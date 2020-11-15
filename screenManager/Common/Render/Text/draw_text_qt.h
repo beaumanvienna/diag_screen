@@ -11,7 +11,7 @@ class QFont;
 
 class TextDrawerQt : public TextDrawer {
 public:
-	TextDrawerQt(Draw::DrawContext *draw);
+	TextDrawerQt(Draw::SCREEN_DrawContext *draw);
 	~TextDrawerQt();
 
 	uint32_t SetFont(const char *fontName, int size, int flags) override;

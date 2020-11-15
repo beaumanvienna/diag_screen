@@ -102,7 +102,7 @@ struct PendingInputBox {
 static std::mutex pendingMutex;
 static std::vector<PendingMessage> pendingMessages;
 static std::vector<PendingInputBox> pendingInputBoxes;
-static SCREEN_Draw::DrawContext *g_draw;
+static SCREEN_Draw::SCREEN_DrawContext *g_draw;
 static SCREEN_Draw::Pipeline *colorPipeline;
 static SCREEN_Draw::Pipeline *texColorPipeline;
 static SCREEN_UIContext *uiContext;
@@ -211,7 +211,7 @@ bool CreateGlobalPipelines();
 
 bool NativeInitGraphics(SCREEN_GraphicsContext *graphicsContext) {
 	
-	g_draw = graphicsContext->GetDrawContext();
+	g_draw = graphicsContext->GetSCREEN_DrawContext();
 
 	if (!CreateGlobalPipelines()) {
 		printf("Failed to create global pipelines");
@@ -246,7 +246,7 @@ bool NativeInitGraphics(SCREEN_GraphicsContext *graphicsContext) {
 		uiContext->Text()->SetFont("Tahoma", 20, 0);
 
 	screenManager->setUIContext(uiContext);
-	screenManager->setDrawContext(g_draw);
+	screenManager->setSCREEN_DrawContext(g_draw);
 
 	return true;
 }

@@ -77,13 +77,13 @@ void SCREEN_UIScreen::deviceLost() {
 
 void SCREEN_UIScreen::deviceRestored() {
 	if (root_)
-		root_->DeviceRestored(screenManager()->getDrawContext());
+		root_->DeviceRestored(screenManager()->getSCREEN_DrawContext());
 }
 
 void SCREEN_UIScreen::preRender() {
     //printf("jc: void SCREEN_UIScreen::preRender()\n");
 	using namespace SCREEN_Draw;
-	SCREEN_Draw::DrawContext *draw = screenManager()->getDrawContext();
+	SCREEN_Draw::SCREEN_DrawContext *draw = screenManager()->getSCREEN_DrawContext();
 	if (!draw) {
 		return;
 	}
@@ -105,7 +105,7 @@ void SCREEN_UIScreen::preRender() {
 
 void SCREEN_UIScreen::postRender() {
     //printf("jc: void SCREEN_UIScreen::postRender()\n");
-	SCREEN_Draw::DrawContext *draw = screenManager()->getDrawContext();
+	SCREEN_Draw::SCREEN_DrawContext *draw = screenManager()->getSCREEN_DrawContext();
 	if (!draw) {
 		return;
 	}

@@ -30,7 +30,7 @@ SCREEN_DrawBuffer::~SCREEN_DrawBuffer() {
 	delete [] verts_;
 }
 
-void SCREEN_DrawBuffer::Init(SCREEN_Draw::DrawContext *t3d, SCREEN_Draw::Pipeline *pipeline) {
+void SCREEN_DrawBuffer::Init(SCREEN_Draw::SCREEN_DrawContext *t3d, SCREEN_Draw::Pipeline *pipeline) {
 	using namespace SCREEN_Draw;
 
 	if (inited_)
@@ -46,7 +46,7 @@ void SCREEN_DrawBuffer::Init(SCREEN_Draw::DrawContext *t3d, SCREEN_Draw::Pipelin
 	}
 }
 
-SCREEN_Draw::InputLayout *SCREEN_DrawBuffer::CreateInputLayout(SCREEN_Draw::DrawContext *t3d) {
+SCREEN_Draw::InputLayout *SCREEN_DrawBuffer::CreateInputLayout(SCREEN_Draw::SCREEN_DrawContext *t3d) {
 	using namespace SCREEN_Draw;
 	InputLayoutDesc desc = {
 		{

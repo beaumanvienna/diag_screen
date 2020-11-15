@@ -8,8 +8,8 @@ class VulkanContext;
 
 namespace SCREEN_Draw {
 
-DrawContext *T3DCreateGLContext();
+SCREEN_DrawContext *T3DCreateGLContext();
 
-DrawContext *T3DCreateVulkanContext(VulkanContext *context, bool splitSubmit);
+SCREEN_DrawContext *T3DCreateVulkanContext(VulkanContext *context, bool splitSubmit);
 
 }  // namespace SCREEN_Draw

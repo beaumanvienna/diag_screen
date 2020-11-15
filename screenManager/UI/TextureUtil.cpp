@@ -153,7 +153,7 @@ bool SCREEN_ManagedTexture::LoadFromFile(const std::string &filename, ImageFileT
 	return retval;
 }
 
-std::unique_ptr<SCREEN_ManagedTexture> CreateTextureFromFile(SCREEN_Draw::DrawContext *draw, const char *filename, ImageFileType type, bool generateMips) {
+std::unique_ptr<SCREEN_ManagedTexture> CreateTextureFromFile(SCREEN_Draw::SCREEN_DrawContext *draw, const char *filename, ImageFileType type, bool generateMips) {
 	if (!draw)
 		return std::unique_ptr<SCREEN_ManagedTexture>();
 	// TODO: Load the texture on a background thread.
@@ -172,7 +172,7 @@ void SCREEN_ManagedTexture::DeviceLost() {
 	texture_ = nullptr;
 }
 
-void SCREEN_ManagedTexture::DeviceRestored(SCREEN_Draw::DrawContext *draw) {
+void SCREEN_ManagedTexture::DeviceRestored(SCREEN_Draw::SCREEN_DrawContext *draw) {
     printf("SCREEN_ManagedTexture::DeviceRestored(%s)", filename_.c_str());
 	_assert_(!texture_);
 	draw_ = draw;
@@ -181,7 +181,7 @@ void SCREEN_ManagedTexture::DeviceRestored(SCREEN_Draw::DrawContext *draw) {
 	loadPending_ = true;
 }
 
-SCREEN_Draw::Texture *SCREEN_ManagedTexture::GetTexture() {
+SCREEN_Draw::SCREEN_Texture *SCREEN_ManagedTexture::GetTexture() {
 	if (loadPending_) {
 		if (!LoadFromFile(filename_, ImageFileType::DETECT, generateMips_)) {
 			printf("SCREEN_ManagedTexture failed: '%s'", filename_.c_str());
@@ -192,7 +192,7 @@ SCREEN_Draw::Texture *SCREEN_ManagedTexture::GetTexture() {
 }
 
 // TODO: Remove the code duplication between this and LoadFromFileData
-std::unique_ptr<SCREEN_ManagedTexture> CreateTextureFromFileData(SCREEN_Draw::DrawContext *draw, const uint8_t *data, int size, ImageFileType type, bool generateMips, const char *name) {
+std::unique_ptr<SCREEN_ManagedTexture> CreateTextureFromFileData(SCREEN_Draw::SCREEN_DrawContext *draw, const uint8_t *data, int size, ImageFileType type, bool generateMips, const char *name) {
 	if (!draw)
 		return std::unique_ptr<SCREEN_ManagedTexture>();
 	SCREEN_ManagedTexture *mtex = new SCREEN_ManagedTexture(draw);

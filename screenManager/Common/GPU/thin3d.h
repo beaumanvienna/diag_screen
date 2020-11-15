@@ -378,7 +378,7 @@ class Buffer : public RefCountedObject {
 public:
 };
 
-class Texture : public RefCountedObject {
+class SCREEN_Texture : public RefCountedObject {
 public:
 	int Width() { return width_; }
 	int Height() { return height_; }
@@ -559,9 +559,9 @@ struct RenderPassInfo {
 	const char *tag;
 };
 
-class DrawContext {
+class SCREEN_DrawContext {
 public:
-	virtual ~DrawContext();
+	virtual ~SCREEN_DrawContext();
 	bool CreatePresets();
 	void DestroyPresets();
 
@@ -590,7 +590,7 @@ public:
 	// Resources
 	virtual Buffer *CreateBuffer(size_t size, uint32_t usageFlags) = 0;
 	// Does not take ownership over pointed-to initData. After this returns, can dispose of it.
-	virtual Texture *CreateTexture(const TextureDesc &desc) = 0;
+	virtual SCREEN_Texture *CreateTexture(const TextureDesc &desc) = 0;
 	// On some hardware, you might get a 24-bit depth buffer even though you only wanted a 16-bit one.
 	virtual Framebuffer *CreateFramebuffer(const FramebufferDesc &desc) = 0;
 
@@ -633,7 +633,7 @@ public:
 	virtual void SetStencilRef(uint8_t ref) = 0;
 
 	virtual void BindSamplerStates(int start, int count, SamplerState **state) = 0;
-	virtual void BindTextures(int start, int count, Texture **textures) = 0;
+	virtual void BindTextures(int start, int count, SCREEN_Texture **textures) = 0;
 	virtual void BindVertexBuffers(int start, int count, Buffer **buffers, int *offsets) = 0;
 	virtual void BindIndexBuffer(Buffer *indexBuffer, int offset) = 0;
 
@@ -641,8 +641,8 @@ public:
 	// More modern methods will be added later.
 	virtual void UpdateDynamicUniformBuffer(const void *ub, size_t size) = 0;
 
-	void BindTexture(int stage, Texture *texture) {
-		Texture *textures[1] = { texture };
+	void BindTexture(int stage, SCREEN_Texture *texture) {
+		SCREEN_Texture *textures[1] = { texture };
 		BindTextures(stage, 1, textures);
 	}  // from sampler 0 and upwards
 
@@ -712,6 +712,6 @@ struct ShaderSource {
 	const char *src;
 };
 
-ShaderModule *CreateShader(DrawContext *draw, ShaderStage stage, const std::vector<ShaderSource> &sources);
+ShaderModule *CreateShader(SCREEN_DrawContext *draw, ShaderStage stage, const std::vector<ShaderSource> &sources);
 
 }  // namespace SCREEN_Draw

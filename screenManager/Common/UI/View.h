@@ -31,12 +31,12 @@ struct AxisInput;
 struct ImageID;
 
 class SCREEN_DrawBuffer;
-class Texture;
+class SCREEN_Texture;
 class SCREEN_UIContext;
 
 namespace SCREEN_Draw {
-	class DrawContext;
-	class Texture;
+	class SCREEN_DrawContext;
+	class SCREEN_Texture;
 }
 
 
@@ -360,7 +360,7 @@ public:
 	virtual void Update();
 
 	virtual void DeviceLost() {}
-	virtual void DeviceRestored(SCREEN_Draw::DrawContext *draw) {}
+	virtual void DeviceRestored(SCREEN_Draw::SCREEN_DrawContext *draw) {}
 
 	// If this view covers these coordinates, it should add itself and its children to the list.
 	virtual void Query(float x, float y, std::vector<View *> &list);

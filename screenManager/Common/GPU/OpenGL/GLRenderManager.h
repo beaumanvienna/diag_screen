@@ -18,7 +18,7 @@ class GLRInputLayout;
 class GLPushBuffer;
 
 namespace SCREEN_Draw {
-class DrawContext;
+class SCREEN_DrawContext;
 }
 
 class GLRTexture {
@@ -357,7 +357,7 @@ public:
 	SCREEN_GLRenderManager();
 	~SCREEN_GLRenderManager();
 
-	void ThreadStart(SCREEN_Draw::DrawContext *draw);
+	void ThreadStart(SCREEN_Draw::SCREEN_DrawContext *draw);
 	void ThreadEnd();
 	bool ThreadFrame();  // Returns false to request exiting the loop.
 

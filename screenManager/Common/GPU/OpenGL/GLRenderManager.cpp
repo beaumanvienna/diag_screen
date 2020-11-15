@@ -106,7 +106,7 @@ SCREEN_GLRenderManager::~SCREEN_GLRenderManager() {
 	_assert_(deleter_.IsEmpty());
 }
 
-void SCREEN_GLRenderManager::ThreadStart(SCREEN_Draw::DrawContext *draw) {
+void SCREEN_GLRenderManager::ThreadStart(SCREEN_Draw::SCREEN_DrawContext *draw) {
 	queueRunner_.CreateDeviceObjects();
 	threadFrame_ = threadInitFrame_;
 	renderThreadId = std::this_thread::get_id();

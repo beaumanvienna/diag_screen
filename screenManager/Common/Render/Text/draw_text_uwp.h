@@ -16,7 +16,7 @@ class TextDrawerFontContext;
 
 class TextDrawerUWP : public TextDrawer {
 public:
-	TextDrawerUWP(Draw::DrawContext *draw);
+	TextDrawerUWP(Draw::SCREEN_DrawContext *draw);
 	~TextDrawerUWP();
 
 	uint32_t SetFont(const char *fontName, int size, int flags) override;

@@ -10,7 +10,7 @@ using namespace SCREEN_Lin;
 
 class I18NCategory;
 namespace SCREEN_Draw {
-	class DrawContext;
+	class SCREEN_DrawContext;
 }
 
 class SCREEN_UIScreen : public Screen {

@@ -120,7 +120,7 @@ void ViewGroup::DeviceLost() {
 	}
 }
 
-void ViewGroup::DeviceRestored(SCREEN_Draw::DrawContext *draw) {
+void ViewGroup::DeviceRestored(SCREEN_Draw::SCREEN_DrawContext *draw) {
 	std::lock_guard<std::mutex> guard(modifyLock_);
 	for (auto iter = views_.begin(); iter != views_.end(); ++iter) {
 		(*iter)->DeviceRestored(draw);

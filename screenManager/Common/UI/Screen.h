@@ -36,7 +36,7 @@ class SCREEN_ScreenManager;
 class SCREEN_UIContext;
 
 namespace SCREEN_Draw {
-	class DrawContext;
+	class SCREEN_DrawContext;
 }
 
 class Screen {
@@ -104,8 +104,8 @@ public:
 	void setUIContext(SCREEN_UIContext *context) { uiContext_ = context; }
 	SCREEN_UIContext *getUIContext() { return uiContext_; }
 
-	void setDrawContext(SCREEN_Draw::DrawContext *context) { thin3DContext_ = context; }
-	SCREEN_Draw::DrawContext *getDrawContext() { return thin3DContext_; }
+	void setSCREEN_DrawContext(SCREEN_Draw::SCREEN_DrawContext *context) { thin3DContext_ = context; }
+	SCREEN_Draw::SCREEN_DrawContext *getSCREEN_DrawContext() { return thin3DContext_; }
 
 	void setPostRenderCallback(PostRenderCallback cb, void *userdata) {
 		postRenderCb_ = cb;
@@ -147,7 +147,7 @@ private:
 	void processFinishDialog();
 
 	SCREEN_UIContext *uiContext_;
-	SCREEN_Draw::DrawContext *thin3DContext_;
+	SCREEN_Draw::SCREEN_DrawContext *thin3DContext_;
 
 	PostRenderCallback postRenderCb_ = nullptr;
 	void *postRenderUserdata_ = nullptr;

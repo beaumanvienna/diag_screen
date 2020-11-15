@@ -37,7 +37,7 @@ public:
 	virtual void Query(float x, float y, std::vector<View *> &list) override;
 
 	virtual void DeviceLost() override;
-	virtual void DeviceRestored(SCREEN_Draw::DrawContext *draw) override;
+	virtual void DeviceRestored(SCREEN_Draw::SCREEN_DrawContext *draw) override;
 
 	virtual void Draw(SCREEN_UIContext &dc) override;
 

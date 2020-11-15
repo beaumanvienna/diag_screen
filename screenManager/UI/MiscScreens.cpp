@@ -82,7 +82,7 @@ void UIBackgroundInit(SCREEN_UIContext &dc) {
 	const std::string bgPng = "background.png";
 	if (SCREEN_PFile::Exists(bgPng)) {
 		const std::string &bgFile = bgPng;
-		bgTexture = CreateTextureFromFile(dc.GetDrawContext(), bgFile.c_str(), DETECT, true);
+		bgTexture = CreateTextureFromFile(dc.GetSCREEN_DrawContext(), bgFile.c_str(), DETECT, true);
 	}
 }
 
@@ -115,11 +115,11 @@ void DrawBackground(SCREEN_UIContext &dc, float alpha) {
 	}
 	
 	uint32_t bgColor = whiteAlpha(alpha);
-    bgTexture = CreateTextureFromFile(dc.GetDrawContext(), "/home/yo/dev/marley/pictures/splash_pcsx2.png", DETECT, true);
+    bgTexture = CreateTextureFromFile(dc.GetSCREEN_DrawContext(), "/home/yo/dev/marley/pictures/splash_pcsx2.png", DETECT, true);
 
 	if (bgTexture != nullptr) {
 		dc.Flush();
-		dc.GetDrawContext()->BindTexture(0, bgTexture->GetTexture());
+		dc.GetSCREEN_DrawContext()->BindTexture(0, bgTexture->GetTexture());
 		dc.Draw()->DrawTexRect(dc.GetBounds(), 0, 0, 1, 1, bgColor);
 
 		dc.Flush();
@@ -141,17 +141,17 @@ void DrawGameBackground(SCREEN_UIContext &dc, const std::string &gamePath) {
     /*
 	std::shared_ptr<GameInfo> ginfo;
 	if (gamePath.size())
-		ginfo = g_gameInfoCache->GetInfo(dc.GetDrawContext(), gamePath, GAMEINFO_WANTBG);
+		ginfo = g_gameInfoCache->GetInfo(dc.GetSCREEN_DrawContext(), gamePath, GAMEINFO_WANTBG);
 	dc.Flush();
 
 	bool hasPic = false;
 	double loadTime;
 	if (ginfo && ginfo->pic1.texture) {
-		dc.GetDrawContext()->BindTexture(0, ginfo->pic1.texture->GetTexture());
+		dc.GetSCREEN_DrawContext()->BindTexture(0, ginfo->pic1.texture->GetTexture());
 		loadTime = ginfo->pic1.timeLoaded;
 		hasPic = true;
 	} else if (ginfo && ginfo->pic0.texture) {
-		dc.GetDrawContext()->BindTexture(0, ginfo->pic0.texture->GetTexture());
+		dc.GetSCREEN_DrawContext()->BindTexture(0, ginfo->pic0.texture->GetTexture());
 		loadTime = ginfo->pic0.timeLoaded;
 		hasPic = true;
 	}
@@ -555,7 +555,7 @@ void LogoScreen::render() {
 
 #if (defined(_WIN32) && !PPSSPP_PLATFORM(UWP)) || PPSSPP_PLATFORM(ANDROID) || PPSSPP_PLATFORM(LINUX)
 	// Draw the graphics API, except on UWP where it's always D3D11
-	std::string apiName = screenManager()->getDrawContext()->GetInfoString(InfoField::APINAME);
+	std::string apiName = screenManager()->getSCREEN_DrawContext()->GetInfoString(InfoField::APINAME);
 #ifdef _DEBUG
 	apiName += ", debug build";
 #endif

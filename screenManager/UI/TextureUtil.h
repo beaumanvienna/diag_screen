@@ -15,7 +15,7 @@ enum ImageFileType {
 
 class SCREEN_ManagedTexture {
 public:
-	SCREEN_ManagedTexture(SCREEN_Draw::DrawContext *draw) : draw_(draw) {
+	SCREEN_ManagedTexture(SCREEN_Draw::SCREEN_DrawContext *draw) : draw_(draw) {
 	}
 	~SCREEN_ManagedTexture() {
 		if (texture_)
@@ -24,23 +24,23 @@ public:
 
 	bool LoadFromFile(const std::string &filename, ImageFileType type = ImageFileType::DETECT, bool generateMips = false);
 	bool LoadFromFileData(const uint8_t *data, size_t dataSize, ImageFileType type, bool generateMips, const char *name);
-	SCREEN_Draw::Texture *GetTexture();  // For immediate use, don't store.
+	SCREEN_Draw::SCREEN_Texture *GetTexture();  // For immediate use, don't store.
 	int Width() const { return texture_->Width(); }
 	int Height() const { return texture_->Height(); }
 
 	void DeviceLost();
-	void DeviceRestored(SCREEN_Draw::DrawContext *draw);
+	void DeviceRestored(SCREEN_Draw::SCREEN_DrawContext *draw);
 
 private:
-	SCREEN_Draw::Texture *texture_ = nullptr;
-	SCREEN_Draw::DrawContext *draw_;
+	SCREEN_Draw::SCREEN_Texture *texture_ = nullptr;
+	SCREEN_Draw::SCREEN_DrawContext *draw_;
 	std::string filename_;  // Textures that are loaded from files can reload themselves automatically.
 	bool generateMips_ = false;
 	bool loadPending_ = false;
 };
 
-std::unique_ptr<SCREEN_ManagedTexture> CreateTextureFromFile(SCREEN_Draw::DrawContext *draw, const char *filename, ImageFileType fileType, bool generateMips);
-std::unique_ptr<SCREEN_ManagedTexture> CreateTextureFromFileData(SCREEN_Draw::DrawContext *draw, const uint8_t *data, int size, ImageFileType fileType, bool generateMips, const char *name);
+std::unique_ptr<SCREEN_ManagedTexture> CreateTextureFromFile(SCREEN_Draw::SCREEN_DrawContext *draw, const char *filename, ImageFileType fileType, bool generateMips);
+std::unique_ptr<SCREEN_ManagedTexture> CreateTextureFromFileData(SCREEN_Draw::SCREEN_DrawContext *draw, const uint8_t *data, int size, ImageFileType fileType, bool generateMips, const char *name);
 
 class SCREEN_GameIconView : public SCREEN_UI::InertView {
 public:

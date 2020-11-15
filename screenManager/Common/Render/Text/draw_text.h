@@ -17,12 +17,12 @@
 #include "Common/Render/DrawBuffer.h"
 
 namespace SCREEN_Draw {
-	class DrawContext;
-	class Texture;
+	class SCREEN_DrawContext;
+	class SCREEN_Texture;
 }
 
 struct TextStringEntry {
-	SCREEN_Draw::Texture *texture;
+	SCREEN_Draw::SCREEN_Texture *texture;
 	int width;
 	int height;
 	int bmWidth;
@@ -60,12 +60,12 @@ public:
 	}
 
 	// Factory function that selects implementation.
-	static TextDrawer *Create(SCREEN_Draw::DrawContext *draw);
+	static TextDrawer *Create(SCREEN_Draw::SCREEN_DrawContext *draw);
 
 protected:
-	TextDrawer(SCREEN_Draw::DrawContext *draw);
+	TextDrawer(SCREEN_Draw::SCREEN_DrawContext *draw);
 
-	SCREEN_Draw::DrawContext *draw_;
+	SCREEN_Draw::SCREEN_DrawContext *draw_;
 	virtual void ClearCache() = 0;
 	void WrapString(std::string &out, const char *str, float maxWidth, int flags);
 

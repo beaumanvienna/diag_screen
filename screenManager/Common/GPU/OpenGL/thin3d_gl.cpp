@@ -331,13 +331,13 @@ private:
 class OpenGLFramebuffer;
 class OpenGLTexture;
 
-class OpenGLContext : public DrawContext {
+class OpenGLContext : public SCREEN_DrawContext {
 public:
 	OpenGLContext();
 	virtual ~OpenGLContext();
 
 	void SetTargetSize(int w, int h) override {
-		DrawContext::SetTargetSize(w, h);
+		SCREEN_DrawContext::SetTargetSize(w, h);
 		renderManager_.Resize(w, h);
 	}
 
@@ -360,7 +360,7 @@ public:
 	InputLayout *CreateInputLayout(const InputLayoutDesc &desc) override;
 	ShaderModule *CreateShaderModule(ShaderStage stage, ShaderLanguage language, const uint8_t *data, size_t dataSize, const std::string &tag) override;
 
-	Texture *CreateTexture(const TextureDesc &desc) override;
+	SCREEN_Texture *CreateTexture(const TextureDesc &desc) override;
 	Buffer *CreateBuffer(size_t size, uint32_t usageFlags) override;
 	Framebuffer *CreateFramebuffer(const FramebufferDesc &desc) override;
 
@@ -412,7 +412,7 @@ public:
 			curPipeline_->depthStencil->stencilCompareMask);
 	}
 
-	void BindTextures(int start, int count, Texture **textures) override;
+	void BindTextures(int start, int count, SCREEN_Texture **textures) override;
 	void BindPipeline(Pipeline *pipeline) override;
 	void BindVertexBuffers(int start, int count, Buffer **buffers, int *offsets) override {
 		for (int i = 0; i < count; i++) {
@@ -655,7 +655,7 @@ GLuint TypeToTarget(TextureType type) {
 	}
 }
 
-class OpenGLTexture : public Texture {
+class OpenGLTexture : public SCREEN_Texture {
 public:
 	OpenGLTexture(SCREEN_GLRenderManager *render, const TextureDesc &desc);
 	~OpenGLTexture();
@@ -846,7 +846,7 @@ bool OpenGLContext::CopyFramebufferToMemorySync(Framebuffer *src, int channelBit
 }
 
 
-Texture *OpenGLContext::CreateTexture(const TextureDesc &desc) {
+SCREEN_Texture *OpenGLContext::CreateTexture(const TextureDesc &desc) {
 	return new OpenGLTexture(&renderManager_, desc);
 }
 
@@ -1011,7 +1011,7 @@ Pipeline *OpenGLContext::CreateGraphicsPipeline(const PipelineDesc &desc) {
 	}
 }
 
-void OpenGLContext::BindTextures(int start, int count, Texture **textures) {
+void OpenGLContext::BindTextures(int start, int count, SCREEN_Texture **textures) {
 	if (start + count >= MAX_TEXTURE_SLOTS) {
 		return;
 	}
@@ -1183,7 +1183,7 @@ void OpenGLContext::Clear(int mask, uint32_t colorval, float depthVal, int stenc
 	renderManager_.Clear(colorval, depthVal, stencilVal, glMask, 0xF, 0, 0, targetWidth_, targetHeight_);
 }
 
-DrawContext *T3DCreateGLContext() {
+SCREEN_DrawContext *T3DCreateGLContext() {
 	return new OpenGLContext();
 }
 

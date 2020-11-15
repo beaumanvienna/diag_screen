@@ -38,5 +38,5 @@ public:
 	// Should strive to get rid of these.
 	virtual void Poll() {}
 
-	virtual SCREEN_Draw::DrawContext *GetDrawContext() = 0;
+	virtual SCREEN_Draw::SCREEN_DrawContext *GetSCREEN_DrawContext() = 0;
 };

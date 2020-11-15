@@ -62,11 +62,11 @@ public:
 	void Flush(bool set_blend_state = true);
 
 	// TODO: Enforce these. Now Init is autocalled and shutdown not called.
-	void Init(SCREEN_Draw::DrawContext *t3d, SCREEN_Draw::Pipeline *pipeline);
+	void Init(SCREEN_Draw::SCREEN_DrawContext *t3d, SCREEN_Draw::Pipeline *pipeline);
 	void Shutdown();
 
 	// So that callers can create appropriate pipelines.
-	SCREEN_Draw::InputLayout *CreateInputLayout(SCREEN_Draw::DrawContext *t3d);
+	SCREEN_Draw::InputLayout *CreateInputLayout(SCREEN_Draw::SCREEN_DrawContext *t3d);
 
 	int Count() const { return count_; }
 
@@ -179,7 +179,7 @@ private:
 	float alpha_ = 1.0f;
 	std::vector<float> alphaStack_;
 
-	SCREEN_Draw::DrawContext *draw_;
+	SCREEN_Draw::SCREEN_DrawContext *draw_;
 	SCREEN_Draw::Buffer *vbuf_;
 	SCREEN_Draw::Pipeline *pipeline_;
 

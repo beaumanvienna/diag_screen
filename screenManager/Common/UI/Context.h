@@ -12,16 +12,16 @@
 // Everything forward declared so this header is safe everywhere.
 
 namespace SCREEN_Draw {
-	class DrawContext;
+	class SCREEN_DrawContext;
 	class Pipeline;
 	class DepthStencilState;
-	class Texture;
+	class SCREEN_Texture;
 	class BlendState;
 	class SamplerState;
 	class RasterState;
 }
 
-class Texture;
+class SCREEN_Texture;
 class SCREEN_ManagedTexture;
 class SCREEN_DrawBuffer;
 class TextDrawer;
@@ -49,7 +49,7 @@ public:
 	SCREEN_UIContext();
 	~SCREEN_UIContext();
 
-	void Init(SCREEN_Draw::DrawContext *thin3d, SCREEN_Draw::Pipeline *uipipe, SCREEN_Draw::Pipeline *uipipenotex, SCREEN_DrawBuffer *uidrawbuffer, SCREEN_DrawBuffer *uidrawbufferTop);
+	void Init(SCREEN_Draw::SCREEN_DrawContext *thin3d, SCREEN_Draw::Pipeline *uipipe, SCREEN_Draw::Pipeline *uipipenotex, SCREEN_DrawBuffer *uidrawbuffer, SCREEN_DrawBuffer *uidrawbufferTop);
 
 	void BeginFrame();
 
@@ -90,7 +90,7 @@ public:
 	void SetBounds(const Bounds &b) { bounds_ = b; }
 	const Bounds &GetBounds() const { return bounds_; }
 	Bounds GetLayoutBounds() const;
-	SCREEN_Draw::DrawContext *GetDrawContext() { return draw_; }
+	SCREEN_Draw::SCREEN_DrawContext *GetSCREEN_DrawContext() { return draw_; }
 	void SetCurZ(float curZ);
 
 	void PushTransform(const UITransform &transform);
@@ -98,7 +98,7 @@ public:
 	Bounds TransformBounds(const Bounds &bounds);
 
 private:
-	SCREEN_Draw::DrawContext *draw_;
+	SCREEN_Draw::SCREEN_DrawContext *draw_;
 	Bounds bounds_;
 
 	float fontScaleX_ = 1.0f;

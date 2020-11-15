@@ -356,7 +356,7 @@ const UniformBufferDesc vsTexColBufDesc{ sizeof(VsTexColUB),{
 	{ "WorldViewProj", 0, -1, UniformType::MATRIX4X4, 0 }
 } };
 
-ShaderModule *CreateShader(DrawContext *draw, ShaderStage stage, const std::vector<ShaderSource> &sources) {
+ShaderModule *CreateShader(SCREEN_DrawContext *draw, ShaderStage stage, const std::vector<ShaderSource> &sources) {
 	uint32_t supported = draw->GetSupportedShaderLanguages();
 	for (auto iter : sources) {
 		if ((uint32_t)iter.lang & supported) {
@@ -366,7 +366,7 @@ ShaderModule *CreateShader(DrawContext *draw, ShaderStage stage, const std::vect
 	return nullptr;
 }
 
-bool DrawContext::CreatePresets() {
+bool SCREEN_DrawContext::CreatePresets() {
 	vsPresets_[VS_TEXTURE_COLOR_2D] = CreateShader(this, ShaderStage::VERTEX, vsTexCol);
 	vsPresets_[VS_COLOR_2D] = CreateShader(this, ShaderStage::VERTEX, vsCol);
 
@@ -377,7 +377,7 @@ bool DrawContext::CreatePresets() {
 	return vsPresets_[VS_TEXTURE_COLOR_2D] && vsPresets_[VS_COLOR_2D] && fsPresets_[FS_TEXTURE_COLOR_2D] && fsPresets_[FS_COLOR_2D] && fsPresets_[FS_TEXTURE_COLOR_2D_RB_SWIZZLE];
 }
 
-void DrawContext::DestroyPresets() {
+void SCREEN_DrawContext::DestroyPresets() {
 	for (int i = 0; i < VS_MAX_PRESET; i++) {
 		if (vsPresets_[i]) {
 			vsPresets_[i]->Release();
@@ -392,7 +392,7 @@ void DrawContext::DestroyPresets() {
 	}
 }
 
-DrawContext::~DrawContext() {
+SCREEN_DrawContext::~SCREEN_DrawContext() {
 	DestroyPresets();
 }
 

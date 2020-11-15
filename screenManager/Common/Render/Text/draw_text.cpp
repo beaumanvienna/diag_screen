@@ -12,7 +12,7 @@
 #include "Common/Render/Text/draw_text_qt.h"
 #include "Common/Render/Text/draw_text_android.h"
 
-TextDrawer::TextDrawer(SCREEN_Draw::DrawContext *draw) : draw_(draw) {
+TextDrawer::TextDrawer(SCREEN_Draw::SCREEN_DrawContext *draw) : draw_(draw) {
 	// These probably shouldn't be state.
 	dpiScale_ = CalculateDPIScale();
 }
@@ -80,7 +80,7 @@ void TextDrawer::DrawStringBitmapRect(std::vector<uint8_t> &bitmapData, TextStri
 	DrawStringBitmap(bitmapData, entry, texFormat, toDraw.c_str(), align);
 }
 
-TextDrawer *TextDrawer::Create(SCREEN_Draw::DrawContext *draw) {
+TextDrawer *TextDrawer::Create(SCREEN_Draw::SCREEN_DrawContext *draw) {
 	TextDrawer *drawer = nullptr;
 
 	if (drawer && !drawer->IsReady()) {

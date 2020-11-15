@@ -15,7 +15,7 @@ struct AndroidFontEntry {
 
 class TextDrawerAndroid : public TextDrawer {
 public:
-	TextDrawerAndroid(Draw::DrawContext *draw);
+	TextDrawerAndroid(Draw::SCREEN_DrawContext *draw);
 	~TextDrawerAndroid();
 
 	bool IsReady() const override;
