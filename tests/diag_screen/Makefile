@@ -69,8 +69,8 @@ all: SETTINGS_DIAG
 
 SETTINGS_DIAG: main.cpp
 	$(info   *************** tests make settings dialog ***************)
-	g++ $(COMPILER_ARTIFACTS) -o SETTINGS_DIAG $(SOURCE_FILES) $(LINKER_OBJECTS_DYN)
+	g++ $(COMPILER_ARTIFACTS) -o DIAG_SCREEN $(SOURCE_FILES) $(LINKER_OBJECTS_DYN)
 
 clean:
 	$(info   *************** tests settings dialog clean ***************)
-	rm -rf *.o SETTINGS_DIAG *.ini PSP
+	rm -rf *.o DIAG_SCREEN *.ini PSP
