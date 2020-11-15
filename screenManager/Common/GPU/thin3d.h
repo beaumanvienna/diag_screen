@@ -15,7 +15,7 @@
 #include "DataFormat.h"
 
 namespace SCREEN_Lin {
-class Matrix4x4;
+class SCREEN_Matrix4x4;
 }
 
 namespace SCREEN_Draw {

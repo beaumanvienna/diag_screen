@@ -160,7 +160,7 @@ inline void CopyFloat3To4(float dest[4], const float src[3]) {
 	dest[3] = 0.0f;
 }
 
-inline void CopyMatrix4x4(float dest[16], const float src[16]) {
+inline void CopySCREEN_Matrix4x4(float dest[16], const float src[16]) {
 	memcpy(dest, src, sizeof(float) * 16);
 }
 

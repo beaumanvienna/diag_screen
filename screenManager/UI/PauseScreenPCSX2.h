@@ -25,7 +25,7 @@
 #include "UI/MiscScreens.h"
 #include "UI/TextureUtil.h"
 
-class GamePauseScreenPCSX2 : public UIDialogScreenWithBackground {
+class GamePauseScreenPCSX2 : public SCREEN_UIDialogScreenWithBackground {
 public:
 	GamePauseScreenPCSX2() {printf("jc: GamePauseScreenPCSX2()\n");}
 	virtual ~GamePauseScreenPCSX2();

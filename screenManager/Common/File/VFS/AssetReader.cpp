@@ -8,12 +8,12 @@
 #include "Common/File/VFS/AssetReader.h"
 
 
-DirectoryAssetReader::DirectoryAssetReader(const char *path) {
+DirectorySCREEN_AssetReader::DirectorySCREEN_AssetReader(const char *path) {
 	strncpy(path_, path, ARRAY_SIZE(path_));
 	path_[ARRAY_SIZE(path_) - 1] = '\0';
 }
 
-uint8_t *DirectoryAssetReader::ReadAsset(const char *path, size_t *size) {
+uint8_t *DirectorySCREEN_AssetReader::ReadAsset(const char *path, size_t *size) {
 	char new_path[2048];
 	new_path[0] = '\0';
 	// Check if it already contains the path
@@ -26,7 +26,7 @@ uint8_t *DirectoryAssetReader::ReadAsset(const char *path, size_t *size) {
 	return ReadLocalFile(new_path, size);
 }
 
-bool DirectoryAssetReader::GetFileListing(const char *path, std::vector<FileInfo> *listing, const char *filter = 0)
+bool DirectorySCREEN_AssetReader::GetFileListing(const char *path, std::vector<FileInfo> *listing, const char *filter = 0)
 {
 	char new_path[2048];
 	new_path[0] = '\0';
@@ -52,7 +52,7 @@ bool DirectoryAssetReader::GetFileListing(const char *path, std::vector<FileInfo
 	}
 }
 
-bool DirectoryAssetReader::GetFileInfo(const char *path, FileInfo *info) 
+bool DirectorySCREEN_AssetReader::GetFileInfo(const char *path, FileInfo *info) 
 {
 	char new_path[2048];
 	new_path[0] = '\0';

@@ -22,7 +22,7 @@ namespace SCREEN_Draw {
 }
 
 class Texture;
-class ManagedTexture;
+class SCREEN_ManagedTexture;
 class SCREEN_DrawBuffer;
 class TextDrawer;
 
@@ -109,7 +109,7 @@ private:
 	SCREEN_Draw::SamplerState *sampler_;
 	SCREEN_Draw::Pipeline *ui_pipeline_ = nullptr;
 	SCREEN_Draw::Pipeline *ui_pipeline_notex_ = nullptr;
-	std::unique_ptr<ManagedTexture> uitexture_;
+	std::unique_ptr<SCREEN_ManagedTexture> uitexture_;
 
 	SCREEN_DrawBuffer *uidrawbuffer_ = nullptr;
 	SCREEN_DrawBuffer *uidrawbufferTop_ = nullptr;

@@ -5,9 +5,7 @@
 
 namespace SCREEN_Lin {
 
-class Quaternion;
-
-class Matrix4x4 {
+class SCREEN_Matrix4x4 {
 public:
 	union {
 		struct {
@@ -30,8 +28,8 @@ public:
 	float &operator[](int i) {
 		return *(((float *)this) + i);
 	}
-	Matrix4x4 operator * (const Matrix4x4 &other) const ;
-	void operator *= (const Matrix4x4 &other) {
+	SCREEN_Matrix4x4 operator * (const SCREEN_Matrix4x4 &other) const ;
+	void operator *= (const SCREEN_Matrix4x4 &other) {
 		*this = *this * other;
 	}
 	const float *getReadPtr() const {
@@ -40,8 +38,8 @@ public:
 	void empty() {
 		memset(this, 0, 16 * sizeof(float));
 	}
-	static Matrix4x4 identity() {
-		Matrix4x4 id;
+	static SCREEN_Matrix4x4 identity() {
+		SCREEN_Matrix4x4 id;
 		id.setIdentity();
 		return id;
 	}
@@ -56,7 +54,7 @@ public:
 		wz = trans.z;
 	}
 
-	Matrix4x4 transpose() const;
+	SCREEN_Matrix4x4 transpose() const;
 
 	// Exact angles to avoid any artifacts.
 	void setRotationZ90() {

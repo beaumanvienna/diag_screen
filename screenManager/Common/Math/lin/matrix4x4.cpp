@@ -7,9 +7,9 @@
 
 namespace SCREEN_Lin {
 
-Matrix4x4 Matrix4x4::transpose() const
+SCREEN_Matrix4x4 SCREEN_Matrix4x4::transpose() const
 {
-	Matrix4x4 out;
+	SCREEN_Matrix4x4 out;
 	out.xx = xx;out.xy = yx;out.xz = zx;out.xw = wx;
 	out.yx = xy;out.yy = yy;out.yz = zy;out.yw = wy;
 	out.zx = xz;out.zy = yz;out.zz = zz;out.zw = wz;
@@ -17,14 +17,14 @@ Matrix4x4 Matrix4x4::transpose() const
 	return out;
 }
 
-Matrix4x4 Matrix4x4::operator * (const Matrix4x4 &other) const 
+SCREEN_Matrix4x4 SCREEN_Matrix4x4::operator * (const SCREEN_Matrix4x4 &other) const 
 {
-	Matrix4x4 temp;
+	SCREEN_Matrix4x4 temp;
 	fast_matrix_mul_4x4(temp.m, other.m, this->m);
 	return temp;
 }
 
-void Matrix4x4::setViewFrame(const Vec3 &pos, const Vec3 &vRight, const Vec3 &vView, const Vec3 &vUp) {
+void SCREEN_Matrix4x4::setViewFrame(const Vec3 &pos, const Vec3 &vRight, const Vec3 &vView, const Vec3 &vUp) {
 	xx = vRight.x; xy = vUp.x; xz=vView.x; xw = 0.0f;
 	yx = vRight.y; yy = vUp.y; yz=vView.y; yw = 0.0f;
 	zx = vRight.z; zy = vUp.z; zz=vView.z; zw = 0.0f;
@@ -35,7 +35,7 @@ void Matrix4x4::setViewFrame(const Vec3 &pos, const Vec3 &vRight, const Vec3 &vV
 	ww = 1.0f;
 }
 
-void Matrix4x4::setOrtho(float left, float right, float bottom, float top, float near, float far) {
+void SCREEN_Matrix4x4::setOrtho(float left, float right, float bottom, float top, float near, float far) {
 	empty();
 	xx = 2.0f / (right - left);
 	yy = 2.0f / (top - bottom);
@@ -46,7 +46,7 @@ void Matrix4x4::setOrtho(float left, float right, float bottom, float top, float
 	ww = 1.0f;
 }
 
-void Matrix4x4::setOrthoD3D(float left, float right, float bottom, float top, float near, float far) {
+void SCREEN_Matrix4x4::setOrthoD3D(float left, float right, float bottom, float top, float near, float far) {
 	empty();
 	xx = 2.0f / (right - left);
 	yy = 2.0f / (top - bottom);
@@ -57,7 +57,7 @@ void Matrix4x4::setOrthoD3D(float left, float right, float bottom, float top, fl
 	ww = 1.0f;
 }
 
-void Matrix4x4::setOrthoVulkan(float left, float right, float top, float bottom, float near, float far) {
+void SCREEN_Matrix4x4::setOrthoVulkan(float left, float right, float top, float bottom, float near, float far) {
 	empty();
 	xx = 2.0f / (right - left);
 	yy = 2.0f / (bottom - top);
@@ -68,7 +68,7 @@ void Matrix4x4::setOrthoVulkan(float left, float right, float top, float bottom,
 	ww = 1.0f;
 }
 
-void Matrix4x4::toText(char *buffer, int len) const {
+void SCREEN_Matrix4x4::toText(char *buffer, int len) const {
 	snprintf(buffer, len, "%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n",
 		xx,xy,xz,xw,
 		yx,yy,yz,yw,
@@ -77,7 +77,7 @@ void Matrix4x4::toText(char *buffer, int len) const {
 	buffer[len - 1] = '\0';
 }
 
-void Matrix4x4::print() const {
+void SCREEN_Matrix4x4::print() const {
 	char buffer[256];
 	toText(buffer, 256);
 	puts(buffer);

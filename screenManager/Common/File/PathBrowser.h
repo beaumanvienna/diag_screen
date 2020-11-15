@@ -13,11 +13,11 @@
 // Abstraction above path that lets you navigate easily.
 // "/" is a special path that means the root of the file system. On Windows,
 // listing this will yield drives.
-class PathBrowser {
+class SCREEN_PathBrowser {
 public:
-	PathBrowser() {}
-	PathBrowser(std::string path) { SetPath(path); }
-	~PathBrowser();
+	SCREEN_PathBrowser() {}
+	SCREEN_PathBrowser(std::string path) { SetPath(path); }
+	~SCREEN_PathBrowser();
 
 	void SetPath(const std::string &path);
 	bool IsListingReady();

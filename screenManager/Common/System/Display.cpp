@@ -17,7 +17,7 @@ float pixel_in_dps_y = 1.0f;
 float display_hz = 60.0f;
 
 DisplayRotation g_display_rotation;
-SCREEN_Lin::Matrix4x4 g_display_rot_matrix = SCREEN_Lin::Matrix4x4::identity();
+SCREEN_Lin::SCREEN_Matrix4x4 g_display_rot_matrix = SCREEN_Lin::SCREEN_Matrix4x4::identity();
 
 template<class T>
 void RotateRectToDisplayImpl(DisplayRect<T> &rect, T curRTWidth, T curRTHeight) {

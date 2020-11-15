@@ -84,7 +84,7 @@ static bool LoadTextureLevels(const uint8_t *data, size_t size, ImageFileType ty
 	return *num_levels > 0;
 }
 
-bool ManagedTexture::LoadFromFileData(const uint8_t *data, size_t dataSize, ImageFileType type, bool generateMips, const char *name) {
+bool SCREEN_ManagedTexture::LoadFromFileData(const uint8_t *data, size_t dataSize, ImageFileType type, bool generateMips, const char *name) {
 	generateMips_ = generateMips;
 	using namespace SCREEN_Draw;
 
@@ -133,7 +133,7 @@ bool ManagedTexture::LoadFromFileData(const uint8_t *data, size_t dataSize, Imag
 	return texture_;
 }
 
-bool ManagedTexture::LoadFromFile(const std::string &filename, ImageFileType type, bool generateMips) {
+bool SCREEN_ManagedTexture::LoadFromFile(const std::string &filename, ImageFileType type, bool generateMips) {
 	generateMips_ = generateMips;
 	size_t fileSize;
 	uint8_t *buffer = VFSReadFile(filename.c_str(), &fileSize);
@@ -153,27 +153,27 @@ bool ManagedTexture::LoadFromFile(const std::string &filename, ImageFileType typ
 	return retval;
 }
 
-std::unique_ptr<ManagedTexture> CreateTextureFromFile(SCREEN_Draw::DrawContext *draw, const char *filename, ImageFileType type, bool generateMips) {
+std::unique_ptr<SCREEN_ManagedTexture> CreateTextureFromFile(SCREEN_Draw::DrawContext *draw, const char *filename, ImageFileType type, bool generateMips) {
 	if (!draw)
-		return std::unique_ptr<ManagedTexture>();
+		return std::unique_ptr<SCREEN_ManagedTexture>();
 	// TODO: Load the texture on a background thread.
-	ManagedTexture *mtex = new ManagedTexture(draw);
+	SCREEN_ManagedTexture *mtex = new SCREEN_ManagedTexture(draw);
 	if (!mtex->LoadFromFile(filename, type, generateMips)) {
 		delete mtex;
-		return std::unique_ptr<ManagedTexture>();
+		return std::unique_ptr<SCREEN_ManagedTexture>();
 	}
-	return std::unique_ptr<ManagedTexture>(mtex);
+	return std::unique_ptr<SCREEN_ManagedTexture>(mtex);
 }
 
-void ManagedTexture::DeviceLost() {
-	printf("ManagedTexture::DeviceLost(%s)", filename_.c_str());
+void SCREEN_ManagedTexture::DeviceLost() {
+	printf("SCREEN_ManagedTexture::DeviceLost(%s)", filename_.c_str());
 	if (texture_)
 		texture_->Release();
 	texture_ = nullptr;
 }
 
-void ManagedTexture::DeviceRestored(SCREEN_Draw::DrawContext *draw) {
-    printf("ManagedTexture::DeviceRestored(%s)", filename_.c_str());
+void SCREEN_ManagedTexture::DeviceRestored(SCREEN_Draw::DrawContext *draw) {
+    printf("SCREEN_ManagedTexture::DeviceRestored(%s)", filename_.c_str());
 	_assert_(!texture_);
 	draw_ = draw;
 	// Vulkan: Can't load textures before the first frame has started.
@@ -181,10 +181,10 @@ void ManagedTexture::DeviceRestored(SCREEN_Draw::DrawContext *draw) {
 	loadPending_ = true;
 }
 
-SCREEN_Draw::Texture *ManagedTexture::GetTexture() {
+SCREEN_Draw::Texture *SCREEN_ManagedTexture::GetTexture() {
 	if (loadPending_) {
 		if (!LoadFromFile(filename_, ImageFileType::DETECT, generateMips_)) {
-			printf("ManagedTexture failed: '%s'", filename_.c_str());
+			printf("SCREEN_ManagedTexture failed: '%s'", filename_.c_str());
 		}
 		loadPending_ = false;
 	}
@@ -192,23 +192,23 @@ SCREEN_Draw::Texture *ManagedTexture::GetTexture() {
 }
 
 // TODO: Remove the code duplication between this and LoadFromFileData
-std::unique_ptr<ManagedTexture> CreateTextureFromFileData(SCREEN_Draw::DrawContext *draw, const uint8_t *data, int size, ImageFileType type, bool generateMips, const char *name) {
+std::unique_ptr<SCREEN_ManagedTexture> CreateTextureFromFileData(SCREEN_Draw::DrawContext *draw, const uint8_t *data, int size, ImageFileType type, bool generateMips, const char *name) {
 	if (!draw)
-		return std::unique_ptr<ManagedTexture>();
-	ManagedTexture *mtex = new ManagedTexture(draw);
+		return std::unique_ptr<SCREEN_ManagedTexture>();
+	SCREEN_ManagedTexture *mtex = new SCREEN_ManagedTexture(draw);
 	if (mtex->LoadFromFileData(data, size, type, generateMips, name)) {
-		return std::unique_ptr<ManagedTexture>(mtex);
+		return std::unique_ptr<SCREEN_ManagedTexture>(mtex);
 	} else {
 		// Best to return a null pointer if we fail!
 		delete mtex;
-		return std::unique_ptr<ManagedTexture>();
+		return std::unique_ptr<SCREEN_ManagedTexture>();
 	}
 }
 
-void GameIconView::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
+void SCREEN_GameIconView::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
 	w = textureWidth_;
 	h = textureHeight_;
 }
 
-void GameIconView::Draw(SCREEN_UIContext &dc) {
+void SCREEN_GameIconView::Draw(SCREEN_UIContext &dc) {
 }

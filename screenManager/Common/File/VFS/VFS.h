@@ -8,9 +8,9 @@
 // read them manually out of the APK zipfile, while being able to run on other
 // platforms as well with the appropriate directory set-up.
 
-class AssetReader;
+class SCREEN_AssetReader;
 
-void VFSRegister(const char *prefix, AssetReader *reader);
+void VFSRegister(const char *prefix, SCREEN_AssetReader *reader);
 void VFSShutdown();
 
 // Use delete [] to release the returned memory.

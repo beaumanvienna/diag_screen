@@ -86,27 +86,27 @@ void UIBackgroundShutdown();
 
 inline void NoOpVoidBool(bool) {}
 
-class UIScreenWithBackground : public UIScreen {
+class SCREEN_UIScreenWithBackground : public SCREEN_UIScreen {
 public:
-	UIScreenWithBackground() : UIScreen() {}
+	SCREEN_UIScreenWithBackground() : SCREEN_UIScreen() {}
 protected:
 	void DrawBackground(SCREEN_UIContext &dc) override;
 	void sendMessage(const char *message, const char *value) override;
 };
 
-class UIScreenWithGameBackground : public UIScreenWithBackground {
+class SCREEN_UIScreenWithGameBackground : public SCREEN_UIScreenWithBackground {
 public:
-	UIScreenWithGameBackground(const std::string &gamePath)
-		: UIScreenWithBackground(), gamePath_(gamePath) {}
+	SCREEN_UIScreenWithGameBackground(const std::string &gamePath)
+		: SCREEN_UIScreenWithBackground(), gamePath_(gamePath) {}
 	void DrawBackground(SCREEN_UIContext &dc) override;
 	void sendMessage(const char *message, const char *value) override;
 protected:
 	std::string gamePath_;
 };
 
-class UIDialogScreenWithBackground : public UIDialogScreen {
+class SCREEN_UIDialogScreenWithBackground : public SCREEN_UIDialogScreen {
 public:
-	UIDialogScreenWithBackground() : UIDialogScreen() {printf("jc: UIDialogScreenWithBackground() : UIDialogScreen()\n");}
+	SCREEN_UIDialogScreenWithBackground() : SCREEN_UIDialogScreen() {printf("jc: SCREEN_UIDialogScreenWithBackground() : SCREEN_UIDialogScreen()\n");}
 protected:
 	void DrawBackground(SCREEN_UIContext &dc) override;
 	void sendMessage(const char *message, const char *value) override;
@@ -114,17 +114,17 @@ protected:
 	void AddStandardBack(SCREEN_UI::ViewGroup *parent);
 };
 
-class UIDialogScreenWithGameBackground : public UIDialogScreenWithBackground {
+class SCREEN_UIDialogScreenWithGameBackground : public SCREEN_UIDialogScreenWithBackground {
 public:
-	UIDialogScreenWithGameBackground(const std::string &gamePath)
-		: UIDialogScreenWithBackground(), gamePath_(gamePath) {}
+	SCREEN_UIDialogScreenWithGameBackground(const std::string &gamePath)
+		: SCREEN_UIDialogScreenWithBackground(), gamePath_(gamePath) {}
 	void DrawBackground(SCREEN_UIContext &dc) override;
 	void sendMessage(const char *message, const char *value) override;
 protected:
 	std::string gamePath_;
 };
 
-class PromptScreen : public UIDialogScreenWithBackground {
+class PromptScreen : public SCREEN_UIDialogScreenWithBackground {
 public:
 	PromptScreen(std::string message, std::string yesButtonText, std::string noButtonText,
 		std::function<void(bool)> callback = &NoOpVoidBool);
@@ -143,9 +143,9 @@ private:
 	std::function<void(bool)> callback_;
 };
 
-class NewLanguageScreen : public ListPopupScreen {
+class SCREEN_NewLanguageScreen : public ListSCREEN_PopupScreen {
 public:
-	NewLanguageScreen(const std::string &title);
+	SCREEN_NewLanguageScreen(const std::string &title);
 
 private:
 	void OnCompleted(DialogResult result) override;
@@ -155,9 +155,9 @@ private:
 	std::vector<FileInfo> langs_;
 };
 
-class PostProcScreen : public ListPopupScreen {
+class SCREEN_PostProcScreen : public ListSCREEN_PopupScreen {
 public:
-	PostProcScreen(const std::string &title, int id);
+	SCREEN_PostProcScreen(const std::string &title, int id);
 
 private:
 	void OnCompleted(DialogResult result) override;
@@ -166,9 +166,9 @@ private:
 	int id_;
 };
 
-class TextureShaderScreen : public ListPopupScreen {
+class SCREEN_TextureShaderScreen : public ListSCREEN_PopupScreen {
 public:
-	TextureShaderScreen(const std::string &title);
+	SCREEN_TextureShaderScreen(const std::string &title);
 
 private:
 	void OnCompleted(DialogResult result) override;
@@ -176,7 +176,7 @@ private:
 	std::vector<TextureShaderInfo> shaders_;
 };
 
-class LogoScreen : public UIScreen {
+class LogoScreen : public SCREEN_UIScreen {
 public:
 	LogoScreen(bool gotoGameSettings = false)
 		: gotoGameSettings_(gotoGameSettings) {}
@@ -194,7 +194,7 @@ private:
 	bool gotoGameSettings_ = false;
 };
 
-class CreditsScreen : public UIDialogScreenWithBackground {
+class CreditsScreen : public SCREEN_UIDialogScreenWithBackground {
 public:
 	CreditsScreen() : frames_(0) {}
 	void update() override;

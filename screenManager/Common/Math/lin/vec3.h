@@ -6,7 +6,7 @@
 
 namespace SCREEN_Lin {
 
-class Matrix4x4;
+class SCREEN_Matrix4x4;
 
 // Hm, doesn't belong in this file.
 class Vec4 {
@@ -75,11 +75,11 @@ public:
 	Vec3 scaledByInv(const Vec3 &other) const {
 		return Vec3(x/other.x, y/other.y, z/other.z);
 	}
-	Vec3 operator *(const Matrix4x4 &m) const;
-	void operator *=(const Matrix4x4 &m) {
+	Vec3 operator *(const SCREEN_Matrix4x4 &m) const;
+	void operator *=(const SCREEN_Matrix4x4 &m) {
 		*this = *this * m;
 	}
-	Vec3 rotatedBy(const Matrix4x4 &m) const;
+	Vec3 rotatedBy(const SCREEN_Matrix4x4 &m) const;
 	Vec3 operator %(const Vec3 &v) const {
 		return Vec3(y*v.z-z*v.y, z*v.x-x*v.z, x*v.y-y*v.x);
 	}	

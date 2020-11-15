@@ -138,7 +138,7 @@ public:
 
 	static void DoAlign(int flags, float *x, float *y, float *w, float *h);
 
-	void PushDrawMatrix(const SCREEN_Lin::Matrix4x4 &m) {
+	void PushDrawMatrix(const SCREEN_Lin::SCREEN_Matrix4x4 &m) {
 		drawMatrixStack_.push_back(drawMatrix_);
 		drawMatrix_ = m;
 	}
@@ -148,7 +148,7 @@ public:
 		drawMatrixStack_.pop_back();
 	}
 
-	SCREEN_Lin::Matrix4x4 GetDrawMatrix() {
+	SCREEN_Lin::SCREEN_Matrix4x4 GetDrawMatrix() {
 		return drawMatrix_;
 	}
 
@@ -173,8 +173,8 @@ private:
 		uint32_t rgba;
 	};
 
-	SCREEN_Lin::Matrix4x4 drawMatrix_;
-	std::vector<SCREEN_Lin::Matrix4x4> drawMatrixStack_;
+	SCREEN_Lin::SCREEN_Matrix4x4 drawMatrix_;
+	std::vector<SCREEN_Lin::SCREEN_Matrix4x4> drawMatrixStack_;
 
 	float alpha_ = 1.0f;
 	std::vector<float> alphaStack_;

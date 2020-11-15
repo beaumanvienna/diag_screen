@@ -4,7 +4,7 @@
 //
 // Semantics
 //
-// switchScreen: When you call this, on a newed screen, the ScreenManager takes ownership.
+// switchScreen: When you call this, on a newed screen, the SCREEN_ScreenManager takes ownership.
 // On the next update, it switches to the new screen and deletes the previous screen.
 //
 // TODO: A way to do smooth transitions between screens. Will probably involve screenshotting
@@ -32,7 +32,7 @@ enum DialogResult {
 	DR_BACK,
 };
 
-class ScreenManager;
+class SCREEN_ScreenManager;
 class SCREEN_UIContext;
 
 namespace SCREEN_Draw {
@@ -62,8 +62,8 @@ public:
 
 	virtual void RecreateViews() {}
 
-	ScreenManager *screenManager() { return screenManager_; }
-	void setScreenManager(ScreenManager *sm) { screenManager_ = sm; }
+	SCREEN_ScreenManager *screenManager() { return screenManager_; }
+	void setSCREEN_ScreenManager(SCREEN_ScreenManager *sm) { screenManager_ = sm; }
 
 	// This one is icky to use because you can't know what's in it until you know
 	// what screen it is.
@@ -77,7 +77,7 @@ public:
 	virtual TouchInput transformTouch(const TouchInput &touch) { return touch; }
 
 private:
-	ScreenManager *screenManager_;
+	SCREEN_ScreenManager *screenManager_;
 	DISALLOW_COPY_AND_ASSIGN(Screen);
 };
 
@@ -93,10 +93,10 @@ enum {
 
 typedef void(*PostRenderCallback)(SCREEN_UIContext *ui, void *userdata);
 
-class ScreenManager {
+class SCREEN_ScreenManager {
 public:
-	ScreenManager();
-	virtual ~ScreenManager();
+	SCREEN_ScreenManager();
+	virtual ~SCREEN_ScreenManager();
 
 	void switchScreen(Screen *screen);
 	void update();

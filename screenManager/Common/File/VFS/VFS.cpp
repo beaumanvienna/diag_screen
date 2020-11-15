@@ -4,13 +4,13 @@
 
 struct VFSEntry {
 	const char *prefix;
-	AssetReader *reader;
+	SCREEN_AssetReader *reader;
 };
 
 static VFSEntry entries[16];
 static int num_entries = 0;
 
-void VFSRegister(const char *prefix, AssetReader *reader) {
+void VFSRegister(const char *prefix, SCREEN_AssetReader *reader) {
 	entries[num_entries].prefix = prefix;
 	entries[num_entries].reader = reader;
 	printf("Registered VFS for prefix %s: %s", prefix, reader->toString().c_str());

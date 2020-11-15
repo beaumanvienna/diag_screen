@@ -13,11 +13,11 @@ enum ImageFileType {
 	TYPE_UNKNOWN,
 };
 
-class ManagedTexture {
+class SCREEN_ManagedTexture {
 public:
-	ManagedTexture(SCREEN_Draw::DrawContext *draw) : draw_(draw) {
+	SCREEN_ManagedTexture(SCREEN_Draw::DrawContext *draw) : draw_(draw) {
 	}
-	~ManagedTexture() {
+	~SCREEN_ManagedTexture() {
 		if (texture_)
 			texture_->Release();
 	}
@@ -39,12 +39,12 @@ private:
 	bool loadPending_ = false;
 };
 
-std::unique_ptr<ManagedTexture> CreateTextureFromFile(SCREEN_Draw::DrawContext *draw, const char *filename, ImageFileType fileType, bool generateMips);
-std::unique_ptr<ManagedTexture> CreateTextureFromFileData(SCREEN_Draw::DrawContext *draw, const uint8_t *data, int size, ImageFileType fileType, bool generateMips, const char *name);
+std::unique_ptr<SCREEN_ManagedTexture> CreateTextureFromFile(SCREEN_Draw::DrawContext *draw, const char *filename, ImageFileType fileType, bool generateMips);
+std::unique_ptr<SCREEN_ManagedTexture> CreateTextureFromFileData(SCREEN_Draw::DrawContext *draw, const uint8_t *data, int size, ImageFileType fileType, bool generateMips, const char *name);
 
-class GameIconView : public SCREEN_UI::InertView {
+class SCREEN_GameIconView : public SCREEN_UI::InertView {
 public:
-	GameIconView(std::string gamePath, float scale, SCREEN_UI::LayoutParams *layoutParams = 0)
+	SCREEN_GameIconView(std::string gamePath, float scale, SCREEN_UI::LayoutParams *layoutParams = 0)
 		: InertView(layoutParams), gamePath_(gamePath), scale_(scale) {}
 
 	void GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const override;

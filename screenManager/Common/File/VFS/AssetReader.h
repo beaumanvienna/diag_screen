@@ -13,9 +13,9 @@
 // Direct readers. deallocate using delete [].
 uint8_t *ReadLocalFile(const char *filename, size_t *size);
 
-class AssetReader {
+class SCREEN_AssetReader {
 public:
-	virtual ~AssetReader() {}
+	virtual ~SCREEN_AssetReader() {}
 	// use delete[]
 	virtual uint8_t *ReadAsset(const char *path, size_t *size) = 0;
 	// Filter support is optional but nice to have
@@ -26,10 +26,10 @@ public:
 
 #ifdef __ANDROID__
 uint8_t *ReadFromZip(zip *archive, const char* filename, size_t *size);
-class ZipAssetReader : public AssetReader {
+class ZipSCREEN_AssetReader : public SCREEN_AssetReader {
 public:
-	ZipAssetReader(const char *zip_file, const char *in_zip_path);
-	~ZipAssetReader();
+	ZipSCREEN_AssetReader(const char *zip_file, const char *in_zip_path);
+	~ZipSCREEN_AssetReader();
 	// use delete[]
 	virtual uint8_t *ReadAsset(const char *path, size_t *size);
 	virtual bool GetFileListing(const char *path, std::vector<FileInfo> *listing, const char *filter);
@@ -44,9 +44,9 @@ private:
 };
 #endif
 
-class DirectoryAssetReader : public AssetReader {
+class DirectorySCREEN_AssetReader : public SCREEN_AssetReader {
 public:
-	explicit DirectoryAssetReader(const char *path);
+	explicit DirectorySCREEN_AssetReader(const char *path);
 	// use delete[]
 	virtual uint8_t *ReadAsset(const char *path, size_t *size);
 	virtual bool GetFileListing(const char *path, std::vector<FileInfo> *listing, const char *filter);

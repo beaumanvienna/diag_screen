@@ -16,7 +16,7 @@
 
 void GamePauseScreenPCSX2::update() {
 	//UpdateUIState(UISTATE_PAUSEMENU);
-	UIScreen::update();
+	SCREEN_UIScreen::update();
 
 	if (finishNextFrame_) {
 		TriggerFinish(DR_CANCEL);

@@ -76,7 +76,7 @@ static std::string gpuBackendDevice;
 
 Atlas g_ui_atlas;
 
-ScreenManager *screenManager;
+SCREEN_ScreenManager *screenManager;
 std::string config_filename;
 
 bool g_TakeScreenshot;
@@ -108,30 +108,6 @@ static SCREEN_Draw::Pipeline *texColorPipeline;
 static SCREEN_UIContext *uiContext;
 
 std::thread *graphicsLoadThread;
-
-class PrintfLogger : public LogListener {
-public:
-	void Log(const LogMessage &message) override {
-		switch (message.level) {
-		case SCREEN_LogTypes::LVERBOSE:
-		case SCREEN_LogTypes::LDEBUG:
-		case SCREEN_LogTypes::LINFO:
-			printf("INFO [%s] %s", message.log, message.msg.c_str());
-			break;
-		case SCREEN_LogTypes::LERROR:
-			printf("ERR  [%s] %s", message.log, message.msg.c_str());
-			break;
-		case SCREEN_LogTypes::LWARNING:
-			printf("WARN [%s] %s", message.log, message.msg.c_str());
-			break;
-		case SCREEN_LogTypes::LNOTICE:
-		default:
-			printf("NOTE [%s] !!! %s", message.log, message.msg.c_str());
-			break;
-		}
-	}
-};
-
 
 static LogListener *logger = nullptr;
 std::string boot_filename = "";
@@ -184,9 +160,9 @@ void NativeInit(int argc, const char *argv[], const char *savegame_dir, const ch
 	}
 
 	foldername += ".marley/ppsspp/assets/";
-	VFSRegister("", new DirectoryAssetReader(foldername.c_str()));	
+	VFSRegister("", new DirectorySCREEN_AssetReader(foldername.c_str()));	
     
-	screenManager = new ScreenManager();
+	screenManager = new SCREEN_ScreenManager();
     screenManager->push(new GamePauseScreenPCSX2());
 
 }
@@ -343,7 +319,7 @@ void NativeRender(SCREEN_GraphicsContext *graphicsContext) {
 	float yres = dp_yres;
 
 	// Apply the UIContext bounds as a 2D transformation matrix.
-	Matrix4x4 ortho;
+	SCREEN_Matrix4x4 ortho;
     ortho.setOrtho(0.0f, xres, yres, 0.0f, -1.0f, 1.0f);
     
 	ui_draw2d.PushDrawMatrix(ortho);

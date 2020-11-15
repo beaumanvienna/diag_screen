@@ -55,7 +55,7 @@ static const uint32_t colors[4] = {
 	0xC0FFFFFF,
 };
 
-static std::unique_ptr<ManagedTexture> bgTexture;
+static std::unique_ptr<SCREEN_ManagedTexture> bgTexture;
 
 static bool backgroundInited;
 extern GlobalUIState globalUIState;
@@ -168,7 +168,7 @@ void DrawGameBackground(SCREEN_UIContext &dc, const std::string &gamePath) {
     */
 }
 
-void HandleCommonMessages(const char *message, const char *value, ScreenManager *manager, Screen *activeScreen) {
+void HandleCommonMessages(const char *message, const char *value, SCREEN_ScreenManager *manager, Screen *activeScreen) {
 	bool isActiveScreen = manager->topScreen() == activeScreen;
 
 	/*if (!strcmp(message, "clear jit")) {
@@ -189,7 +189,7 @@ void HandleCommonMessages(const char *message, const char *value, ScreenManager 
 		manager->push(new GameSettingsScreen(""));
 	} else if (!strcmp(message, "language screen") && isActiveScreen) {
 		auto dev = GetI18NCategory("Developer");
-		auto langScreen = new NewLanguageScreen(dev->T("Language"));
+		auto langScreen = new SCREEN_NewLanguageScreen(dev->T("Language"));
 		langScreen->OnChoice.Add([](SCREEN_UI::EventParams &) {
 			NativeMessageReceived("recreateviews", "");
 			if (host) {
@@ -207,12 +207,12 @@ void HandleCommonMessages(const char *message, const char *value, ScreenManager 
 	}*/
 }
 
-void UIScreenWithBackground::DrawBackground(SCREEN_UIContext &dc) {
+void SCREEN_UIScreenWithBackground::DrawBackground(SCREEN_UIContext &dc) {
 	::DrawBackground(dc, 1.0f);
 	dc.Flush();
 }
 
-void UIScreenWithGameBackground::DrawBackground(SCREEN_UIContext &dc) {
+void SCREEN_UIScreenWithGameBackground::DrawBackground(SCREEN_UIContext &dc) {
 	if (!gamePath_.empty()) {
 		DrawGameBackground(dc, gamePath_);
 	} else {
@@ -221,48 +221,48 @@ void UIScreenWithGameBackground::DrawBackground(SCREEN_UIContext &dc) {
 	}
 }
 
-void UIScreenWithGameBackground::sendMessage(const char *message, const char *value) {
+void SCREEN_UIScreenWithGameBackground::sendMessage(const char *message, const char *value) {
 /*
 	if (!strcmp(message, "settings") && screenManager()->topScreen() == this) {
 		screenManager()->push(new GameSettingsScreen(gamePath_));
 	} else {
-		UIScreenWithBackground::sendMessage(message, value);
+		SCREEN_UIScreenWithBackground::sendMessage(message, value);
 	}
 */
 }
 
-void UIDialogScreenWithGameBackground::DrawBackground(SCREEN_UIContext &dc) {
+void SCREEN_UIDialogScreenWithGameBackground::DrawBackground(SCREEN_UIContext &dc) {
 /*
 	DrawGameBackground(dc, gamePath_);
 */
 }
 
-void UIDialogScreenWithGameBackground::sendMessage(const char *message, const char *value) {
+void SCREEN_UIDialogScreenWithGameBackground::sendMessage(const char *message, const char *value) {
 /*
 	if (!strcmp(message, "settings") && screenManager()->topScreen() == this) {
 		screenManager()->push(new GameSettingsScreen(gamePath_));
 	} else {
-		UIDialogScreenWithBackground::sendMessage(message, value);
+		SCREEN_UIDialogScreenWithBackground::sendMessage(message, value);
 	}
 */
 }
 
-void UIScreenWithBackground::sendMessage(const char *message, const char *value) {
+void SCREEN_UIScreenWithBackground::sendMessage(const char *message, const char *value) {
 	HandleCommonMessages(message, value, screenManager(), this);
 }
 
-void UIDialogScreenWithBackground::DrawBackground(SCREEN_UIContext &dc) {
+void SCREEN_UIDialogScreenWithBackground::DrawBackground(SCREEN_UIContext &dc) {
 	::DrawBackground(dc, 1.0f);
 	dc.Flush();
 }
 
-void UIDialogScreenWithBackground::AddStandardBack(SCREEN_UI::ViewGroup *parent) {
+void SCREEN_UIDialogScreenWithBackground::AddStandardBack(SCREEN_UI::ViewGroup *parent) {
 	using namespace SCREEN_UI;
 	auto di = GetI18NCategory("Dialog");
-	parent->Add(new Choice(di->T("Back"), "", false, new AnchorLayoutParams(150, 64, 10, NONE, NONE, 10)))->OnClick.Handle<UIScreen>(this, &UIScreen::OnBack);
+	parent->Add(new Choice(di->T("Back"), "", false, new AnchorLayoutParams(150, 64, 10, NONE, NONE, 10)))->OnClick.Handle<SCREEN_UIScreen>(this, &SCREEN_UIScreen::OnBack);
 }
 
-void UIDialogScreenWithBackground::sendMessage(const char *message, const char *value) {
+void SCREEN_UIDialogScreenWithBackground::sendMessage(const char *message, const char *value) {
 	HandleCommonMessages(message, value, screenManager(), this);
 }
 
@@ -310,10 +310,10 @@ SCREEN_UI::EventReturn PromptScreen::OnNo(SCREEN_UI::EventParams &e) {
 
 void PromptScreen::TriggerFinish(DialogResult result) {
 	callback_(result == DR_OK || result == DR_YES);
-	UIDialogScreenWithBackground::TriggerFinish(result);
+	SCREEN_UIDialogScreenWithBackground::TriggerFinish(result);
 }
 
-PostProcScreen::PostProcScreen(const std::string &title, int id) : ListPopupScreen(title), id_(id) {
+SCREEN_PostProcScreen::SCREEN_PostProcScreen(const std::string &title, int id) : ListSCREEN_PopupScreen(title), id_(id) {
 /*	auto ps = GetI18NCategory("PostShaders");
 	ReloadAllPostShaderInfo();
 	shaders_ = GetAllPostShaderInfo();
@@ -330,7 +330,7 @@ PostProcScreen::PostProcScreen(const std::string &title, int id) : ListPopupScre
 */
 }
 
-void PostProcScreen::OnCompleted(DialogResult result) {
+void SCREEN_PostProcScreen::OnCompleted(DialogResult result) {
 /*
 	if (result != DR_OK)
 		return;
@@ -338,7 +338,7 @@ void PostProcScreen::OnCompleted(DialogResult result) {
 */
 }
 
-TextureShaderScreen::TextureShaderScreen(const std::string &title) : ListPopupScreen(title) {
+SCREEN_TextureShaderScreen::SCREEN_TextureShaderScreen(const std::string &title) : ListSCREEN_PopupScreen(title) {
 /*
 	auto ps = GetI18NCategory("TextureShaders");
 	ReloadAllPostShaderInfo();
@@ -354,7 +354,7 @@ TextureShaderScreen::TextureShaderScreen(const std::string &title) : ListPopupSc
 */
 }
 
-void TextureShaderScreen::OnCompleted(DialogResult result) {
+void SCREEN_TextureShaderScreen::OnCompleted(DialogResult result) {
 /*
 	if (result != DR_OK)
 		return;
@@ -362,7 +362,7 @@ void TextureShaderScreen::OnCompleted(DialogResult result) {
 */
 }
 
-NewLanguageScreen::NewLanguageScreen(const std::string &title) : ListPopupScreen(title) {
+SCREEN_NewLanguageScreen::SCREEN_NewLanguageScreen(const std::string &title) : ListSCREEN_PopupScreen(title) {
 /*
 
 	langValuesMapping = GetLangValuesMapping();
@@ -414,7 +414,7 @@ NewLanguageScreen::NewLanguageScreen(const std::string &title) : ListPopupScreen
 */
 }
 
-void NewLanguageScreen::OnCompleted(DialogResult result) {
+void SCREEN_NewLanguageScreen::OnCompleted(DialogResult result) {
 /*
 	if (result != DR_OK)
 		return;
@@ -479,7 +479,7 @@ void LogoScreen::Next() {
 const float logoScreenSeconds = 2.5f;
 
 void LogoScreen::update() {
-	UIScreen::update();
+	SCREEN_UIScreen::update();
 	frames_++;
 	if (frames_ > 60 * logoScreenSeconds) {
 		Next();
@@ -512,7 +512,7 @@ bool LogoScreen::touch(const TouchInput &touch) {
 void LogoScreen::render() {
 	using namespace SCREEN_Draw;
 
-	UIScreen::render();
+	SCREEN_UIScreen::render();
 	SCREEN_UIContext &dc = *screenManager()->getUIContext();
 
 	const Bounds &bounds = dc.GetBounds();
@@ -619,13 +619,13 @@ SCREEN_UI::EventReturn CreditsScreen::OnOK(SCREEN_UI::EventParams &e) {
 }
 
 void CreditsScreen::update() {
-	UIScreen::update();
+	SCREEN_UIScreen::update();
 	UpdateUIState(UISTATE_MENU);
 	frames_++;
 }
 
 void CreditsScreen::render() {
-	UIScreen::render();
+	SCREEN_UIScreen::render();
 
 	auto cr = GetI18NCategory("PSPCredits");
 

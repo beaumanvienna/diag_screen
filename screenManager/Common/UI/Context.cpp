@@ -241,7 +241,7 @@ void SCREEN_UIContext::PushTransform(const UITransform &transform) {
 
 	using namespace SCREEN_Lin;
 
-	Matrix4x4 m = Draw()->GetDrawMatrix();
+	SCREEN_Matrix4x4 m = Draw()->GetDrawMatrix();
 	const Vec3 &t = transform.translate;
 	Vec3 scaledTranslate = Vec3(
 		t.x * m.xx + t.y * m.xy + t.z * m.xz + m.xw,
