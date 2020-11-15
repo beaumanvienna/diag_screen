@@ -11,7 +11,7 @@
 // Everything you need to draw a UI collected into a single unit that can be passed around.
 // Everything forward declared so this header is safe everywhere.
 
-namespace Draw {
+namespace SCREEN_Draw {
 	class DrawContext;
 	class Pipeline;
 	class DepthStencilState;
@@ -26,7 +26,7 @@ class ManagedTexture;
 class DrawBuffer;
 class TextDrawer;
 
-namespace UI {
+namespace SCREEN_UI {
 	struct Drawable;
 	struct EventParams;
 	struct Theme;
@@ -39,8 +39,8 @@ class DrawBuffer;
 
 struct UITransform {
 	// TODO: Or just use a matrix?
-	Lin::Vec3 translate;
-	Lin::Vec3 scale;
+	SCREEN_Lin::Vec3 translate;
+	SCREEN_Lin::Vec3 scale;
 	float alpha;
 };
 
@@ -49,13 +49,13 @@ public:
 	UIContext();
 	~UIContext();
 
-	void Init(Draw::DrawContext *thin3d, Draw::Pipeline *uipipe, Draw::Pipeline *uipipenotex, DrawBuffer *uidrawbuffer, DrawBuffer *uidrawbufferTop);
+	void Init(SCREEN_Draw::DrawContext *thin3d, SCREEN_Draw::Pipeline *uipipe, SCREEN_Draw::Pipeline *uipipenotex, DrawBuffer *uidrawbuffer, DrawBuffer *uidrawbufferTop);
 
 	void BeginFrame();
 
 	void Begin();
 	void BeginNoTex();
-	void BeginPipeline(Draw::Pipeline *pipeline, Draw::SamplerState *samplerState);
+	void BeginPipeline(SCREEN_Draw::Pipeline *pipeline, SCREEN_Draw::SamplerState *samplerState);
 	void Flush();
 
 	void RebindTexture() const;
@@ -69,28 +69,28 @@ public:
 
 	DrawBuffer *Draw() const { return uidrawbuffer_; }
 	DrawBuffer *DrawTop() const { return uidrawbufferTop_; }
-	const UI::Theme *theme;
+	const SCREEN_UI::Theme *theme;
 
 	// Utility methods
 
 	TextDrawer *Text() const { return textDrawer_; }
 
-	void SetFontStyle(const UI::FontStyle &style);
-	const UI::FontStyle &GetFontStyle() { return *fontStyle_; }
+	void SetFontStyle(const SCREEN_UI::FontStyle &style);
+	const SCREEN_UI::FontStyle &GetFontStyle() { return *fontStyle_; }
 	void SetFontScale(float scaleX, float scaleY);
-	void MeasureTextCount(const UI::FontStyle &style, float scaleX, float scaleY, const char *str, int count, float *x, float *y, int align = 0) const;
-	void MeasureText(const UI::FontStyle &style, float scaleX, float scaleY, const char *str, float *x, float *y, int align = 0) const;
-	void MeasureTextRect(const UI::FontStyle &style, float scaleX, float scaleY, const char *str, int count, const Bounds &bounds, float *x, float *y, int align = 0) const;
+	void MeasureTextCount(const SCREEN_UI::FontStyle &style, float scaleX, float scaleY, const char *str, int count, float *x, float *y, int align = 0) const;
+	void MeasureText(const SCREEN_UI::FontStyle &style, float scaleX, float scaleY, const char *str, float *x, float *y, int align = 0) const;
+	void MeasureTextRect(const SCREEN_UI::FontStyle &style, float scaleX, float scaleY, const char *str, int count, const Bounds &bounds, float *x, float *y, int align = 0) const;
 	void DrawText(const char *str, float x, float y, uint32_t color, int align = 0);
 	void DrawTextShadow(const char *str, float x, float y, uint32_t color, int align = 0);
 	void DrawTextRect(const char *str, const Bounds &bounds, uint32_t color, int align = 0);
-	void FillRect(const UI::Drawable &drawable, const Bounds &bounds);
+	void FillRect(const SCREEN_UI::Drawable &drawable, const Bounds &bounds);
 
 	// in dps, like dp_xres and dp_yres
 	void SetBounds(const Bounds &b) { bounds_ = b; }
 	const Bounds &GetBounds() const { return bounds_; }
 	Bounds GetLayoutBounds() const;
-	Draw::DrawContext *GetDrawContext() { return draw_; }
+	SCREEN_Draw::DrawContext *GetDrawContext() { return draw_; }
 	void SetCurZ(float curZ);
 
 	void PushTransform(const UITransform &transform);
@@ -98,17 +98,17 @@ public:
 	Bounds TransformBounds(const Bounds &bounds);
 
 private:
-	Draw::DrawContext *draw_;
+	SCREEN_Draw::DrawContext *draw_;
 	Bounds bounds_;
 
 	float fontScaleX_ = 1.0f;
 	float fontScaleY_ = 1.0f;
-	UI::FontStyle *fontStyle_ = nullptr;
+	SCREEN_UI::FontStyle *fontStyle_ = nullptr;
 	TextDrawer *textDrawer_ = nullptr;
 
-	Draw::SamplerState *sampler_;
-	Draw::Pipeline *ui_pipeline_ = nullptr;
-	Draw::Pipeline *ui_pipeline_notex_ = nullptr;
+	SCREEN_Draw::SamplerState *sampler_;
+	SCREEN_Draw::Pipeline *ui_pipeline_ = nullptr;
+	SCREEN_Draw::Pipeline *ui_pipeline_notex_ = nullptr;
 	std::unique_ptr<ManagedTexture> uitexture_;
 
 	DrawBuffer *uidrawbuffer_ = nullptr;

@@ -36,7 +36,7 @@ extern const char *hleCurrentThreadName;
 struct LogMessage {
 	char timestamp[16];
 	char header[64];  // Filename/thread/etc. in front.
-	LogTypes::LOG_LEVELS level;
+	SCREEN_LogTypes::LOG_LEVELS level;
 	const char *log;
 	std::string msg;  // The actual log message.
 };
@@ -82,7 +82,7 @@ public:
 
 	int GetCount() const { return count_ < MAX_LOGS ? count_ : MAX_LOGS; }
 	const char *TextAt(int i) const { return messages_[(curMessage_ - i - 1) & (MAX_LOGS - 1)].msg.c_str(); }
-	LogTypes::LOG_LEVELS LevelAt(int i) const { return messages_[(curMessage_ - i - 1) & (MAX_LOGS - 1)].level; }
+	SCREEN_LogTypes::LOG_LEVELS LevelAt(int i) const { return messages_[(curMessage_ - i - 1) & (MAX_LOGS - 1)].level; }
 
 private:
 	enum { MAX_LOGS = 128 };
@@ -98,7 +98,7 @@ private:
 
 struct LogChannel {
 	char m_shortName[32]{};
-	LogTypes::LOG_LEVELS level;
+	SCREEN_LogTypes::LOG_LEVELS level;
 	bool enabled;
 };
 
@@ -113,7 +113,7 @@ private:
 	LogManager(const LogManager &) = delete;
 	void operator=(const LogManager &) = delete;
 
-	LogChannel log_[LogTypes::NUMBER_OF_LOGS];
+	LogChannel log_[SCREEN_LogTypes::NUMBER_OF_LOGS];
 	FileLogListener *fileLog_ = nullptr;
 	PConsoleListener *consoleLog_ = nullptr;
 	OutputDebugStringLogListener *debuggerLog_ = nullptr;
@@ -129,31 +129,31 @@ public:
 	void RemoveListener(LogListener *listener);
 
 	static u32 GetMaxLevel() { return MAX_LOGLEVEL;	}
-	static int GetNumChannels() { return LogTypes::NUMBER_OF_LOGS; }
+	static int GetNumChannels() { return SCREEN_LogTypes::NUMBER_OF_LOGS; }
 
-	void Log(LogTypes::LOG_LEVELS level, LogTypes::LOG_TYPE type, 
+	void Log(SCREEN_LogTypes::LOG_LEVELS level, SCREEN_LogTypes::LOG_TYPE type, 
 			 const char *file, int line, const char *fmt, va_list args);
-	bool IsEnabled(LogTypes::LOG_LEVELS level, LogTypes::LOG_TYPE type);
+	bool IsEnabled(SCREEN_LogTypes::LOG_LEVELS level, SCREEN_LogTypes::LOG_TYPE type);
 
-	LogChannel *GetLogChannel(LogTypes::LOG_TYPE type) {
+	LogChannel *GetLogChannel(SCREEN_LogTypes::LOG_TYPE type) {
 		return &log_[type];
 	}
 
-	void SetLogLevel(LogTypes::LOG_TYPE type, LogTypes::LOG_LEVELS level) {
+	void SetLogLevel(SCREEN_LogTypes::LOG_TYPE type, SCREEN_LogTypes::LOG_LEVELS level) {
 		log_[type].level = level;
 	}
 
-	void SetAllLogLevels(LogTypes::LOG_LEVELS level) {
-		for (int i = 0; i < LogTypes::NUMBER_OF_LOGS; ++i) {
+	void SetAllLogLevels(SCREEN_LogTypes::LOG_LEVELS level) {
+		for (int i = 0; i < SCREEN_LogTypes::NUMBER_OF_LOGS; ++i) {
 			log_[i].level = level;
 		}
 	}
 
-	void SetEnabled(LogTypes::LOG_TYPE type, bool enable) {
+	void SetEnabled(SCREEN_LogTypes::LOG_TYPE type, bool enable) {
 		log_[type].enabled = enable;
 	}
 
-	LogTypes::LOG_LEVELS GetLogLevel(LogTypes::LOG_TYPE type) {
+	SCREEN_LogTypes::LOG_LEVELS GetLogLevel(SCREEN_LogTypes::LOG_TYPE type) {
 		return log_[type].level;
 	}
 

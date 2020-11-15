@@ -1,7 +1,7 @@
 #include "Common/GPU/OpenGL/DataFormatGL.h"
 #include "Common/Log.h"
 
-namespace Draw {
+namespace SCREEN_Draw {
 
 bool Thin3DFormatToFormatAndType(DataFormat fmt, GLuint &internalFormat, GLuint &format, GLuint &type, int &alignment) {
 	alignment = 4;

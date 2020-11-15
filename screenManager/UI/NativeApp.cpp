@@ -69,7 +69,7 @@
 
 #include "../../include/emu.h"
 
-static UI::Theme ui_theme;
+static SCREEN_UI::Theme ui_theme;
 extern GlobalUIState globalUIState;
 static GPUBackend gpuBackend;
 static std::string gpuBackendDevice;
@@ -102,9 +102,9 @@ struct PendingInputBox {
 static std::mutex pendingMutex;
 static std::vector<PendingMessage> pendingMessages;
 static std::vector<PendingInputBox> pendingInputBoxes;
-static Draw::DrawContext *g_draw;
-static Draw::Pipeline *colorPipeline;
-static Draw::Pipeline *texColorPipeline;
+static SCREEN_Draw::DrawContext *g_draw;
+static SCREEN_Draw::Pipeline *colorPipeline;
+static SCREEN_Draw::Pipeline *texColorPipeline;
 static UIContext *uiContext;
 
 std::thread *graphicsLoadThread;
@@ -113,18 +113,18 @@ class PrintfLogger : public LogListener {
 public:
 	void Log(const LogMessage &message) override {
 		switch (message.level) {
-		case LogTypes::LVERBOSE:
-		case LogTypes::LDEBUG:
-		case LogTypes::LINFO:
+		case SCREEN_LogTypes::LVERBOSE:
+		case SCREEN_LogTypes::LDEBUG:
+		case SCREEN_LogTypes::LINFO:
 			printf("INFO [%s] %s", message.log, message.msg.c_str());
 			break;
-		case LogTypes::LERROR:
+		case SCREEN_LogTypes::LERROR:
 			printf("ERR  [%s] %s", message.log, message.msg.c_str());
 			break;
-		case LogTypes::LWARNING:
+		case SCREEN_LogTypes::LWARNING:
 			printf("WARN [%s] %s", message.log, message.msg.c_str());
 			break;
-		case LogTypes::LNOTICE:
+		case SCREEN_LogTypes::LNOTICE:
 		default:
 			printf("NOTE [%s] !!! %s", message.log, message.msg.c_str());
 			break;
@@ -191,9 +191,9 @@ void NativeInit(int argc, const char *argv[], const char *savegame_dir, const ch
 
 }
 
-static UI::Style MakeStyle(uint32_t fg, uint32_t bg) {
-	UI::Style s;
-	s.background = UI::Drawable(bg);
+static SCREEN_UI::Style MakeStyle(uint32_t fg, uint32_t bg) {
+	SCREEN_UI::Style s;
+	s.background = SCREEN_UI::Drawable(bg);
 	s.fgColor = fg;
 
 	return s;
@@ -201,9 +201,9 @@ static UI::Style MakeStyle(uint32_t fg, uint32_t bg) {
 
 static void UIThemeInit() {
 
-	ui_theme.uiFont = UI::FontStyle(FontID("UBUNTU24"), "", 20);
-	ui_theme.uiFontSmall = UI::FontStyle(FontID("UBUNTU24"), "", 14);
-	ui_theme.uiFontSmaller = UI::FontStyle(FontID("UBUNTU24"), "", 11);
+	ui_theme.uiFont = SCREEN_UI::FontStyle(FontID("UBUNTU24"), "", 20);
+	ui_theme.uiFontSmall = SCREEN_UI::FontStyle(FontID("UBUNTU24"), "", 14);
+	ui_theme.uiFontSmaller = SCREEN_UI::FontStyle(FontID("UBUNTU24"), "", 11);
 
 	ui_theme.checkOn = ImageID("I_CHECKEDBOX");
 	ui_theme.checkOff = ImageID("I_SQUARE");
@@ -276,7 +276,7 @@ bool NativeInitGraphics(GraphicsContext *graphicsContext) {
 }
 
 bool CreateGlobalPipelines() {
-	using namespace Draw;
+	using namespace SCREEN_Draw;
 
 	InputLayout *inputLayout = ui_draw2d.CreateInputLayout(g_draw);
 	BlendState *blendNormal = g_draw->CreateBlendState({ true, 0xF, BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA });

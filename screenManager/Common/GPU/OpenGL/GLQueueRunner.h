@@ -143,7 +143,7 @@ struct GLRRenderData {
 		} texture;
 		struct {
 			GLRTexture *texture;
-			Draw::DataFormat format;
+			SCREEN_Draw::DataFormat format;
 			int level;
 			int x;
 			int y;
@@ -254,7 +254,7 @@ struct GLRInitStep {
 		} buffer_subdata;
 		struct {
 			GLRTexture *texture;
-			Draw::DataFormat format;
+			SCREEN_Draw::DataFormat format;
 			int level;
 			int width;
 			int height;
@@ -327,7 +327,7 @@ struct GLRStep {
 			int aspectMask;
 			GLRFramebuffer *src;
 			GLRect2D srcRect;
-			Draw::DataFormat dstFormat;
+			SCREEN_Draw::DataFormat dstFormat;
 		} readback;
 		struct {
 			GLRTexture *texture;
@@ -353,7 +353,7 @@ public:
 		return (int)depth * 3 + (int)color;
 	}
 
-	void CopyReadbackBuffer(int width, int height, Draw::DataFormat srcFormat, Draw::DataFormat destFormat, int pixelStride, uint8_t *pixels);
+	void CopyReadbackBuffer(int width, int height, SCREEN_Draw::DataFormat srcFormat, SCREEN_Draw::DataFormat destFormat, int pixelStride, uint8_t *pixels);
 
 	void Resize(int width, int height) {
 		targetWidth_ = width;

@@ -17,7 +17,7 @@
 #include "Common/Log.h"
 #include "Common/File/FileDescriptor.h"
 
-namespace fd_util {
+namespace SCREEN_fd_util {
 
 // Slow as hell and should only be used for prototyping.
 // Reads from a socket, up to an '\n'. This means that if the line ends

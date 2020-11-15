@@ -26,15 +26,7 @@
 
 #include "Common/Common.h"
 
-#ifdef _MSC_VER
-inline struct tm* localtime_r(const time_t *clock, struct tm *result) {
-	if (localtime_s(result, clock) == 0)
-		return result;
-	return NULL;
-}
-#endif
-
-namespace PFile {
+namespace SCREEN_PFile {
 
 struct FileDetails {
 	bool isDirectory;

@@ -3,7 +3,7 @@
 #include <cstring>
 #include <string>
 
-namespace fd_util {
+namespace SCREEN_fd_util {
 
 // Slow as hell and should only be used for prototyping.
 size_t ReadLine(int fd, char *buffer, size_t buf_size);

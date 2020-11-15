@@ -106,7 +106,7 @@ GLRenderManager::~GLRenderManager() {
 	_assert_(deleter_.IsEmpty());
 }
 
-void GLRenderManager::ThreadStart(Draw::DrawContext *draw) {
+void GLRenderManager::ThreadStart(SCREEN_Draw::DrawContext *draw) {
 	queueRunner_.CreateDeviceObjects();
 	threadFrame_ = threadInitFrame_;
 	renderThreadId = std::this_thread::get_id();
@@ -118,7 +118,7 @@ void GLRenderManager::ThreadStart(Draw::DrawContext *draw) {
 	}
 
 	// Don't save draw, we don't want any thread safety confusion.
-	bool mapBuffers = draw->GetBugs().Has(Draw::Bugs::ANY_MAP_BUFFER_RANGE_SLOW);
+	bool mapBuffers = draw->GetBugs().Has(SCREEN_Draw::Bugs::ANY_MAP_BUFFER_RANGE_SLOW);
 	bool hasBufferStorage = gl_extensions.ARB_buffer_storage || gl_extensions.EXT_buffer_storage;
 	if (!gl_extensions.VersionGEThan(3, 0, 0) && gl_extensions.IsGLES && !hasBufferStorage) {
 		// Force disable if it wouldn't work anyway.
@@ -377,7 +377,7 @@ void GLRenderManager::BlitFramebuffer(GLRFramebuffer *src, GLRect2D srcRect, GLR
 	steps_.push_back(step);
 }
 
-bool GLRenderManager::CopyFramebufferToMemorySync(GLRFramebuffer *src, int aspectBits, int x, int y, int w, int h, Draw::DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
+bool GLRenderManager::CopyFramebufferToMemorySync(GLRFramebuffer *src, int aspectBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
 	_assert_(pixels);
 
 	GLRStep *step = new GLRStep{ GLRStepType::READBACK };
@@ -392,15 +392,15 @@ bool GLRenderManager::CopyFramebufferToMemorySync(GLRFramebuffer *src, int aspec
 	curRenderStep_ = nullptr;
 	FlushSync();
 
-	Draw::DataFormat srcFormat;
+	SCREEN_Draw::DataFormat srcFormat;
 	if (aspectBits & GL_COLOR_BUFFER_BIT) {
-		srcFormat = Draw::DataFormat::R8G8B8A8_UNORM;
+		srcFormat = SCREEN_Draw::DataFormat::R8G8B8A8_UNORM;
 	} else if (aspectBits & GL_STENCIL_BUFFER_BIT) {
 		// Copies from stencil are always S8.
-		srcFormat = Draw::DataFormat::S8;
+		srcFormat = SCREEN_Draw::DataFormat::S8;
 	} else if (aspectBits & GL_DEPTH_BUFFER_BIT) {
 		// TODO: Do this properly.
-		srcFormat = Draw::DataFormat::D24_S8;
+		srcFormat = SCREEN_Draw::DataFormat::D24_S8;
 	} else {
 		return false;
 	}
@@ -408,7 +408,7 @@ bool GLRenderManager::CopyFramebufferToMemorySync(GLRFramebuffer *src, int aspec
 	return true;
 }
 
-void GLRenderManager::CopyImageToMemorySync(GLRTexture *texture, int mipLevel, int x, int y, int w, int h, Draw::DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
+void GLRenderManager::CopyImageToMemorySync(GLRTexture *texture, int mipLevel, int x, int y, int w, int h, SCREEN_Draw::DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
 	_assert_(texture);
 	_assert_(pixels);
 	GLRStep *step = new GLRStep{ GLRStepType::READBACK_IMAGE };
@@ -421,7 +421,7 @@ void GLRenderManager::CopyImageToMemorySync(GLRTexture *texture, int mipLevel, i
 	curRenderStep_ = nullptr;
 	FlushSync();
 
-	queueRunner_.CopyReadbackBuffer(w, h, Draw::DataFormat::R8G8B8A8_UNORM, destFormat, pixelStride, pixels);
+	queueRunner_.CopyReadbackBuffer(w, h, SCREEN_Draw::DataFormat::R8G8B8A8_UNORM, destFormat, pixelStride, pixels);
 }
 
 void GLRenderManager::BeginFrame() {

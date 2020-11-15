@@ -14,7 +14,7 @@
 DrawBuffer ui_draw2d;
 DrawBuffer ui_draw2d_front;
 
-void UIBegin(Draw::Pipeline *pipeline) {
+void UIBegin(SCREEN_Draw::Pipeline *pipeline) {
 	ui_draw2d.Begin(pipeline);
 	ui_draw2d_front.Begin(pipeline);
 }

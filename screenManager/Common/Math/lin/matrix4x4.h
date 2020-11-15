@@ -3,7 +3,7 @@
 
 #include "Common/Math/lin/vec3.h"
 
-namespace Lin {
+namespace SCREEN_Lin {
 
 class Quaternion;
 
@@ -114,7 +114,7 @@ public:
 	}
 };
 
-}  // namespace Lin
+}  // namespace SCREEN_Lin
 
 #endif	// _MATH_LIN_MATRIX4X4_H
 

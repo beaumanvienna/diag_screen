@@ -54,107 +54,30 @@
 // This namespace has various generic functions related to files and paths.
 // The code still needs a ton of cleanup.
 // REMEMBER: strdup considered harmful!
-namespace PFile
+namespace SCREEN_PFile
 {
 
 FILE *OpenCFile(const std::string &filename, const char *mode)
 {
-#if defined(_WIN32) && defined(UNICODE)
-	return _wfopen(ConvertUTF8ToWString(filename).c_str(), ConvertUTF8ToWString(mode).c_str());
-#else
 	return fopen(filename.c_str(), mode);
-#endif
 }
 
 bool OpenCPPFile(std::fstream & stream, const std::string &filename, std::ios::openmode mode)
 {
-#if defined(_WIN32) && defined(UNICODE) && !defined(__MINGW32__)
-	stream.open(ConvertUTF8ToWString(filename), mode);
-#else
 	stream.open(filename.c_str(), mode);
-#endif
+
 	return stream.is_open();
 }
 
-#ifdef _WIN32
-static bool ResolvePathVista(const std::wstring &path, wchar_t *buf, DWORD bufSize) {
-	typedef DWORD(WINAPI *getFinalPathNameByHandleW_f)(HANDLE hFile, LPWSTR lpszFilePath, DWORD cchFilePath, DWORD dwFlags);
-	static getFinalPathNameByHandleW_f getFinalPathNameByHandleW = nullptr;
-
-#if PPSSPP_PLATFORM(UWP)
-	getFinalPathNameByHandleW = &GetFinalPathNameByHandleW;
-#else
-	if (!getFinalPathNameByHandleW) {
-		HMODULE kernel32 = GetModuleHandle(L"kernel32.dll");
-		getFinalPathNameByHandleW = (getFinalPathNameByHandleW_f)GetProcAddress(kernel32, "GetFinalPathNameByHandleW");
-	}
-#endif
-
-	if (getFinalPathNameByHandleW) {
-#if PPSSPP_PLATFORM(UWP)
-		HANDLE hFile = CreateFile2(path.c_str(), GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING, nullptr);
-#else
-		HANDLE hFile = CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
-#endif
-		if (hFile == INVALID_HANDLE_VALUE)
-			return false;
-
-		DWORD result = getFinalPathNameByHandleW(hFile, buf, bufSize - 1, FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
-		CloseHandle(hFile);
-
-		return result < bufSize && result != 0;
-	}
-
-	return false;
-}
-#endif
 
 std::string ResolvePath(const std::string &path) {
 	if (startsWith(path, "http://") || startsWith(path, "https://")) {
 		return path;
 	}
-#ifdef _WIN32
-	static const int BUF_SIZE = 32768;
-	wchar_t *buf = new wchar_t[BUF_SIZE] {};
-
-	std::wstring input = ConvertUTF8ToWString(path);
-	// Try to resolve symlinks (such as Documents aliases, etc.) if possible on Vista and higher.
-	// For some paths and remote shares, this may fail, so fall back.
-	if (!ResolvePathVista(input, buf, BUF_SIZE)) {
-		wchar_t *longBuf = new wchar_t[BUF_SIZE] {};
-
-		int result = GetLongPathNameW(input.c_str(), longBuf, BUF_SIZE - 1);
-		if (result >= BUF_SIZE || result == 0)
-			wcscpy_s(longBuf, BUF_SIZE - 1, input.c_str());
-
-		result = GetFullPathNameW(longBuf, BUF_SIZE - 1, buf, nullptr);
-		if (result >= BUF_SIZE || result == 0)
-			wcscpy_s(buf, BUF_SIZE - 1, input.c_str());
-
-		delete [] longBuf;
-	}
-
-	// Normalize slashes just in case.
-	for (int i = 0; i < BUF_SIZE; ++i) {
-		if (buf[i] == '\\')
-			buf[i] = '/';
-		else if (buf[i] == '\0')
-			break;
-	}
-
-	// Undo the \\?\C:\ syntax that's normally returned (after normalization of slashes.)
-	std::string output = ConvertWStringToUTF8(buf);
-	if (buf[0] == '/' && buf[1] == '/' && buf[2] == '?' && buf[3] == '/' && isalpha(buf[4]) && buf[5] == ':')
-		output = output.substr(4);
-	delete [] buf;
-	return output;
-
-#else
 	std::unique_ptr<char[]> buf(new char[PATH_MAX + 32768]);
 	if (realpath(path.c_str(), buf.get()) == nullptr)
 		return path;
 	return buf.get();
-#endif
 }
 
 // Remove any ending forward slashes from directory paths
@@ -162,10 +85,7 @@ std::string ResolvePath(const std::string &path) {
 static void StripTailDirSlashes(std::string &fname) {
 	if (fname.length() > 1) {
 		size_t i = fname.length() - 1;
-#ifdef _WIN32
-		if (i == 2 && fname[1] == ':' && fname[2] == '\\')
-			return;
-#endif
+
 		while (strchr(DIR_SEP_CHRS, fname[i]))
 			fname[i--] = '\0';
 	}
@@ -177,25 +97,9 @@ bool Exists(const std::string &filename) {
 	std::string fn = filename;
 	StripTailDirSlashes(fn);
 
-#if defined(_WIN32)
-	std::wstring copy = ConvertUTF8ToWString(fn);
-
-	// Make sure Windows will no longer handle critical errors, which means no annoying "No disk" dialog
-#if !PPSSPP_PLATFORM(UWP)
-	int OldMode = SetErrorMode(SEM_FAILCRITICALERRORS);
-#endif
-	WIN32_FILE_ATTRIBUTE_DATA data{};
-	if (!GetFileAttributesEx(copy.c_str(), GetFileExInfoStandard, &data) || data.dwFileAttributes == INVALID_FILE_ATTRIBUTES) {
-		return false;
-	}
-#if !PPSSPP_PLATFORM(UWP)
-	SetErrorMode(OldMode);
-#endif
-	return true;
-#else
 	struct stat file_info;
 	return stat(fn.c_str(), &file_info) == 0;
-#endif
+
 }
 
 // Returns true if filename is a directory
@@ -301,7 +205,7 @@ bool CreateFullPath(const std::string &path)
 	int panicCounter = 100;
 	VERBOSE_LOG(COMMON, "CreateFullPath: path %s", fullPath.c_str());
 		
-	if (PFile::Exists(fullPath)) {
+	if (SCREEN_PFile::Exists(fullPath)) {
 		printf("CreateFullPath: path exists %s", fullPath.c_str());
 		return true;
 	}
@@ -321,13 +225,13 @@ bool CreateFullPath(const std::string &path)
 		// we're done, yay!
 		if (position == fullPath.npos)
 		{
-			if (!PFile::Exists(fullPath))
-				return PFile::CreateDir(fullPath);
+			if (!SCREEN_PFile::Exists(fullPath))
+				return SCREEN_PFile::CreateDir(fullPath);
 			return true;
 		}
 		std::string subPath = fullPath.substr(0, position);
-		if (position != 0 && !PFile::Exists(subPath))
-			PFile::CreateDir(subPath);
+		if (position != 0 && !SCREEN_PFile::Exists(subPath))
+			SCREEN_PFile::CreateDir(subPath);
 
 		// A safety check
 		panicCounter--;
@@ -347,7 +251,7 @@ bool DeleteDir(const std::string &filename)
 	printf("DeleteDir: directory %s", filename.c_str());
 
 	// check if a directory
-	if (!PFile::IsDirectory(filename))
+	if (!SCREEN_PFile::IsDirectory(filename))
 	{
 		printf("DeleteDir: Not a directory %s", filename.c_str());
 		return false;
@@ -676,7 +580,7 @@ bool DeleteDirRecursively(const std::string &directory)
 		}
 		else
 		{
-			if (!PFile::Delete(newPath))
+			if (!SCREEN_PFile::Delete(newPath))
 			{
 
 				closedir(dirp);
@@ -687,7 +591,7 @@ bool DeleteDirRecursively(const std::string &directory)
 	}
 	closedir(dirp);
 
-	return PFile::DeleteDir(directory);
+	return SCREEN_PFile::DeleteDir(directory);
 }
 
 
@@ -696,8 +600,8 @@ void CopyDir(const std::string &source_path, const std::string &dest_path)
 {
 
 	if (source_path == dest_path) return;
-	if (!PFile::Exists(source_path)) return;
-	if (!PFile::Exists(dest_path)) PFile::CreateFullPath(dest_path);
+	if (!SCREEN_PFile::Exists(source_path)) return;
+	if (!SCREEN_PFile::Exists(dest_path)) SCREEN_PFile::CreateFullPath(dest_path);
 
 	struct dirent *result = NULL;
 	DIR *dirp = opendir(source_path.c_str());
@@ -719,10 +623,10 @@ void CopyDir(const std::string &source_path, const std::string &dest_path)
 		{
 			source += '/';
 			dest += '/';
-			if (!PFile::Exists(dest)) PFile::CreateFullPath(dest);
+			if (!SCREEN_PFile::Exists(dest)) SCREEN_PFile::CreateFullPath(dest);
 			CopyDir(source, dest);
 		}
-		else if (!PFile::Exists(dest)) PFile::Copy(source, dest);
+		else if (!SCREEN_PFile::Exists(dest)) SCREEN_PFile::Copy(source, dest);
 	}
 	closedir(dirp);
 
@@ -786,7 +690,7 @@ IOFile::~IOFile()
 bool IOFile::Open(const std::string& filename, const char openmode[])
 {
 	Close();
-	m_file = PFile::OpenCFile(filename, openmode);
+	m_file = SCREEN_PFile::OpenCFile(filename, openmode);
 	m_good = IsOpen();
 	return m_good;
 }
@@ -817,7 +721,7 @@ void IOFile::SetHandle(std::FILE* file)
 uint64_t IOFile::GetSize()
 {
 	if (IsOpen())
-		return PFile::GetFileSize(m_file);
+		return SCREEN_PFile::GetFileSize(m_file);
 	else
 		return 0;
 }
@@ -862,10 +766,10 @@ bool IOFile::Resize(uint64_t size)
 
 bool readFileToString(bool text_file, const char *filename, std::string & str)
 {
-	FILE *f = PFile::OpenCFile(filename, text_file ? "r" : "rb");
+	FILE *f = SCREEN_PFile::OpenCFile(filename, text_file ? "r" : "rb");
 	if (!f)
 		return false;
-	size_t len = (size_t)PFile::GetFileSize(f);
+	size_t len = (size_t)SCREEN_PFile::GetFileSize(f);
 	char *buf = new char[len + 1];
 	buf[fread(buf, 1, len, f)] = 0;
 	str = std::string(buf, len);
@@ -875,7 +779,7 @@ bool readFileToString(bool text_file, const char *filename, std::string & str)
 }
 
 uint8_t *ReadLocalFile(const char *filename, size_t * size) {
-	FILE *file = PFile::OpenCFile(filename, "rb");
+	FILE *file = SCREEN_PFile::OpenCFile(filename, "rb");
 	if (!file) {
 		*size = 0;
 		return nullptr;
@@ -903,7 +807,7 @@ uint8_t *ReadLocalFile(const char *filename, size_t * size) {
 
 bool writeStringToFile(bool text_file, const std::string &str, const char *filename)
 {
-	FILE *f = PFile::OpenCFile(filename, text_file ? "w" : "wb");
+	FILE *f = SCREEN_PFile::OpenCFile(filename, text_file ? "w" : "wb");
 	if (!f)
 		return false;
 	size_t len = str.size();
@@ -918,7 +822,7 @@ bool writeStringToFile(bool text_file, const std::string &str, const char *filen
 
 bool writeDataToFile(bool text_file, const void* data, const unsigned int size, const char *filename)
 {
-	FILE *f = PFile::OpenCFile(filename, text_file ? "w" : "wb");
+	FILE *f = SCREEN_PFile::OpenCFile(filename, text_file ? "w" : "wb");
 	if (!f)
 		return false;
 	size_t len = size;

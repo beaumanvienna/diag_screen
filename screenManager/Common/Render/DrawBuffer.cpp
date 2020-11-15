@@ -30,8 +30,8 @@ DrawBuffer::~DrawBuffer() {
 	delete [] verts_;
 }
 
-void DrawBuffer::Init(Draw::DrawContext *t3d, Draw::Pipeline *pipeline) {
-	using namespace Draw;
+void DrawBuffer::Init(SCREEN_Draw::DrawContext *t3d, SCREEN_Draw::Pipeline *pipeline) {
+	using namespace SCREEN_Draw;
 
 	if (inited_)
 		return;
@@ -46,8 +46,8 @@ void DrawBuffer::Init(Draw::DrawContext *t3d, Draw::Pipeline *pipeline) {
 	}
 }
 
-Draw::InputLayout *DrawBuffer::CreateInputLayout(Draw::DrawContext *t3d) {
-	using namespace Draw;
+SCREEN_Draw::InputLayout *DrawBuffer::CreateInputLayout(SCREEN_Draw::DrawContext *t3d) {
+	using namespace SCREEN_Draw;
 	InputLayoutDesc desc = {
 		{
 			{ sizeof(Vertex), false },
@@ -75,13 +75,13 @@ void DrawBuffer::Shutdown() {
 	count_ = 0;
 }
 
-void DrawBuffer::Begin(Draw::Pipeline *program) {
+void DrawBuffer::Begin(SCREEN_Draw::Pipeline *program) {
 	pipeline_ = program;
 	count_ = 0;
 }
 
 void DrawBuffer::Flush(bool set_blend_state) {
-	using namespace Draw;
+	using namespace SCREEN_Draw;
 	if (count_ == 0)
 		return;
 	if (!pipeline_) {
@@ -92,10 +92,10 @@ void DrawBuffer::Flush(bool set_blend_state) {
 	draw_->BindPipeline(pipeline_);
 
 	VsTexColUB ub{};
-	memcpy(ub.WorldViewProj, drawMatrix_.getReadPtr(), sizeof(Lin::Matrix4x4));
+	memcpy(ub.WorldViewProj, drawMatrix_.getReadPtr(), sizeof(SCREEN_Lin::Matrix4x4));
 	draw_->UpdateDynamicUniformBuffer(&ub, sizeof(ub));
 	if (vbuf_) {
-		draw_->UpdateBuffer(vbuf_, (const uint8_t *)verts_, 0, sizeof(Vertex) * count_, Draw::UPDATE_DISCARD);
+		draw_->UpdateBuffer(vbuf_, (const uint8_t *)verts_, 0, sizeof(Vertex) * count_, SCREEN_Draw::UPDATE_DISCARD);
 		draw_->BindVertexBuffers(0, 1, &vbuf_, nullptr);
 		int offset = 0;
 		draw_->Draw(count_, offset);

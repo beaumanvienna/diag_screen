@@ -26,7 +26,7 @@
 #define	DEBUG_LEVEL   5  // Detailed debugging - might make things slow.
 #define	VERBOSE_LEVEL 6  // Noisy debugging - sometimes needed but usually unimportant.
 
-namespace LogTypes {
+namespace SCREEN_LogTypes {
 
 enum LOG_TYPE {
 	SYSTEM = 0,  // Catch-all for uncategorized things
@@ -75,13 +75,13 @@ enum LOG_LEVELS : int {
 
 }  // namespace
 
-void GenericLog(LogTypes::LOG_LEVELS level, LogTypes::LOG_TYPE type,
+void GenericLog(SCREEN_LogTypes::LOG_LEVELS level, SCREEN_LogTypes::LOG_TYPE type,
 		const char *file, int line, const char *fmt, ...)
 #ifdef __GNUC__
 		__attribute__((format(printf, 5, 6)))
 #endif
 		;
-bool GenericLogEnabled(LogTypes::LOG_LEVELS level, LogTypes::LOG_TYPE type);
+bool GenericLogEnabled(SCREEN_LogTypes::LOG_LEVELS level, SCREEN_LogTypes::LOG_TYPE type);
 
 #if defined(_DEBUG) || defined(_WIN32)
 
@@ -102,12 +102,12 @@ bool GenericLogEnabled(LogTypes::LOG_LEVELS level, LogTypes::LOG_TYPE type);
 		GenericLog(v, t, __FILE__, __LINE__, __VA_ARGS__); \
 	}
 
-#define ERROR_LOG(t,...)   do { GENERIC_LOG(LogTypes::t, LogTypes::LERROR,   __VA_ARGS__) } while (false)
-#define WARN_LOG(t,...)    do { GENERIC_LOG(LogTypes::t, LogTypes::LWARNING, __VA_ARGS__) } while (false)
-#define NOTICE_LOG(t,...)  do { GENERIC_LOG(LogTypes::t, LogTypes::LNOTICE,  __VA_ARGS__) } while (false)
-#define INFO_LOG(t,...)    do { GENERIC_LOG(LogTypes::t, LogTypes::LINFO,    __VA_ARGS__) } while (false)
-#define DEBUG_LOG(t,...)   do { GENERIC_LOG(LogTypes::t, LogTypes::LDEBUG,   __VA_ARGS__) } while (false)
-#define VERBOSE_LOG(t,...) do { GENERIC_LOG(LogTypes::t, LogTypes::LVERBOSE, __VA_ARGS__) } while (false)
+#define ERROR_LOG(t,...)   do { GENERIC_LOG(SCREEN_LogTypes::t, SCREEN_LogTypes::LERROR,   __VA_ARGS__) } while (false)
+#define WARN_LOG(t,...)    do { GENERIC_LOG(SCREEN_LogTypes::t, SCREEN_LogTypes::LWARNING, __VA_ARGS__) } while (false)
+#define NOTICE_LOG(t,...)  do { GENERIC_LOG(SCREEN_LogTypes::t, SCREEN_LogTypes::LNOTICE,  __VA_ARGS__) } while (false)
+#define INFO_LOG(t,...)    do { GENERIC_LOG(SCREEN_LogTypes::t, SCREEN_LogTypes::LINFO,    __VA_ARGS__) } while (false)
+#define DEBUG_LOG(t,...)   do { GENERIC_LOG(SCREEN_LogTypes::t, SCREEN_LogTypes::LDEBUG,   __VA_ARGS__) } while (false)
+#define VERBOSE_LOG(t,...) do { GENERIC_LOG(SCREEN_LogTypes::t, SCREEN_LogTypes::LVERBOSE, __VA_ARGS__) } while (false)
 
 // Currently only actually shows a dialog box on Windows.
 bool HandleAssert(const char *function, const char *file, int line, const char *expression, const char* format, ...)

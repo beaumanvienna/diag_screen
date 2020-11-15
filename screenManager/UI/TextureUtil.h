@@ -15,7 +15,7 @@ enum ImageFileType {
 
 class ManagedTexture {
 public:
-	ManagedTexture(Draw::DrawContext *draw) : draw_(draw) {
+	ManagedTexture(SCREEN_Draw::DrawContext *draw) : draw_(draw) {
 	}
 	~ManagedTexture() {
 		if (texture_)
@@ -24,27 +24,27 @@ public:
 
 	bool LoadFromFile(const std::string &filename, ImageFileType type = ImageFileType::DETECT, bool generateMips = false);
 	bool LoadFromFileData(const uint8_t *data, size_t dataSize, ImageFileType type, bool generateMips, const char *name);
-	Draw::Texture *GetTexture();  // For immediate use, don't store.
+	SCREEN_Draw::Texture *GetTexture();  // For immediate use, don't store.
 	int Width() const { return texture_->Width(); }
 	int Height() const { return texture_->Height(); }
 
 	void DeviceLost();
-	void DeviceRestored(Draw::DrawContext *draw);
+	void DeviceRestored(SCREEN_Draw::DrawContext *draw);
 
 private:
-	Draw::Texture *texture_ = nullptr;
-	Draw::DrawContext *draw_;
+	SCREEN_Draw::Texture *texture_ = nullptr;
+	SCREEN_Draw::DrawContext *draw_;
 	std::string filename_;  // Textures that are loaded from files can reload themselves automatically.
 	bool generateMips_ = false;
 	bool loadPending_ = false;
 };
 
-std::unique_ptr<ManagedTexture> CreateTextureFromFile(Draw::DrawContext *draw, const char *filename, ImageFileType fileType, bool generateMips);
-std::unique_ptr<ManagedTexture> CreateTextureFromFileData(Draw::DrawContext *draw, const uint8_t *data, int size, ImageFileType fileType, bool generateMips, const char *name);
+std::unique_ptr<ManagedTexture> CreateTextureFromFile(SCREEN_Draw::DrawContext *draw, const char *filename, ImageFileType fileType, bool generateMips);
+std::unique_ptr<ManagedTexture> CreateTextureFromFileData(SCREEN_Draw::DrawContext *draw, const uint8_t *data, int size, ImageFileType fileType, bool generateMips, const char *name);
 
-class GameIconView : public UI::InertView {
+class GameIconView : public SCREEN_UI::InertView {
 public:
-	GameIconView(std::string gamePath, float scale, UI::LayoutParams *layoutParams = 0)
+	GameIconView(std::string gamePath, float scale, SCREEN_UI::LayoutParams *layoutParams = 0)
 		: InertView(layoutParams), gamePath_(gamePath), scale_(scale) {}
 
 	void GetContentDimensions(const UIContext &dc, float &w, float &h) const override;

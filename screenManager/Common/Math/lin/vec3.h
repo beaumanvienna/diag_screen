@@ -4,7 +4,7 @@
 #include <math.h>
 #include <string.h>	// memset
 
-namespace Lin {
+namespace SCREEN_Lin {
 
 class Matrix4x4;
 
@@ -138,6 +138,6 @@ public:
 	Vec3 max;
 };
 
-}  // namespace Lin
+}  // namespace SCREEN_Lin
 
 #endif	// _MATH_LIN_VEC3

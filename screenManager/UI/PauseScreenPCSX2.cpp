@@ -29,7 +29,7 @@ GamePauseScreenPCSX2::~GamePauseScreenPCSX2() {
 }
 
 void GamePauseScreenPCSX2::CreateViews() {
-	using namespace UI;
+	using namespace SCREEN_UI;
 	Margins scrollMargins(0, 20, 0, 0);
 	Margins actionMenuMargins(0, 20, 15, 0);
 
@@ -56,14 +56,14 @@ void GamePauseScreenPCSX2::dialogFinished(const Screen *dialog, DialogResult dr)
 }
 
 
-UI::EventReturn GamePauseScreenPCSX2::OnGameSettings(UI::EventParams &e) {
-    printf("jc: UI::EventReturn GamePauseScreenPCSX2::OnGameSettings(UI::EventParams &e) {\n");
-	return UI::EVENT_DONE;
+SCREEN_UI::EventReturn GamePauseScreenPCSX2::OnGameSettings(SCREEN_UI::EventParams &e) {
+    printf("jc: SCREEN_UI::EventReturn GamePauseScreenPCSX2::OnGameSettings(SCREEN_UI::EventParams &e) {\n");
+	return SCREEN_UI::EVENT_DONE;
 }
 
-UI::EventReturn GamePauseScreenPCSX2::OnExitToMarley(UI::EventParams &e) {
-    printf("jc: UI::EventReturn GamePauseScreenPCSX2::OnExitToMarley(UI::EventParams &e) {\n");
-	return UI::EVENT_DONE;
+SCREEN_UI::EventReturn GamePauseScreenPCSX2::OnExitToMarley(SCREEN_UI::EventParams &e) {
+    printf("jc: SCREEN_UI::EventReturn GamePauseScreenPCSX2::OnExitToMarley(SCREEN_UI::EventParams &e) {\n");
+	return SCREEN_UI::EVENT_DONE;
 }
 
 

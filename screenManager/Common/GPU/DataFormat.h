@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <cstdlib>
 
-namespace Draw {
+namespace SCREEN_Draw {
 
 enum class DataFormat : uint8_t {
 	UNDEFINED,

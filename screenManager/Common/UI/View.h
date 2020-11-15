@@ -34,14 +34,13 @@ class DrawBuffer;
 class Texture;
 class UIContext;
 
-namespace Draw {
+namespace SCREEN_Draw {
 	class DrawContext;
 	class Texture;
 }
 
 
-// I don't generally like namespaces but I think we do need one for UI, so many potentially-clashing names.
-namespace UI {
+namespace SCREEN_UI {
 
 class View;
 
@@ -205,7 +204,7 @@ enum PersistStatus {
 };
 
 typedef std::vector<int> PersistBuffer;
-typedef std::map<std::string, UI::PersistBuffer> PersistMap;
+typedef std::map<std::string, SCREEN_UI::PersistBuffer> PersistMap;
 
 class ViewGroup;
 
@@ -361,7 +360,7 @@ public:
 	virtual void Update();
 
 	virtual void DeviceLost() {}
-	virtual void DeviceRestored(Draw::DrawContext *draw) {}
+	virtual void DeviceRestored(SCREEN_Draw::DrawContext *draw) {}
 
 	// If this view covers these coordinates, it should add itself and its children to the list.
 	virtual void Query(float x, float y, std::vector<View *> &list);

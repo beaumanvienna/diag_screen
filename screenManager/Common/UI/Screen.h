@@ -20,7 +20,7 @@
 #include "Common/Common.h"
 #include "Common/Input/InputState.h"
 
-namespace UI {
+namespace SCREEN_UI {
 	class View;
 }
 
@@ -35,7 +35,7 @@ enum DialogResult {
 class ScreenManager;
 class UIContext;
 
-namespace Draw {
+namespace SCREEN_Draw {
 	class DrawContext;
 }
 
@@ -104,8 +104,8 @@ public:
 	void setUIContext(UIContext *context) { uiContext_ = context; }
 	UIContext *getUIContext() { return uiContext_; }
 
-	void setDrawContext(Draw::DrawContext *context) { thin3DContext_ = context; }
-	Draw::DrawContext *getDrawContext() { return thin3DContext_; }
+	void setDrawContext(SCREEN_Draw::DrawContext *context) { thin3DContext_ = context; }
+	SCREEN_Draw::DrawContext *getDrawContext() { return thin3DContext_; }
 
 	void setPostRenderCallback(PostRenderCallback cb, void *userdata) {
 		postRenderCb_ = cb;
@@ -147,7 +147,7 @@ private:
 	void processFinishDialog();
 
 	UIContext *uiContext_;
-	Draw::DrawContext *thin3DContext_;
+	SCREEN_Draw::DrawContext *thin3DContext_;
 
 	PostRenderCallback postRenderCb_ = nullptr;
 	void *postRenderUserdata_ = nullptr;
@@ -158,7 +158,7 @@ private:
 	struct Layer {
 		Screen *screen;
 		int flags;  // From LAYER_ enum above
-		UI::View *focusedView;  // TODO: save focus here. Going for quick solution now to reset focus.
+		SCREEN_UI::View *focusedView;  // TODO: save focus here. Going for quick solution now to reset focus.
 	};
 
 	// Dialog stack. These are shown "on top" of base screens and the Android back button works as expected.

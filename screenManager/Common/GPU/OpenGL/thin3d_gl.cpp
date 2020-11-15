@@ -17,7 +17,7 @@
 
 // #define DEBUG_READ_PIXELS 1
 
-namespace Draw {
+namespace SCREEN_Draw {
 
 static const unsigned short compToGL[] = {
 	GL_NEVER,
@@ -371,7 +371,7 @@ public:
 
 	void CopyFramebufferImage(Framebuffer *src, int level, int x, int y, int z, Framebuffer *dst, int dstLevel, int dstX, int dstY, int dstZ, int width, int height, int depth, int channelBits, const char *tag) override;
 	bool BlitFramebuffer(Framebuffer *src, int srcX1, int srcY1, int srcX2, int srcY2, Framebuffer *dst, int dstX1, int dstY1, int dstX2, int dstY2, int channelBits, FBBlitFilter filter, const char *tag) override;
-	bool CopyFramebufferToMemorySync(Framebuffer *src, int channelBits, int x, int y, int w, int h, Draw::DataFormat format, void *pixels, int pixelStride, const char *tag) override;
+	bool CopyFramebufferToMemorySync(Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat format, void *pixels, int pixelStride, const char *tag) override;
 
 	// These functions should be self explanatory.
 	void BindFramebufferAsRenderTarget(Framebuffer *fbo, const RenderPassInfo &rp, const char *tag) override;
@@ -569,7 +569,7 @@ OpenGLContext::OpenGLContext() {
 		// Note: this is for Intel drivers with GL3+.
 		// Also on Intel, see https://github.com/hrydgard/ppsspp/issues/10117
 		// TODO: Remove entirely sometime reasonably far in driver years after 2015.
-		const std::string ver = GetInfoString(Draw::InfoField::APIVERSION);
+		const std::string ver = GetInfoString(SCREEN_Draw::InfoField::APIVERSION);
 		int versions[4]{};
 		if (sscanf(ver.c_str(), "Build %d.%d.%d.%d", &versions[0], &versions[1], &versions[2], &versions[3]) == 4) {
 			if (HasIntelDualSrcBug(versions)) {
@@ -828,7 +828,7 @@ static void LogReadPixelsError(GLenum error) {
 }
 #endif
 
-bool OpenGLContext::CopyFramebufferToMemorySync(Framebuffer *src, int channelBits, int x, int y, int w, int h, Draw::DataFormat dataFormat, void *pixels, int pixelStride, const char *tag) {
+bool OpenGLContext::CopyFramebufferToMemorySync(Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat dataFormat, void *pixels, int pixelStride, const char *tag) {
 	if (gl_extensions.IsGLES && (channelBits & FB_COLOR_BIT) == 0) {
 		// Can't readback depth or stencil on GLES.
 		return false;
@@ -1336,4 +1336,4 @@ uint32_t OpenGLContext::GetDataFormatSupport(DataFormat fmt) const {
 	}
 }
 
-}  // namespace Draw
+}  // namespace SCREEN_Draw

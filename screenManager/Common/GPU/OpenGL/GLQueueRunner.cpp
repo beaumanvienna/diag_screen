@@ -1346,7 +1346,7 @@ void GLQueueRunner::PerformCopy(const GLRStep &step) {
 }
 
 void GLQueueRunner::PerformReadback(const GLRStep &pass) {
-	using namespace Draw;
+	using namespace SCREEN_Draw;
 	CHECK_GL_ERROR_IF_DEBUG();
 
 	GLRFramebuffer *fb = pass.readback.src;
@@ -1492,11 +1492,11 @@ void GLQueueRunner::PerformBindFramebufferAsRenderTarget(const GLRStep &pass) {
 	CHECK_GL_ERROR_IF_DEBUG();
 }
 
-void GLQueueRunner::CopyReadbackBuffer(int width, int height, Draw::DataFormat srcFormat, Draw::DataFormat destFormat, int pixelStride, uint8_t *pixels) {
+void GLQueueRunner::CopyReadbackBuffer(int width, int height, SCREEN_Draw::DataFormat srcFormat, SCREEN_Draw::DataFormat destFormat, int pixelStride, uint8_t *pixels) {
 	// TODO: Maybe move data format conversion here, and always read back 8888. Drivers
 	// don't usually provide very optimized conversion implementations, though some do.
 	// Just need to be careful about dithering, which may break Danganronpa.
-	int bpp = (int)Draw::DataFormatSizeInBytes(destFormat);
+	int bpp = (int)SCREEN_Draw::DataFormatSizeInBytes(destFormat);
 	if (!readbackBuffer_ || bpp <= 0 || !pixels) {
 		// Something went wrong during the read and no readback buffer was allocated, probably.
 		return;

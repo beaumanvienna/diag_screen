@@ -5,7 +5,7 @@
 #include "Common/UI/Context.h"
 #include "Common/Input/InputState.h"
 
-namespace UI {
+namespace SCREEN_UI {
 
 // The ONLY global is the currently focused item.
 // Can be and often is null.
@@ -42,4 +42,4 @@ void SetSoundCallback(std::function<void(UISound)> func);
 
 void PlayUISound(UISound sound);
 
-}  // namespace UI
+}  // namespace SCREEN_UI

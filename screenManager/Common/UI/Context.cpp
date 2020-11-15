@@ -14,7 +14,7 @@
 #include "UI/TextureUtil.h"
 
 UIContext::UIContext() {
-	fontStyle_ = new UI::FontStyle();
+	fontStyle_ = new SCREEN_UI::FontStyle();
 	bounds_ = Bounds(0, 0, dp_xres, dp_yres);
 }
 
@@ -24,8 +24,8 @@ UIContext::~UIContext() {
 	delete textDrawer_;
 }
 
-void UIContext::Init(Draw::DrawContext *thin3d, Draw::Pipeline *uipipe, Draw::Pipeline *uipipenotex, DrawBuffer *uidrawbuffer, DrawBuffer *uidrawbufferTop) {
-	using namespace Draw;
+void UIContext::Init(SCREEN_Draw::DrawContext *thin3d, SCREEN_Draw::Pipeline *uipipe, SCREEN_Draw::Pipeline *uipipenotex, DrawBuffer *uidrawbuffer, DrawBuffer *uidrawbufferTop) {
+	using namespace SCREEN_Draw;
 	draw_ = thin3d;
 	sampler_ = draw_->CreateSamplerState({ TextureFilter::LINEAR, TextureFilter::LINEAR, TextureFilter::LINEAR });
 	ui_pipeline_ = uipipe;
@@ -54,7 +54,7 @@ void UIContext::BeginNoTex() {
 	UIBegin(ui_pipeline_notex_);
 }
 
-void UIContext::BeginPipeline(Draw::Pipeline *pipeline, Draw::SamplerState *samplerState) {
+void UIContext::BeginPipeline(SCREEN_Draw::Pipeline *pipeline, SCREEN_Draw::SamplerState *samplerState) {
 	draw_->BindSamplerStates(0, 1, &samplerState);
 	RebindTexture();
 	UIBegin(pipeline);
@@ -145,7 +145,7 @@ void UIContext::SetFontScale(float scaleX, float scaleY) {
 	fontScaleY_ = scaleY;
 }
 
-void UIContext::SetFontStyle(const UI::FontStyle &fontStyle) {
+void UIContext::SetFontStyle(const SCREEN_UI::FontStyle &fontStyle) {
 	*fontStyle_ = fontStyle;
 	if (textDrawer_) {
 		textDrawer_->SetFontScale(fontScaleX_, fontScaleY_);
@@ -153,11 +153,11 @@ void UIContext::SetFontStyle(const UI::FontStyle &fontStyle) {
 	}
 }
 
-void UIContext::MeasureText(const UI::FontStyle &style, float scaleX, float scaleY, const char *str, float *x, float *y, int align) const {
+void UIContext::MeasureText(const SCREEN_UI::FontStyle &style, float scaleX, float scaleY, const char *str, float *x, float *y, int align) const {
 	MeasureTextCount(style, scaleX, scaleY, str, (int)strlen(str), x, y, align);
 }
 
-void UIContext::MeasureTextCount(const UI::FontStyle &style, float scaleX, float scaleY, const char *str, int count, float *x, float *y, int align) const {
+void UIContext::MeasureTextCount(const SCREEN_UI::FontStyle &style, float scaleX, float scaleY, const char *str, int count, float *x, float *y, int align) const {
 	if (!textDrawer_ || (align & FLAG_DYNAMIC_ASCII)) {
 		float sizeFactor = (float)style.sizePts / 24.0f;
 		Draw()->SetFontScale(scaleX * sizeFactor, scaleY * sizeFactor);
@@ -170,7 +170,7 @@ void UIContext::MeasureTextCount(const UI::FontStyle &style, float scaleX, float
 	}
 }
 
-void UIContext::MeasureTextRect(const UI::FontStyle &style, float scaleX, float scaleY, const char *str, int count, const Bounds &bounds, float *x, float *y, int align) const {
+void UIContext::MeasureTextRect(const SCREEN_UI::FontStyle &style, float scaleX, float scaleY, const char *str, int count, const Bounds &bounds, float *x, float *y, int align) const {
 	if (!textDrawer_ || (align & FLAG_DYNAMIC_ASCII)) {
 		float sizeFactor = (float)style.sizePts / 24.0f;
 		Draw()->SetFontScale(scaleX * sizeFactor, scaleY * sizeFactor);
@@ -216,22 +216,22 @@ void UIContext::DrawTextRect(const char *str, const Bounds &bounds, uint32_t col
 	}
 }
 
-void UIContext::FillRect(const UI::Drawable &drawable, const Bounds &bounds) {
+void UIContext::FillRect(const SCREEN_UI::Drawable &drawable, const Bounds &bounds) {
 	// Only draw if alpha is non-zero.
 	if ((drawable.color & 0xFF000000) == 0)
 		return;
 
 	switch (drawable.type) {
-	case UI::DRAW_SOLID_COLOR:
+	case SCREEN_UI::DRAW_SOLID_COLOR:
 		uidrawbuffer_->DrawImageStretch(theme->whiteImage, bounds.x, bounds.y, bounds.x2(), bounds.y2(), drawable.color);
 		break;
-	case UI::DRAW_4GRID:
+	case SCREEN_UI::DRAW_4GRID:
 		uidrawbuffer_->DrawImage4Grid(drawable.image, bounds.x, bounds.y, bounds.x2(), bounds.y2(), drawable.color);
 		break;
-	case UI::DRAW_STRETCH_IMAGE:
+	case SCREEN_UI::DRAW_STRETCH_IMAGE:
 		uidrawbuffer_->DrawImageStretch(drawable.image, bounds.x, bounds.y, bounds.x2(), bounds.y2(), drawable.color);
 		break;
-	case UI::DRAW_NOTHING:
+	case SCREEN_UI::DRAW_NOTHING:
 		break;
 	} 
 }
@@ -239,7 +239,7 @@ void UIContext::FillRect(const UI::Drawable &drawable, const Bounds &bounds) {
 void UIContext::PushTransform(const UITransform &transform) {
 	Flush();
 
-	using namespace Lin;
+	using namespace SCREEN_Lin;
 
 	Matrix4x4 m = Draw()->GetDrawMatrix();
 	const Vec3 &t = transform.translate;

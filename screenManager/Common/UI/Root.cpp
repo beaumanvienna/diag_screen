@@ -9,7 +9,7 @@
 #include "Common/Log.h"
 #include "Common/TimeUtil.h"
 
-namespace UI {
+namespace SCREEN_UI {
 
 static std::mutex focusLock;
 static std::vector<int> focusMoves;

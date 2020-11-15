@@ -128,7 +128,7 @@ void Buffer::Printf(const char *fmt, ...) {
 
 bool Buffer::Flush(int fd) {
   // Look into using send() directly.
-  bool success = data_.size() == fd_util::WriteLine(fd, &data_[0], data_.size());
+  bool success = data_.size() == SCREEN_fd_util::WriteLine(fd, &data_[0], data_.size());
   if (success) {
     data_.resize(0);
   }
@@ -154,7 +154,7 @@ bool Buffer::FlushSocket(uintptr_t sock, double timeout, bool *cancelled) {
 		while (!ready && (leftTimeout >= 0 || cancelled)) {
 			if (cancelled && *cancelled)
 				return false;
-			ready = fd_util::WaitUntilReady(sock, CANCEL_INTERVAL, true);
+			ready = SCREEN_fd_util::WaitUntilReady(sock, CANCEL_INTERVAL, true);
 			if (!ready && leftTimeout >= 0.0) {
 				leftTimeout -= CANCEL_INTERVAL;
 				if (leftTimeout < 0) {
@@ -220,7 +220,7 @@ bool Buffer::ReadAllWithProgress(int fd, int knownSize, float *progress, bool *c
 		while (!ready && cancelled) {
 			if (*cancelled)
 				return false;
-			ready = fd_util::WaitUntilReady(fd, CANCEL_INTERVAL, false);
+			ready = SCREEN_fd_util::WaitUntilReady(fd, CANCEL_INTERVAL, false);
 		}
 		int retval = recv(fd, &buf[0], (int)buf.size(), 0);
 		if (retval == 0) {

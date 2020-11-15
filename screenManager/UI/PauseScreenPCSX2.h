@@ -37,8 +37,8 @@ protected:
 	virtual void update() override;
 
 private:
-	UI::EventReturn OnGameSettings(UI::EventParams &e);
-	UI::EventReturn OnExitToMarley(UI::EventParams &e);
+	SCREEN_UI::EventReturn OnGameSettings(SCREEN_UI::EventParams &e);
+	SCREEN_UI::EventReturn OnExitToMarley(SCREEN_UI::EventParams &e);
 
 	bool finishNextFrame_ = false;
 	std::string gamePath_;

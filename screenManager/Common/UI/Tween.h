@@ -6,7 +6,7 @@
 #include "Common/TimeUtil.h"
 #include "Common/UI/View.h"
 
-namespace UI {
+namespace SCREEN_UI {
 
 // This is the class to use in Update().
 class Tween {

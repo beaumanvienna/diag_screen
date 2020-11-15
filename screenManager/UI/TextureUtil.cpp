@@ -15,10 +15,10 @@
 #include "Common/TimeUtil.h"
 #include "UI/TextureUtil.h"
 
-static Draw::DataFormat ZimToT3DFormat(int zim) {
+static SCREEN_Draw::DataFormat ZimToT3DFormat(int zim) {
 	switch (zim) {
-	case ZIM_RGBA8888: return Draw::DataFormat::R8G8B8A8_UNORM;
-	default: return Draw::DataFormat::R8G8B8A8_UNORM;
+	case ZIM_RGBA8888: return SCREEN_Draw::DataFormat::R8G8B8A8_UNORM;
+	default: return SCREEN_Draw::DataFormat::R8G8B8A8_UNORM;
 	}
 }
 
@@ -40,7 +40,7 @@ static ImageFileType DetectImageFileType(const uint8_t *data, size_t size) {
 	}
 }
 
-static bool LoadTextureLevels(const uint8_t *data, size_t size, ImageFileType type, int width[16], int height[16], int *num_levels, Draw::DataFormat *fmt, uint8_t *image[16], int *zim_flags) {
+static bool LoadTextureLevels(const uint8_t *data, size_t size, ImageFileType type, int width[16], int height[16], int *num_levels, SCREEN_Draw::DataFormat *fmt, uint8_t *image[16], int *zim_flags) {
 	if (type == DETECT) {
 		type = DetectImageFileType(data, size);
 	}
@@ -63,7 +63,7 @@ static bool LoadTextureLevels(const uint8_t *data, size_t size, ImageFileType ty
 	case PNG:
 		if (1 == pngLoadPtr((const unsigned char *)data, size, &width[0], &height[0], &image[0])) {
 			*num_levels = 1;
-			*fmt = Draw::DataFormat::R8G8B8A8_UNORM;
+			*fmt = SCREEN_Draw::DataFormat::R8G8B8A8_UNORM;
 			if (!image[0]) {
 				printf("if (!image[0]) {");
 				return false;
@@ -86,7 +86,7 @@ static bool LoadTextureLevels(const uint8_t *data, size_t size, ImageFileType ty
 
 bool ManagedTexture::LoadFromFileData(const uint8_t *data, size_t dataSize, ImageFileType type, bool generateMips, const char *name) {
 	generateMips_ = generateMips;
-	using namespace Draw;
+	using namespace SCREEN_Draw;
 
 	int width[16]{}, height[16]{};
 	uint8_t *image[16]{};
@@ -153,7 +153,7 @@ bool ManagedTexture::LoadFromFile(const std::string &filename, ImageFileType typ
 	return retval;
 }
 
-std::unique_ptr<ManagedTexture> CreateTextureFromFile(Draw::DrawContext *draw, const char *filename, ImageFileType type, bool generateMips) {
+std::unique_ptr<ManagedTexture> CreateTextureFromFile(SCREEN_Draw::DrawContext *draw, const char *filename, ImageFileType type, bool generateMips) {
 	if (!draw)
 		return std::unique_ptr<ManagedTexture>();
 	// TODO: Load the texture on a background thread.
@@ -172,7 +172,7 @@ void ManagedTexture::DeviceLost() {
 	texture_ = nullptr;
 }
 
-void ManagedTexture::DeviceRestored(Draw::DrawContext *draw) {
+void ManagedTexture::DeviceRestored(SCREEN_Draw::DrawContext *draw) {
     printf("ManagedTexture::DeviceRestored(%s)", filename_.c_str());
 	_assert_(!texture_);
 	draw_ = draw;
@@ -181,7 +181,7 @@ void ManagedTexture::DeviceRestored(Draw::DrawContext *draw) {
 	loadPending_ = true;
 }
 
-Draw::Texture *ManagedTexture::GetTexture() {
+SCREEN_Draw::Texture *ManagedTexture::GetTexture() {
 	if (loadPending_) {
 		if (!LoadFromFile(filename_, ImageFileType::DETECT, generateMips_)) {
 			printf("ManagedTexture failed: '%s'", filename_.c_str());
@@ -192,7 +192,7 @@ Draw::Texture *ManagedTexture::GetTexture() {
 }
 
 // TODO: Remove the code duplication between this and LoadFromFileData
-std::unique_ptr<ManagedTexture> CreateTextureFromFileData(Draw::DrawContext *draw, const uint8_t *data, int size, ImageFileType type, bool generateMips, const char *name) {
+std::unique_ptr<ManagedTexture> CreateTextureFromFileData(SCREEN_Draw::DrawContext *draw, const uint8_t *data, int size, ImageFileType type, bool generateMips, const char *name) {
 	if (!draw)
 		return std::unique_ptr<ManagedTexture>();
 	ManagedTexture *mtex = new ManagedTexture(draw);

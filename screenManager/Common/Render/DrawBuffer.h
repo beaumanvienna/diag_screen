@@ -42,7 +42,7 @@ enum {
 	FLAG_ELLIPSIZE_TEXT = 16384,
 };
 
-namespace Draw {
+namespace SCREEN_Draw {
 	class Pipeline;
 }
 
@@ -58,15 +58,15 @@ public:
 	DrawBuffer();
 	~DrawBuffer();
 
-	void Begin(Draw::Pipeline *pipeline);
+	void Begin(SCREEN_Draw::Pipeline *pipeline);
 	void Flush(bool set_blend_state = true);
 
 	// TODO: Enforce these. Now Init is autocalled and shutdown not called.
-	void Init(Draw::DrawContext *t3d, Draw::Pipeline *pipeline);
+	void Init(SCREEN_Draw::DrawContext *t3d, SCREEN_Draw::Pipeline *pipeline);
 	void Shutdown();
 
 	// So that callers can create appropriate pipelines.
-	Draw::InputLayout *CreateInputLayout(Draw::DrawContext *t3d);
+	SCREEN_Draw::InputLayout *CreateInputLayout(SCREEN_Draw::DrawContext *t3d);
 
 	int Count() const { return count_; }
 
@@ -138,7 +138,7 @@ public:
 
 	static void DoAlign(int flags, float *x, float *y, float *w, float *h);
 
-	void PushDrawMatrix(const Lin::Matrix4x4 &m) {
+	void PushDrawMatrix(const SCREEN_Lin::Matrix4x4 &m) {
 		drawMatrixStack_.push_back(drawMatrix_);
 		drawMatrix_ = m;
 	}
@@ -148,7 +148,7 @@ public:
 		drawMatrixStack_.pop_back();
 	}
 
-	Lin::Matrix4x4 GetDrawMatrix() {
+	SCREEN_Lin::Matrix4x4 GetDrawMatrix() {
 		return drawMatrix_;
 	}
 
@@ -173,15 +173,15 @@ private:
 		uint32_t rgba;
 	};
 
-	Lin::Matrix4x4 drawMatrix_;
-	std::vector<Lin::Matrix4x4> drawMatrixStack_;
+	SCREEN_Lin::Matrix4x4 drawMatrix_;
+	std::vector<SCREEN_Lin::Matrix4x4> drawMatrixStack_;
 
 	float alpha_ = 1.0f;
 	std::vector<float> alphaStack_;
 
-	Draw::DrawContext *draw_;
-	Draw::Buffer *vbuf_;
-	Draw::Pipeline *pipeline_;
+	SCREEN_Draw::DrawContext *draw_;
+	SCREEN_Draw::Buffer *vbuf_;
+	SCREEN_Draw::Pipeline *pipeline_;
 
 	Vertex *verts_;
 	int count_;

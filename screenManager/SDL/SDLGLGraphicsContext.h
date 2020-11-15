@@ -25,7 +25,7 @@ public:
 
 	void Resize() override {}
 
-	Draw::DrawContext *GetDrawContext() override {
+	SCREEN_Draw::DrawContext *GetDrawContext() override {
 		return draw_;
 	}
 
@@ -47,7 +47,7 @@ public:
 	}
 
 private:
-	Draw::DrawContext *draw_ = nullptr;
+	SCREEN_Draw::DrawContext *draw_ = nullptr;
 	SDL_Window *window_;
 	SDL_GLContext glContext = nullptr;
 	GLRenderManager *renderManager_ = nullptr;

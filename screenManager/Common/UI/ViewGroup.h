@@ -8,7 +8,7 @@
 #include "Common/Math/geom2d.h"
 #include "Common/UI/View.h"
 
-namespace UI {
+namespace SCREEN_UI {
 
 class AnchorTranslateTween;
 
@@ -37,7 +37,7 @@ public:
 	virtual void Query(float x, float y, std::vector<View *> &list) override;
 
 	virtual void DeviceLost() override;
-	virtual void DeviceRestored(Draw::DrawContext *draw) override;
+	virtual void DeviceRestored(SCREEN_Draw::DrawContext *draw) override;
 
 	virtual void Draw(UIContext &dc) override;
 
@@ -391,4 +391,4 @@ private:
 	std::set<int> hidden_;
 };
 
-}  // namespace UI
+}  // namespace SCREEN_UI

@@ -16,7 +16,7 @@
 #include "Common/TimeUtil.h"
 #include "Common/StringUtils.h"
 
-namespace UI {
+namespace SCREEN_UI {
 
 const float ITEM_HEIGHT = 64.f;
 
@@ -120,7 +120,7 @@ void ViewGroup::DeviceLost() {
 	}
 }
 
-void ViewGroup::DeviceRestored(Draw::DrawContext *draw) {
+void ViewGroup::DeviceRestored(SCREEN_Draw::DrawContext *draw) {
 	std::lock_guard<std::mutex> guard(modifyLock_);
 	for (auto iter = views_.begin(); iter != views_.end(); ++iter) {
 		(*iter)->DeviceRestored(draw);
@@ -130,7 +130,7 @@ void ViewGroup::DeviceRestored(Draw::DrawContext *draw) {
 void ViewGroup::Draw(UIContext &dc) {
 	if (hasDropShadow_) {
 		// Darken things behind.
-		dc.FillRect(UI::Drawable(0x60000000), dc.GetBounds().Expand(dropShadowExpand_));
+		dc.FillRect(SCREEN_UI::Drawable(0x60000000), dc.GetBounds().Expand(dropShadowExpand_));
 		float dropsize = 30.0f;
 		dc.Draw()->DrawImage4Grid(dc.theme->dropShadow4Grid,
 			bounds_.x - dropsize, bounds_.y,
@@ -1332,13 +1332,13 @@ bool ChoiceStrip::Key(const KeyInput &input) {
 		if (IsTabLeftKey(input)) {
 			if (selected_ > 0) {
 				SetSelection(selected_ - 1);
-				UI::PlayUISound(UI::UISound::TOGGLE_OFF);  // Maybe make specific sounds for this at some point?
+				SCREEN_UI::PlayUISound(SCREEN_UI::UISound::TOGGLE_OFF);  // Maybe make specific sounds for this at some point?
 			}
 			ret = true;
 		} else if (IsTabRightKey(input)) {
 			if (selected_ < (int)views_.size() - 1) {
 				SetSelection(selected_ + 1);
-				UI::PlayUISound(UI::UISound::TOGGLE_ON);
+				SCREEN_UI::PlayUISound(SCREEN_UI::UISound::TOGGLE_ON);
 			}
 			ret = true;
 		}
@@ -1419,4 +1419,4 @@ bool StringVectorListAdaptor::AddEventCallback(View *view, std::function<EventRe
 	return EVENT_DONE;
 }
 
-}  // namespace UI
+}  // namespace SCREEN_UI

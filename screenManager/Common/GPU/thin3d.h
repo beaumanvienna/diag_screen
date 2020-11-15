@@ -14,11 +14,11 @@
 
 #include "DataFormat.h"
 
-namespace Lin {
+namespace SCREEN_Lin {
 class Matrix4x4;
 }
 
-namespace Draw {
+namespace SCREEN_Draw {
 
 // Useful in UBOs
 typedef int bool32;
@@ -602,7 +602,7 @@ public:
 
 	virtual void CopyFramebufferImage(Framebuffer *src, int level, int x, int y, int z, Framebuffer *dst, int dstLevel, int dstX, int dstY, int dstZ, int width, int height, int depth, int channelBits, const char *tag) = 0;
 	virtual bool BlitFramebuffer(Framebuffer *src, int srcX1, int srcY1, int srcX2, int srcY2, Framebuffer *dst, int dstX1, int dstY1, int dstX2, int dstY2, int channelBits, FBBlitFilter filter, const char *tag) = 0;
-	virtual bool CopyFramebufferToMemorySync(Framebuffer *src, int channelBits, int x, int y, int w, int h, Draw::DataFormat format, void *pixels, int pixelStride, const char *tag) {
+	virtual bool CopyFramebufferToMemorySync(Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat format, void *pixels, int pixelStride, const char *tag) {
 		return false;
 	}
 	virtual DataFormat PreferredFramebufferReadbackFormat(Framebuffer *src) {
@@ -714,4 +714,4 @@ struct ShaderSource {
 
 ShaderModule *CreateShader(DrawContext *draw, ShaderStage stage, const std::vector<ShaderSource> &sources);
 
-}  // namespace Draw
+}  // namespace SCREEN_Draw

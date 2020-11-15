@@ -6,10 +6,10 @@
 #include "Common/UI/Screen.h"
 #include "Common/UI/ViewGroup.h"
 
-using namespace Lin;
+using namespace SCREEN_Lin;
 
 class I18NCategory;
-namespace Draw {
+namespace SCREEN_Draw {
 	class DrawContext;
 }
 
@@ -34,9 +34,9 @@ public:
 	virtual void TriggerFinish(DialogResult result);
 
 	// Some useful default event handlers
-	UI::EventReturn OnOK(UI::EventParams &e);
-	UI::EventReturn OnCancel(UI::EventParams &e);
-	UI::EventReturn OnBack(UI::EventParams &e);
+	SCREEN_UI::EventReturn OnOK(SCREEN_UI::EventParams &e);
+	SCREEN_UI::EventReturn OnCancel(SCREEN_UI::EventParams &e);
+	SCREEN_UI::EventReturn OnBack(SCREEN_UI::EventParams &e);
 
 protected:
 	virtual void CreateViews() = 0;
@@ -44,7 +44,7 @@ protected:
 
 	virtual void RecreateViews() override { recreateViews_ = true; }
 
-	UI::ViewGroup *root_ = nullptr;
+	SCREEN_UI::ViewGroup *root_ = nullptr;
 	Vec3 translation_ = Vec3(0.0f);
 	Vec3 scale_ = Vec3(1.0f);
 	float alpha_ = 1.0f;
@@ -71,7 +71,7 @@ class PopupScreen : public UIDialogScreen {
 public:
 	PopupScreen(std::string title, std::string button1 = "", std::string button2 = "");
 
-	virtual void CreatePopupContents(UI::ViewGroup *parent) = 0;
+	virtual void CreatePopupContents(SCREEN_UI::ViewGroup *parent) = 0;
 	virtual void CreateViews() override;
 	virtual bool isTransparent() const override { return true; }
 	virtual bool touch(const TouchInput &touch) override;
@@ -80,11 +80,11 @@ public:
 
 	virtual void TriggerFinish(DialogResult result) override;
 
-	void SetPopupOrigin(const UI::View *view);
+	void SetPopupOrigin(const SCREEN_UI::View *view);
 
 protected:
 	virtual bool FillVertical() const { return false; }
-	virtual UI::Size PopupWidth() const { return 550; }
+	virtual SCREEN_UI::Size PopupWidth() const { return 550; }
 	virtual bool ShowButtons() const { return true; }
 	virtual bool CanComplete(DialogResult result) { return true; }
 	virtual void OnCompleted(DialogResult result) {}
@@ -92,8 +92,8 @@ protected:
 	virtual void update() override;
 
 private:
-	UI::ViewGroup *box_;
-	UI::Button *defaultButton_;
+	SCREEN_UI::ViewGroup *box_;
+	SCREEN_UI::Button *defaultButton_;
 	std::string title_;
 	std::string button1_;
 	std::string button2_;
@@ -131,17 +131,17 @@ public:
 	}
 	virtual std::string tag() const override { return std::string("listpopup"); }
 
-	UI::Event OnChoice;
+	SCREEN_UI::Event OnChoice;
 
 protected:
 	virtual bool FillVertical() const override { return false; }
 	virtual bool ShowButtons() const override { return showButtons_; }
-	virtual void CreatePopupContents(UI::ViewGroup *parent) override;
-	UI::StringVectorListAdaptor adaptor_;
-	UI::ListView *listView_ = nullptr;
+	virtual void CreatePopupContents(SCREEN_UI::ViewGroup *parent) override;
+	SCREEN_UI::StringVectorListAdaptor adaptor_;
+	SCREEN_UI::ListView *listView_ = nullptr;
 
 private:
-	UI::EventReturn OnListChoice(UI::EventParams &e);
+	SCREEN_UI::EventReturn OnListChoice(SCREEN_UI::EventParams &e);
 
 	std::function<void(int)> callback_;
 	bool showButtons_ = false;
@@ -152,12 +152,12 @@ class MessagePopupScreen : public PopupScreen {
 public:
 	MessagePopupScreen(std::string title, std::string message, std::string button1, std::string button2, std::function<void(bool)> callback) 
 		: PopupScreen(title, button1, button2), message_(message), callback_(callback) {}
-	UI::Event OnChoice;
+	SCREEN_UI::Event OnChoice;
 
 protected:
 	virtual bool FillVertical() const override { return false; }
 	virtual bool ShowButtons() const override { return true; }
-	virtual void CreatePopupContents(UI::ViewGroup *parent) override;
+	virtual void CreatePopupContents(SCREEN_UI::ViewGroup *parent) override;
 
 private:
 	void OnCompleted(DialogResult result) override;
@@ -167,7 +167,7 @@ private:
 
 // TODO: Need a way to translate OK and Cancel
 
-namespace UI {
+namespace SCREEN_UI {
 
 class SliderPopupScreen : public PopupScreen {
 public:
@@ -189,7 +189,7 @@ private:
 	EventReturn OnSliderChange(EventParams &params);
 	virtual void OnCompleted(DialogResult result) override;
 	Slider *slider_ = nullptr;
-	UI::TextEdit *edit_ = nullptr;
+	SCREEN_UI::TextEdit *edit_ = nullptr;
 	std::string units_;
 	std::string negativeLabel_;
 	int *value_;
@@ -205,7 +205,7 @@ class SliderFloatPopupScreen : public PopupScreen {
 public:
 	SliderFloatPopupScreen(float *value, float minValue, float maxValue, const std::string &title, float step = 1.0f, const std::string &units = "")
 	: PopupScreen(title, "OK", "Cancel"), units_(units), value_(value), minValue_(minValue), maxValue_(maxValue), step_(step), changing_(false) {}
-	void CreatePopupContents(UI::ViewGroup *parent) override;
+	void CreatePopupContents(SCREEN_UI::ViewGroup *parent) override;
 
 	Event OnChange;
 
@@ -215,8 +215,8 @@ private:
 	EventReturn OnTextChange(EventParams &params);
 	EventReturn OnSliderChange(EventParams &params);
 	virtual void OnCompleted(DialogResult result) override;
-	UI::SliderFloat *slider_;
-	UI::TextEdit *edit_;
+	SCREEN_UI::SliderFloat *slider_;
+	SCREEN_UI::TextEdit *edit_;
 	std::string units_;
 	float sliderValue_;
 	float *value_;
@@ -244,11 +244,11 @@ private:
 };
 
 // Reads and writes value to determine the current selection.
-class PopupMultiChoice : public UI::Choice {
+class PopupMultiChoice : public SCREEN_UI::Choice {
 public:
 	PopupMultiChoice(int *value, const std::string &text, const char **choices, int minVal, int numChoices,
-		const char *category, ScreenManager *screenManager, UI::LayoutParams *layoutParams = nullptr)
-		: UI::Choice(text, "", false, layoutParams), value_(value), choices_(choices), minVal_(minVal), numChoices_(numChoices), 
+		const char *category, ScreenManager *screenManager, SCREEN_UI::LayoutParams *layoutParams = nullptr)
+		: SCREEN_UI::Choice(text, "", false, layoutParams), value_(value), choices_(choices), minVal_(minVal), numChoices_(numChoices), 
 		category_(category), screenManager_(screenManager) {
 		if (*value >= numChoices + minVal)
 			*value = numChoices + minVal - 1;
@@ -265,7 +265,7 @@ public:
 		hidden_.insert(c);
 	}
 
-	UI::Event OnChoice;
+	SCREEN_UI::Event OnChoice;
 
 protected:
 	int *value_;
@@ -275,7 +275,7 @@ protected:
 	void UpdateText();
 
 private:
-	UI::EventReturn HandleClick(UI::EventParams &e);
+	SCREEN_UI::EventReturn HandleClick(SCREEN_UI::EventParams &e);
 
 	void ChoiceCallback(int num);
 	virtual void PostChoiceCallback(int num) {}
@@ -291,8 +291,8 @@ private:
 class PopupMultiChoiceDynamic : public PopupMultiChoice {
 public:
 	PopupMultiChoiceDynamic(std::string *value, const std::string &text, std::vector<std::string> choices,
-		const char *category, ScreenManager *screenManager, UI::LayoutParams *layoutParams = nullptr)
-		: UI::PopupMultiChoice(&valueInt_, text, nullptr, 0, (int)choices.size(), category, screenManager, layoutParams),
+		const char *category, ScreenManager *screenManager, SCREEN_UI::LayoutParams *layoutParams = nullptr)
+		: SCREEN_UI::PopupMultiChoice(&valueInt_, text, nullptr, 0, (int)choices.size(), category, screenManager, layoutParams),
 		  valueStr_(value) {
 		choices_ = new const char *[numChoices_];
 		valueInt_ = 0;
@@ -406,7 +406,7 @@ private:
 	bool restoreFocus_;
 };
 
-class ChoiceWithValueDisplay : public UI::Choice {
+class ChoiceWithValueDisplay : public SCREEN_UI::Choice {
 public:
 	ChoiceWithValueDisplay(int *value, const std::string &text, LayoutParams *layoutParams = 0)
 		: Choice(text, layoutParams), iValue_(value) {}
@@ -427,4 +427,4 @@ private:
 	std::string (*translateCallback_)(const char *value) = nullptr;
 };
 
-}  // namespace UI
+}  // namespace SCREEN_UI

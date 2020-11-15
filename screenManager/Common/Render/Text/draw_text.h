@@ -16,13 +16,13 @@
 #include "Common/Data/Text/WrapText.h"
 #include "Common/Render/DrawBuffer.h"
 
-namespace Draw {
+namespace SCREEN_Draw {
 	class DrawContext;
 	class Texture;
 }
 
 struct TextStringEntry {
-	Draw::Texture *texture;
+	SCREEN_Draw::Texture *texture;
 	int width;
 	int height;
 	int bmWidth;
@@ -48,8 +48,8 @@ public:
 	virtual void MeasureStringRect(const char *str, size_t len, const Bounds &bounds, float *w, float *h, int align = ALIGN_TOPLEFT) = 0;
 	virtual void DrawString(DrawBuffer &target, const char *str, float x, float y, uint32_t color, int align = ALIGN_TOPLEFT) = 0;
 	void DrawStringRect(DrawBuffer &target, const char *str, const Bounds &bounds, uint32_t color, int align);
-	virtual void DrawStringBitmap(std::vector<uint8_t> &bitmapData, TextStringEntry &entry, Draw::DataFormat texFormat, const char *str, int align = ALIGN_TOPLEFT) = 0;
-	void DrawStringBitmapRect(std::vector<uint8_t> &bitmapData, TextStringEntry &entry, Draw::DataFormat texFormat, const char *str, const Bounds &bounds, int align);
+	virtual void DrawStringBitmap(std::vector<uint8_t> &bitmapData, TextStringEntry &entry, SCREEN_Draw::DataFormat texFormat, const char *str, int align = ALIGN_TOPLEFT) = 0;
+	void DrawStringBitmapRect(std::vector<uint8_t> &bitmapData, TextStringEntry &entry, SCREEN_Draw::DataFormat texFormat, const char *str, const Bounds &bounds, int align);
 	// Use for housekeeping like throwing out old strings.
 	virtual void OncePerFrame() = 0;
 
@@ -60,12 +60,12 @@ public:
 	}
 
 	// Factory function that selects implementation.
-	static TextDrawer *Create(Draw::DrawContext *draw);
+	static TextDrawer *Create(SCREEN_Draw::DrawContext *draw);
 
 protected:
-	TextDrawer(Draw::DrawContext *draw);
+	TextDrawer(SCREEN_Draw::DrawContext *draw);
 
-	Draw::DrawContext *draw_;
+	SCREEN_Draw::DrawContext *draw_;
 	virtual void ClearCache() = 0;
 	void WrapString(std::string &out, const char *str, float maxWidth, int flags);
 

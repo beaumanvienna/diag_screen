@@ -7,7 +7,7 @@
 #include "Common/Log.h"
 #include "Common/ColorConv.h"
 
-namespace Draw {
+namespace SCREEN_Draw {
 
 size_t DataFormatSizeInBytes(DataFormat fmt) {
 	switch (fmt) {
@@ -402,7 +402,7 @@ void ConvertFromRGBA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, u
 	// Must skip stride in the cases below.  Some games pack data into the cracks, like MotoGP.
 	const uint32_t *src32 = (const uint32_t *)src;
 
-	if (format == Draw::DataFormat::R8G8B8A8_UNORM) {
+	if (format == SCREEN_Draw::DataFormat::R8G8B8A8_UNORM) {
 		uint32_t *dst32 = (uint32_t *)dst;
 		if (src == dst) {
 			return;
@@ -413,7 +413,7 @@ void ConvertFromRGBA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, u
 				dst32 += dstStride;
 			}
 		}
-	} else if (format == Draw::DataFormat::R8G8B8_UNORM) {
+	} else if (format == SCREEN_Draw::DataFormat::R8G8B8_UNORM) {
 		for (uint32_t y = 0; y < height; ++y) {
 			for (uint32_t x = 0; x < width; ++x) {
 				memcpy(dst + x * 3, src32 + x, 3);
@@ -425,29 +425,29 @@ void ConvertFromRGBA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, u
 		// But here it shouldn't matter if they do intersect
 		uint16_t *dst16 = (uint16_t *)dst;
 		switch (format) {
-		case Draw::DataFormat::R5G6B5_UNORM_PACK16: // BGR 565
+		case SCREEN_Draw::DataFormat::R5G6B5_UNORM_PACK16: // BGR 565
 			for (uint32_t y = 0; y < height; ++y) {
 				ConvertRGBA8888ToRGB565(dst16, src32, width);
 				src32 += srcStride;
 				dst16 += dstStride;
 			}
 			break;
-		case Draw::DataFormat::A1R5G5B5_UNORM_PACK16: // ABGR 1555
+		case SCREEN_Draw::DataFormat::A1R5G5B5_UNORM_PACK16: // ABGR 1555
 			for (uint32_t y = 0; y < height; ++y) {
 				ConvertRGBA8888ToRGBA5551(dst16, src32, width);
 				src32 += srcStride;
 				dst16 += dstStride;
 			}
 			break;
-		case Draw::DataFormat::A4R4G4B4_UNORM_PACK16: // ABGR 4444
+		case SCREEN_Draw::DataFormat::A4R4G4B4_UNORM_PACK16: // ABGR 4444
 			for (uint32_t y = 0; y < height; ++y) {
 				ConvertRGBA8888ToRGBA4444(dst16, src32, width);
 				src32 += srcStride;
 				dst16 += dstStride;
 			}
 			break;
-		case Draw::DataFormat::R8G8B8A8_UNORM:
-		case Draw::DataFormat::UNDEFINED:
+		case SCREEN_Draw::DataFormat::R8G8B8A8_UNORM:
+		case SCREEN_Draw::DataFormat::UNDEFINED:
 		default:
 			printf("Unable to convert from format: %d", (int)format);
 			break;
@@ -461,7 +461,7 @@ void ConvertFromBGRA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, u
 	// Must skip stride in the cases below.  Some games pack data into the cracks, like MotoGP.
 	const uint32_t *src32 = (const uint32_t *)src;
 
-	if (format == Draw::DataFormat::B8G8R8A8_UNORM) {
+	if (format == SCREEN_Draw::DataFormat::B8G8R8A8_UNORM) {
 		uint32_t *dst32 = (uint32_t *)dst;
 		if (src == dst) {
 			return;
@@ -472,14 +472,14 @@ void ConvertFromBGRA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, u
 				dst32 += dstStride;
 			}
 		}
-	} else if (format == Draw::DataFormat::R8G8B8A8_UNORM) {
+	} else if (format == SCREEN_Draw::DataFormat::R8G8B8A8_UNORM) {
 		uint32_t *dst32 = (uint32_t *)dst;
 		for (uint32_t y = 0; y < height; ++y) {
 			ConvertBGRA8888ToRGBA8888(dst32, src32, width);
 			src32 += srcStride;
 			dst32 += dstStride;
 		}
-	} else if (format == Draw::DataFormat::R8G8B8_UNORM) {
+	} else if (format == SCREEN_Draw::DataFormat::R8G8B8_UNORM) {
 		for (uint32_t y = 0; y < height; ++y) {
 			for (uint32_t x = 0; x < width; ++x) {
 				uint32_t c = src32[x];
@@ -496,7 +496,7 @@ void ConvertFromBGRA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, u
 }
 
 void ConvertToD32F(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_t srcStride, uint32_t width, uint32_t height, DataFormat format) {
-	if (format == Draw::DataFormat::D32F) {
+	if (format == SCREEN_Draw::DataFormat::D32F) {
 		const float *src32 = (const float *)src;
 		float *dst32 = (float *)dst;
 		if (src == dst) {
@@ -508,7 +508,7 @@ void ConvertToD32F(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_
 				dst32 += dstStride;
 			}
 		}
-	} else if (format == Draw::DataFormat::D16) {
+	} else if (format == SCREEN_Draw::DataFormat::D16) {
 		const uint16_t *src16 = (const uint16_t *)src;
 		float *dst32 = (float *)dst;
 		for (uint32_t y = 0; y < height; ++y) {
@@ -518,7 +518,7 @@ void ConvertToD32F(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_
 			src16 += srcStride;
 			dst32 += dstStride;
 		}
-	} else if (format == Draw::DataFormat::D24_S8) {
+	} else if (format == SCREEN_Draw::DataFormat::D24_S8) {
 		const uint32_t *src32 = (const uint32_t *)src;
 		float *dst32 = (float *)dst;
 		for (uint32_t y = 0; y < height; ++y) {
@@ -534,4 +534,4 @@ void ConvertToD32F(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_
 }
 
 
-}  // namespace Draw
+}  // namespace SCREEN_Draw

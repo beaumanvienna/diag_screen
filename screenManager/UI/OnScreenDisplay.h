@@ -39,9 +39,9 @@ private:
 	std::mutex mutex_;
 };
 
-class OnScreenMessagesView : public UI::InertView {
+class OnScreenMessagesView : public SCREEN_UI::InertView {
 public:
-	OnScreenMessagesView(UI::LayoutParams *layoutParams = nullptr) : UI::InertView(layoutParams) {}
+	OnScreenMessagesView(SCREEN_UI::LayoutParams *layoutParams = nullptr) : SCREEN_UI::InertView(layoutParams) {}
 	void Draw(UIContext &dc);
 };
 

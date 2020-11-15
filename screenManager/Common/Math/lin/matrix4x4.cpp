@@ -5,7 +5,7 @@
 #include "Common/Math/lin/vec3.h"
 #include "Common/Math/fast/fast_matrix.h"
 
-namespace Lin {
+namespace SCREEN_Lin {
 
 Matrix4x4 Matrix4x4::transpose() const
 {

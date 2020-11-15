@@ -80,7 +80,7 @@ void UpdateUIState(GlobalUIState newState) {
 
 void UIBackgroundInit(UIContext &dc) {
 	const std::string bgPng = "background.png";
-	if (PFile::Exists(bgPng)) {
+	if (SCREEN_PFile::Exists(bgPng)) {
 		const std::string &bgFile = bgPng;
 		bgTexture = CreateTextureFromFile(dc.GetDrawContext(), bgFile.c_str(), DETECT, true);
 	}
@@ -190,12 +190,12 @@ void HandleCommonMessages(const char *message, const char *value, ScreenManager 
 	} else if (!strcmp(message, "language screen") && isActiveScreen) {
 		auto dev = GetI18NCategory("Developer");
 		auto langScreen = new NewLanguageScreen(dev->T("Language"));
-		langScreen->OnChoice.Add([](UI::EventParams &) {
+		langScreen->OnChoice.Add([](SCREEN_UI::EventParams &) {
 			NativeMessageReceived("recreateviews", "");
 			if (host) {
 				host->UpdateUI();
 			}
-			return UI::EVENT_DONE;
+			return SCREEN_UI::EVENT_DONE;
 		});
 		manager->push(langScreen);
 	} else if (!strcmp(message, "window minimized")) {
@@ -256,8 +256,8 @@ void UIDialogScreenWithBackground::DrawBackground(UIContext &dc) {
 	dc.Flush();
 }
 
-void UIDialogScreenWithBackground::AddStandardBack(UI::ViewGroup *parent) {
-	using namespace UI;
+void UIDialogScreenWithBackground::AddStandardBack(SCREEN_UI::ViewGroup *parent) {
+	using namespace SCREEN_UI;
 	auto di = GetI18NCategory("Dialog");
 	parent->Add(new Choice(di->T("Back"), "", false, new AnchorLayoutParams(150, 64, 10, NONE, NONE, 10)))->OnClick.Handle<UIScreen>(this, &UIScreen::OnBack);
 }
@@ -277,7 +277,7 @@ void PromptScreen::CreateViews() {
 	// Information in the top left.
 	// Back button to the bottom left.
 	// Scrolling action menu to the right.
-	using namespace UI;
+	using namespace SCREEN_UI;
 
 	Margins actionMenuMargins(0, 100, 15, 0);
 
@@ -298,14 +298,14 @@ void PromptScreen::CreateViews() {
 		rightColumnItems->Add(new Choice(noButtonText_))->OnClick.Handle(this, &PromptScreen::OnNo);
 }
 
-UI::EventReturn PromptScreen::OnYes(UI::EventParams &e) {
+SCREEN_UI::EventReturn PromptScreen::OnYes(SCREEN_UI::EventParams &e) {
 	TriggerFinish(DR_OK);
-	return UI::EVENT_DONE;
+	return SCREEN_UI::EVENT_DONE;
 }
 
-UI::EventReturn PromptScreen::OnNo(UI::EventParams &e) {
+SCREEN_UI::EventReturn PromptScreen::OnNo(SCREEN_UI::EventParams &e) {
 	TriggerFinish(DR_CANCEL);
-	return UI::EVENT_DONE;
+	return SCREEN_UI::EVENT_DONE;
 }
 
 void PromptScreen::TriggerFinish(DialogResult result) {
@@ -326,7 +326,7 @@ PostProcScreen::PostProcScreen(const std::string &title, int id) : ListPopupScre
 			selected = i;
 		items.push_back(ps->T(shaders_[i].section.c_str(), shaders_[i].name.c_str()));
 	}
-	adaptor_ = UI::StringVectorListAdaptor(items, selected);
+	adaptor_ = SCREEN_UI::StringVectorListAdaptor(items, selected);
 */
 }
 
@@ -350,7 +350,7 @@ TextureShaderScreen::TextureShaderScreen(const std::string &title) : ListPopupSc
 			selected = i;
 		items.push_back(ps->T(shaders_[i].section.c_str(), shaders_[i].name.c_str()));
 	}
-	adaptor_ = UI::StringVectorListAdaptor(items, selected);
+	adaptor_ = SCREEN_UI::StringVectorListAdaptor(items, selected);
 */
 }
 
@@ -410,7 +410,7 @@ NewLanguageScreen::NewLanguageScreen(const std::string &title) : ListPopupScreen
 		counter++;
 	}
 
-	adaptor_ = UI::StringVectorListAdaptor(listing, selected);
+	adaptor_ = SCREEN_UI::StringVectorListAdaptor(listing, selected);
 */
 }
 
@@ -437,7 +437,7 @@ void NewLanguageScreen::OnCompleted(DialogResult result) {
 	const std::string langOverridePath = GetSysDirectory(DIRECTORY_SYSTEM) + "lang/";
 
 	// If we run into the unlikely case that "lang" is actually a file, just use the built-in translations.
-	if (!PFile::Exists(langOverridePath) || !PFile::IsDirectory(langOverridePath))
+	if (!SCREEN_PFile::Exists(langOverridePath) || !SCREEN_PFile::IsDirectory(langOverridePath))
 		iniLoadedSuccessfully = i18nrepo.LoadIni(g_PConfig.sLanguageIni);
 	else
 		iniLoadedSuccessfully = i18nrepo.LoadIni(g_PConfig.sLanguageIni, langOverridePath);
@@ -510,7 +510,7 @@ bool LogoScreen::touch(const TouchInput &touch) {
 }
 
 void LogoScreen::render() {
-	using namespace Draw;
+	using namespace SCREEN_Draw;
 
 	UIScreen::render();
 	UIContext &dc = *screenManager()->getUIContext();
@@ -566,7 +566,7 @@ void LogoScreen::render() {
 }
 
 void CreditsScreen::CreateViews() {
-	using namespace UI;
+	using namespace SCREEN_UI;
 	auto di = GetI18NCategory("Dialog");
 	auto cr = GetI18NCategory("PSPCredits");
 
@@ -575,67 +575,47 @@ void CreditsScreen::CreateViews() {
 	back->OnClick.Handle(this, &CreditsScreen::OnOK);
 	root_->SetDefaultFocusView(back);
 
-	// Really need to redo this whole layout with some linear layouts...
-
-	int rightYOffset = 0;
-	if (!System_GetPropertyBool(SYSPROP_APP_GOLD)) {
-		root_->Add(new Button(cr->T("Buy Gold"), new AnchorLayoutParams(260, 64, NONE, NONE, 10, 84, false)))->OnClick.Handle(this, &CreditsScreen::OnSupport);
-		rightYOffset = 74;
-	}
-	root_->Add(new Button(cr->T("PPSSPP Forums"), new AnchorLayoutParams(260, 64, 10, NONE, NONE, 158, false)))->OnClick.Handle(this, &CreditsScreen::OnForums);
-	root_->Add(new Button(cr->T("Discord"), new AnchorLayoutParams(260, 64, 10, NONE, NONE, 232, false)))->OnClick.Handle(this, &CreditsScreen::OnDiscord);
-	root_->Add(new Button("www.ppsspp.org", new AnchorLayoutParams(260, 64, 10, NONE, NONE, 10, false)))->OnClick.Handle(this, &CreditsScreen::OnPPSSPPOrg);
-	root_->Add(new Button(cr->T("Privacy Policy"), new AnchorLayoutParams(260, 64, 10, NONE, NONE, 84, false)))->OnClick.Handle(this, &CreditsScreen::OnPrivacy);
-	root_->Add(new Button(cr->T("Twitter @PPSSPP_emu"), new AnchorLayoutParams(260, 64, NONE, NONE, 10, rightYOffset + 84, false)))->OnClick.Handle(this, &CreditsScreen::OnTwitter);
-#if PPSSPP_PLATFORM(ANDROID) || PPSSPP_PLATFORM(IOS)
-	root_->Add(new Button(cr->T("Share PPSSPP"), new AnchorLayoutParams(260, 64, NONE, NONE, 10, rightYOffset + 158, false)))->OnClick.Handle(this, &CreditsScreen::OnShare);
-#endif
-	if (System_GetPropertyBool(SYSPROP_APP_GOLD)) {
-		root_->Add(new ImageView(ImageID("I_ICONGOLD"), IS_DEFAULT, new AnchorLayoutParams(100, 64, 10, 10, NONE, NONE, false)));
-	} else {
-		root_->Add(new ImageView(ImageID("I_ICON"), IS_DEFAULT, new AnchorLayoutParams(100, 64, 10, 10, NONE, NONE, false)));
-	}
 }
 
-UI::EventReturn CreditsScreen::OnSupport(UI::EventParams &e) {
+SCREEN_UI::EventReturn CreditsScreen::OnSupport(SCREEN_UI::EventParams &e) {
 
-	return UI::EVENT_DONE;
+	return SCREEN_UI::EVENT_DONE;
 }
 
-UI::EventReturn CreditsScreen::OnTwitter(UI::EventParams &e) {
+SCREEN_UI::EventReturn CreditsScreen::OnTwitter(SCREEN_UI::EventParams &e) {
 
-	return UI::EVENT_DONE;
+	return SCREEN_UI::EVENT_DONE;
 }
 
-UI::EventReturn CreditsScreen::OnPPSSPPOrg(UI::EventParams &e) {
+SCREEN_UI::EventReturn CreditsScreen::OnPPSSPPOrg(SCREEN_UI::EventParams &e) {
 
-	return UI::EVENT_DONE;
+	return SCREEN_UI::EVENT_DONE;
 }
 
-UI::EventReturn CreditsScreen::OnPrivacy(UI::EventParams &e) {
+SCREEN_UI::EventReturn CreditsScreen::OnPrivacy(SCREEN_UI::EventParams &e) {
 
-	return UI::EVENT_DONE;
+	return SCREEN_UI::EVENT_DONE;
 }
 
-UI::EventReturn CreditsScreen::OnForums(UI::EventParams &e) {
+SCREEN_UI::EventReturn CreditsScreen::OnForums(SCREEN_UI::EventParams &e) {
 
-	return UI::EVENT_DONE;
+	return SCREEN_UI::EVENT_DONE;
 }
 
-UI::EventReturn CreditsScreen::OnDiscord(UI::EventParams &e) {
+SCREEN_UI::EventReturn CreditsScreen::OnDiscord(SCREEN_UI::EventParams &e) {
 	
-	return UI::EVENT_DONE;
+	return SCREEN_UI::EVENT_DONE;
 }
 
-UI::EventReturn CreditsScreen::OnShare(UI::EventParams &e) {
+SCREEN_UI::EventReturn CreditsScreen::OnShare(SCREEN_UI::EventParams &e) {
 	auto cr = GetI18NCategory("PSPCredits");
 	System_SendMessage("sharetext", cr->T("CheckOutPPSSPP", "Check out PPSSPP, the awesome PSP emulator: https://www.ppsspp.org/"));
-	return UI::EVENT_DONE;
+	return SCREEN_UI::EVENT_DONE;
 }
 
-UI::EventReturn CreditsScreen::OnOK(UI::EventParams &e) {
+SCREEN_UI::EventReturn CreditsScreen::OnOK(SCREEN_UI::EventParams &e) {
 	TriggerFinish(DR_OK);
-	return UI::EVENT_DONE;
+	return SCREEN_UI::EVENT_DONE;
 }
 
 void CreditsScreen::update() {
