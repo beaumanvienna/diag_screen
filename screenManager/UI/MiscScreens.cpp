@@ -38,11 +38,6 @@
 #include "Common/TimeUtil.h"
 #include "Common/File/FileUtil.h"
 
-#include "UI/ControlMappingScreen.h"
-#include "UI/DisplayLayoutScreen.h"
-#include "UI/EmuScreen.h"
-#include "UI/GameSettingsScreen.h"
-#include "UI/MainScreen.h"
 #include "UI/MiscScreens.h"
 #include "UI/TextureUtil.h"
 

@@ -63,15 +63,8 @@
 #include "Common/OSVersion.h"
 
 #include "UI/PauseScreenPCSX2.h"
-#include "UI/BackgroundAudio.h"
-#include "UI/ControlMappingScreen.h"
-#include "UI/DiscordIntegration.h"
-#include "UI/EmuScreen.h"
-#include "UI/GPUDriverTestScreen.h"
 #include "UI/MiscScreens.h"
 #include "UI/OnScreenDisplay.h"
-#include "UI/RemoteISOScreen.h"
-#include "UI/TiltEventProcessor.h"
 #include "UI/TextureUtil.h"
 
 #include "../../include/emu.h"
