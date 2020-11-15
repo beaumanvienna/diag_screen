@@ -7,9 +7,9 @@
 #include "Common/Math/geom2d.h"
 #include "Common/UI/View.h"
 
-class DrawBuffer;
+class SCREEN_DrawBuffer;
 
-class OnScreenMessages {
+class SCREEN_OnScreenMessages {
 public:
 	void Show(const std::string &message, float duration_s = 1.0f, uint32_t color = 0xFFFFFF, int icon = -1, bool checkUnique = true, const char *id = nullptr);
 	void ShowOnOff(const std::string &message, bool b, float duration_s = 1.0f, uint32_t color = 0xFFFFFF, int icon = -1);
@@ -39,10 +39,10 @@ private:
 	std::mutex mutex_;
 };
 
-class OnScreenMessagesView : public SCREEN_UI::InertView {
+class SCREEN_OnScreenMessagesView : public SCREEN_UI::InertView {
 public:
-	OnScreenMessagesView(SCREEN_UI::LayoutParams *layoutParams = nullptr) : SCREEN_UI::InertView(layoutParams) {}
-	void Draw(UIContext &dc);
+	SCREEN_OnScreenMessagesView(SCREEN_UI::LayoutParams *layoutParams = nullptr) : SCREEN_UI::InertView(layoutParams) {}
+	void Draw(SCREEN_UIContext &dc);
 };
 
-extern OnScreenMessages osm;
+extern SCREEN_OnScreenMessages osm;

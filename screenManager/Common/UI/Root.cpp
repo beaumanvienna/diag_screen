@@ -109,7 +109,7 @@ bool IsFocusMovementEnabled() {
 	return focusMovementEnabled;
 }
 
-void LayoutViewHierarchy(const UIContext &dc, ViewGroup *root, bool ignoreInsets) {
+void LayoutViewHierarchy(const SCREEN_UIContext &dc, ViewGroup *root, bool ignoreInsets) {
 	if (!root) {
 		printf("Tried to layout a view hierarchy from a zero pointer root");
 		return;

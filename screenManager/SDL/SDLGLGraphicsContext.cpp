@@ -15,7 +15,7 @@
 #include "EGL/egl.h"
 #endif
 
-class GLRenderManager;
+class SCREEN_GLRenderManager;
 
 #if defined(USING_EGL)
 
@@ -299,7 +299,7 @@ void EGL_Close() {
 #endif // USING_EGL
 
 // Returns 0 on success.
-int SDLGLGraphicsContext::Init(SDL_Window *&window, int x, int y, int mode, std::string *error_message) {
+int SDLGLSCREEN_GraphicsContext::Init(SDL_Window *&window, int x, int y, int mode, std::string *error_message) {
 	struct GLVersionPair {
 		int major;
 		int minor;
@@ -413,7 +413,7 @@ int SDLGLGraphicsContext::Init(SDL_Window *&window, int x, int y, int mode, std:
 	// Finally we can do the regular initialization.
 	CheckGLExtensions();
 	draw_ = SCREEN_Draw::T3DCreateGLContext();
-	renderManager_ = (GLRenderManager *)draw_->GetNativeObject(SCREEN_Draw::NativeObject::RENDER_MANAGER);
+	renderManager_ = (SCREEN_GLRenderManager *)draw_->GetNativeObject(SCREEN_Draw::NativeObject::RENDER_MANAGER);
 	SetGPUBackend(GPUBackend::OPENGL);
 	bool success = draw_->CreatePresets();
 	_assert_(success);
@@ -436,14 +436,14 @@ int SDLGLGraphicsContext::Init(SDL_Window *&window, int x, int y, int mode, std:
 	return 0;
 }
 
-void SDLGLGraphicsContext::SwapInterval(int interval) {
+void SDLGLSCREEN_GraphicsContext::SwapInterval(int interval) {
 	renderManager_->SwapInterval(interval);
 }
 
-void SDLGLGraphicsContext::Shutdown() {
+void SDLGLSCREEN_GraphicsContext::Shutdown() {
 }
 
-void SDLGLGraphicsContext::ShutdownFromRenderThread() {
+void SDLGLSCREEN_GraphicsContext::ShutdownFromRenderThread() {
 	delete draw_;
 	draw_ = nullptr;
 

@@ -111,7 +111,7 @@ void View::Update() {
 	}
 }
 
-void View::Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
+void View::Measure(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
 	float contentW = 0.0f, contentH = 0.0f;
 	GetContentDimensionsBySpec(dc, horiz, vert, contentW, contentH);
 	MeasureBySpec(layoutParams_->width, contentW, horiz, &measuredWidth_);
@@ -120,12 +120,12 @@ void View::Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
 
 // Default values
 
-void View::GetContentDimensions(const UIContext &dc, float &w, float &h) const {
+void View::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
 	w = 10.0f;
 	h = 10.0f;
 }
 
-void View::GetContentDimensionsBySpec(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert, float &w, float &h) const {
+void View::GetContentDimensionsBySpec(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert, float &w, float &h) const {
 	GetContentDimensions(dc, w, h);
 }
 
@@ -192,12 +192,12 @@ bool View::SetFocus() {
 
 Clickable::Clickable(LayoutParams *layoutParams)
 	: View(layoutParams) {
-	// We set the colors later once we have a UIContext.
+	// We set the colors later once we have a SCREEN_UIContext.
 	bgColor_ = AddTween(new CallbackColorTween(0.1f));
 	bgColor_->Persist();
 }
 
-void Clickable::DrawBG(UIContext &dc, const Style &style) {
+void Clickable::DrawBG(SCREEN_UIContext &dc, const Style &style) {
 	if (style.background.type == DRAW_SOLID_COLOR) {
 		if (time_now_d() - bgColorLast_ >= 0.25f) {
 			bgColor_->Reset(style.background.color);
@@ -394,12 +394,12 @@ Item::Item(LayoutParams *layoutParams) : InertView(layoutParams) {
 	}
 }
 
-void Item::GetContentDimensions(const UIContext &dc, float &w, float &h) const {
+void Item::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
 	w = 0.0f;
 	h = 0.0f;
 }
 
-void ClickableItem::GetContentDimensions(const UIContext &dc, float &w, float &h) const {
+void ClickableItem::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
 	w = 0.0f;
 	h = ITEM_HEIGHT;
 }
@@ -411,7 +411,7 @@ ClickableItem::ClickableItem(LayoutParams *layoutParams) : Clickable(layoutParam
 	}
 }
 
-void ClickableItem::Draw(UIContext &dc) {
+void ClickableItem::Draw(SCREEN_UIContext &dc) {
 	Style style = dc.theme->itemStyle;
 
 	if (HasFocus()) {
@@ -429,7 +429,7 @@ void Choice::Click() {
 	SCREEN_UI::PlayUISound(SCREEN_UI::UISound::CONFIRM);
 }
 
-void Choice::GetContentDimensionsBySpec(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert, float &w, float &h) const {
+void Choice::GetContentDimensionsBySpec(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert, float &w, float &h) const {
 	if (atlasImage_.isValid()) {
 		dc.Draw()->GetAtlas()->measureImage(atlasImage_, &w, &h);
 	} else {
@@ -448,7 +448,7 @@ void Choice::GetContentDimensionsBySpec(const UIContext &dc, MeasureSpec horiz, 
 	h = std::max(h, ITEM_HEIGHT);
 }
 
-float Choice::CalculateTextScale(const UIContext &dc, float availWidth) const {
+float Choice::CalculateTextScale(const SCREEN_UIContext &dc, float availWidth) const {
 	float actualWidth, actualHeight;
 	Bounds availBounds(0, 0, availWidth, bounds_.h);
 	dc.MeasureTextRect(dc.theme->uiFont, 1.0f, 1.0f, text_.c_str(), (int)text_.size(), availBounds, &actualWidth, &actualHeight);
@@ -462,7 +462,7 @@ void Choice::HighlightChanged(bool highlighted){
 	highlighted_ = highlighted;
 }
 
-void Choice::Draw(UIContext &dc) {
+void Choice::Draw(SCREEN_UIContext &dc) {
 	if (!IsSticky()) {
 		ClickableItem::Draw(dc);
 	} else {
@@ -515,14 +515,14 @@ void Choice::Draw(UIContext &dc) {
 
 InfoItem::InfoItem(const std::string &text, const std::string &rightText, LayoutParams *layoutParams)
 	: Item(layoutParams), text_(text), rightText_(rightText) {
-	// We set the colors later once we have a UIContext.
+	// We set the colors later once we have a SCREEN_UIContext.
 	bgColor_ = AddTween(new CallbackColorTween(0.1f));
 	bgColor_->Persist();
 	fgColor_ = AddTween(new CallbackColorTween(0.1f));
 	fgColor_->Persist();
 }
 
-void InfoItem::Draw(UIContext &dc) {
+void InfoItem::Draw(SCREEN_UIContext &dc) {
 	Item::Draw(dc);
 
 	SCREEN_UI::Style style = HasFocus() ? dc.theme->itemFocusedStyle : dc.theme->infoStyle;
@@ -553,13 +553,13 @@ ItemHeader::ItemHeader(const std::string &text, LayoutParams *layoutParams)
 	layoutParams_->height = 40;
 }
 
-void ItemHeader::Draw(UIContext &dc) {
+void ItemHeader::Draw(SCREEN_UIContext &dc) {
 	dc.SetFontStyle(dc.theme->uiFontSmall);
 	dc.DrawText(text_.c_str(), bounds_.x + 4, bounds_.centerY(), dc.theme->headerStyle.fgColor, ALIGN_LEFT | ALIGN_VCENTER);
 	dc.Draw()->DrawImageStretch(dc.theme->whiteImage, bounds_.x, bounds_.y2()-2, bounds_.x2(), bounds_.y2(), dc.theme->headerStyle.fgColor);
 }
 
-void ItemHeader::GetContentDimensionsBySpec(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert, float &w, float &h) const {
+void ItemHeader::GetContentDimensionsBySpec(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert, float &w, float &h) const {
 	Bounds bounds(0, 0, layoutParams_->width, layoutParams_->height);
 	if (bounds.w < 0) {
 		// If there's no size, let's grow as big as we want.
@@ -572,7 +572,7 @@ void ItemHeader::GetContentDimensionsBySpec(const UIContext &dc, MeasureSpec hor
 	dc.MeasureTextRect(dc.theme->uiFontSmall, 1.0f, 1.0f, text_.c_str(), (int)text_.length(), bounds, &w, &h, ALIGN_LEFT | ALIGN_VCENTER);
 }
 
-void PopupHeader::Draw(UIContext &dc) {
+void PopupHeader::Draw(SCREEN_UIContext &dc) {
 	const float paddingHorizontal = 12;
 	const float availableWidth = bounds_.w - paddingHorizontal * 2;
 
@@ -618,7 +618,7 @@ EventReturn CheckBox::OnClicked(EventParams &e) {
 	return EVENT_CONTINUE;  // It's safe to keep processing events.
 }
 
-void CheckBox::Draw(UIContext &dc) {
+void CheckBox::Draw(SCREEN_UIContext &dc) {
 	Style style = dc.theme->itemStyle;
 	if (!IsEnabled())
 		style = dc.theme->itemDisabledStyle;
@@ -642,7 +642,7 @@ void CheckBox::Draw(UIContext &dc) {
 	dc.SetFontScale(1.0f, 1.0f);
 }
 
-float CheckBox::CalculateTextScale(const UIContext &dc, float availWidth) const {
+float CheckBox::CalculateTextScale(const SCREEN_UIContext &dc, float availWidth) const {
 	float actualWidth, actualHeight;
 	Bounds availBounds(0, 0, availWidth, bounds_.h);
 	dc.MeasureTextRect(dc.theme->uiFont, 1.0f, 1.0f, text_.c_str(), (int)text_.size(), availBounds, &actualWidth, &actualHeight, ALIGN_VCENTER);
@@ -652,7 +652,7 @@ float CheckBox::CalculateTextScale(const UIContext &dc, float availWidth) const 
 	return 1.0f;
 }
 
-void CheckBox::GetContentDimensions(const UIContext &dc, float &w, float &h) const {
+void CheckBox::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
 	ImageID image = Toggled() ? dc.theme->checkOn : dc.theme->checkOff;
 	float imageW, imageH;
 	dc.Draw()->MeasureImage(image, &imageW, &imageH);
@@ -691,7 +691,7 @@ bool BitCheckBox::Toggled() const {
 	return false;
 }
 
-void Button::GetContentDimensions(const UIContext &dc, float &w, float &h) const {
+void Button::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
 	if (imageID_.isValid()) {
 		dc.Draw()->GetAtlas()->measureImage(imageID_, &w, &h);
 	} else {
@@ -710,7 +710,7 @@ void Button::Click() {
 	SCREEN_UI::PlayUISound(SCREEN_UI::UISound::CONFIRM);
 }
 
-void Button::Draw(UIContext &dc) {
+void Button::Draw(SCREEN_UIContext &dc) {
 	Style style = dc.theme->buttonStyle;
 
 	if (HasFocus()) style = dc.theme->buttonFocusedStyle;
@@ -747,12 +747,12 @@ void Button::Draw(UIContext &dc) {
 	}
 }
 
-void ImageView::GetContentDimensions(const UIContext &dc, float &w, float &h) const {
+void ImageView::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
 	dc.Draw()->GetAtlas()->measureImage(atlasImage_, &w, &h);
 	// TODO: involve sizemode
 }
 
-void ImageView::Draw(UIContext &dc) {
+void ImageView::Draw(SCREEN_UIContext &dc) {
 	const AtlasImage *img = dc.Draw()->GetAtlas()->getImage(atlasImage_);
 	if (img) {
 		// TODO: involve sizemode
@@ -761,7 +761,7 @@ void ImageView::Draw(UIContext &dc) {
 	}
 }
 
-void TextView::GetContentDimensionsBySpec(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert, float &w, float &h) const {
+void TextView::GetContentDimensionsBySpec(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert, float &w, float &h) const {
 	Bounds bounds(0, 0, layoutParams_->width, layoutParams_->height);
 	if (bounds.w < 0) {
 		// If there's no size, let's grow as big as we want.
@@ -774,7 +774,7 @@ void TextView::GetContentDimensionsBySpec(const UIContext &dc, MeasureSpec horiz
 	dc.MeasureTextRect(small_ ? dc.theme->uiFontSmall : dc.theme->uiFont, 1.0f, 1.0f, text_.c_str(), (int)text_.length(), bounds, &w, &h, textAlign_);
 }
 
-void TextView::Draw(UIContext &dc) {
+void TextView::Draw(SCREEN_UIContext &dc) {
 	uint32_t textColor = hasTextColor_ ? textColor_ : dc.theme->infoStyle.fgColor;
 	if (!(textColor & 0xFF000000))
 		return;
@@ -814,7 +814,7 @@ TextEdit::TextEdit(const std::string &text, const std::string &placeholderText, 
 	caret_ = (int)text_.size();
 }
 
-void TextEdit::Draw(UIContext &dc) {
+void TextEdit::Draw(SCREEN_UIContext &dc) {
 	dc.PushScissor(bounds_);
 	dc.SetFontStyle(dc.theme->uiFont);
 	dc.FillRect(HasFocus() ? SCREEN_UI::Drawable(0x80000000) : SCREEN_UI::Drawable(0x30000000), bounds_);
@@ -851,7 +851,7 @@ void TextEdit::Draw(UIContext &dc) {
 	dc.PopScissor();
 }
 
-void TextEdit::GetContentDimensions(const UIContext &dc, float &w, float &h) const {
+void TextEdit::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
 	dc.MeasureText(dc.theme->uiFont, 1.0f, 1.0f, text_.size() ? text_.c_str() : "Wj", &w, &h, align_);
 	w += 2;
 	h += 2;
@@ -1021,11 +1021,11 @@ void TextEdit::InsertAtCaret(const char *text) {
 	}
 }
 
-void ProgressBar::GetContentDimensions(const UIContext &dc, float &w, float &h) const {
+void ProgressBar::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
 	dc.MeasureText(dc.theme->uiFont, 1.0f, 1.0f, "  100%  ", &w, &h);
 }
 
-void ProgressBar::Draw(UIContext &dc) {
+void ProgressBar::Draw(SCREEN_UIContext &dc) {
 	char temp[32];
 	sprintf(temp, "%i%%", (int)(progress_ * 100.0f));
 	dc.Draw()->DrawImageStretch(dc.theme->whiteImage, bounds_.x, bounds_.y, bounds_.x + bounds_.w * progress_, bounds_.y2(), 0xc0c0c0c0);
@@ -1033,12 +1033,12 @@ void ProgressBar::Draw(UIContext &dc) {
 	dc.DrawTextRect(temp, bounds_, 0xFFFFFFFF, ALIGN_CENTER);
 }
 
-void Spinner::GetContentDimensions(const UIContext &dc, float &w, float &h) const {
+void Spinner::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
 	w = 48;
 	h = 48;
 }
 
-void Spinner::Draw(UIContext &dc) {
+void Spinner::Draw(SCREEN_UIContext &dc) {
 	if (!(color_ & 0xFF000000))
 		return;
 	double t = time_now_d() * 1.3f;
@@ -1077,12 +1077,12 @@ void TriggerButton::Touch(const TouchInput &input) {
 	}
 }
 
-void TriggerButton::Draw(UIContext &dc) {
+void TriggerButton::Draw(SCREEN_UIContext &dc) {
 	dc.Draw()->DrawImage(imageBackground_, bounds_.centerX(), bounds_.centerY(), 1.0f, 0xFFFFFFFF, ALIGN_CENTER);
 	dc.Draw()->DrawImage(imageForeground_, bounds_.centerX(), bounds_.centerY(), 1.0f, 0xFFFFFFFF, ALIGN_CENTER);
 }
 
-void TriggerButton::GetContentDimensions(const UIContext &dc, float &w, float &h) const {
+void TriggerButton::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
 	dc.Draw()->GetAtlas()->measureImage(imageBackground_, &w, &h);
 }
 
@@ -1159,7 +1159,7 @@ void Slider::Clamp() {
 	*value_ = *value_ - fmodf(*value_, step_);
 }
 
-void Slider::Draw(UIContext &dc) {
+void Slider::Draw(SCREEN_UIContext &dc) {
 	bool focus = HasFocus();
 	uint32_t linecolor = dc.theme->popupTitle.fgColor;
 	Style knobStyle = (down_ || focus) ? dc.theme->popupTitle : dc.theme->popupStyle;
@@ -1195,7 +1195,7 @@ void Slider::Update() {
 	}
 }
 
-void Slider::GetContentDimensions(const UIContext &dc, float &w, float &h) const {
+void Slider::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
 	// TODO
 	w = 100;
 	h = 50;
@@ -1272,7 +1272,7 @@ void SliderFloat::Clamp() {
 		*value_ = maxValue_;
 }
 
-void SliderFloat::Draw(UIContext &dc) {
+void SliderFloat::Draw(SCREEN_UIContext &dc) {
 	bool focus = HasFocus();
 	uint32_t linecolor = dc.theme->popupTitle.fgColor;
 	Style knobStyle = (down_ || focus) ? dc.theme->popupTitle : dc.theme->popupStyle;
@@ -1302,7 +1302,7 @@ void SliderFloat::Update() {
 	}
 }
 
-void SliderFloat::GetContentDimensions(const UIContext &dc, float &w, float &h) const {
+void SliderFloat::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
 	// TODO
 	w = 100;
 	h = 50;

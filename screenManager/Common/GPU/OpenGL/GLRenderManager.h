@@ -184,7 +184,7 @@ private:
 	bool hasStorage_ = false;
 };
 
-class GLRenderManager;
+class SCREEN_GLRenderManager;
 
 // Similar to VulkanPushBuffer but is currently less efficient - it collects all the data in
 // RAM then does a big memcpy/buffer upload at the end of the frame. This is at least a lot
@@ -195,7 +195,7 @@ class GLRenderManager;
 // runs on the render thread.
 class GLPushBuffer {
 public:
-	friend class GLRenderManager;
+	friend class SCREEN_GLRenderManager;
 
 	struct BufInfo {
 		GLRBuffer *buffer = nullptr;
@@ -204,7 +204,7 @@ public:
 		size_t flushOffset = 0;
 	};
 
-	GLPushBuffer(GLRenderManager *render, GLuint target, size_t size);
+	GLPushBuffer(SCREEN_GLRenderManager *render, GLuint target, size_t size);
 	~GLPushBuffer();
 
 	void Reset() { offset_ = 0; }
@@ -301,7 +301,7 @@ private:
 	void NextBuffer(size_t minSize);
 	void Defragment();
 
-	GLRenderManager *render_;
+	SCREEN_GLRenderManager *render_;
 	std::vector<BufInfo> buffers_;
 	size_t buf_ = 0;
 	size_t offset_ = 0;
@@ -318,7 +318,7 @@ enum class GLRRunType {
 
 class GLDeleter {
 public:
-	void Perform(GLRenderManager *renderManager, bool skipGLCalls);
+	void Perform(SCREEN_GLRenderManager *renderManager, bool skipGLCalls);
 
 	bool IsEmpty() const {
 		return shaders.empty() && programs.empty() && buffers.empty() && textures.empty() && inputLayouts.empty() && framebuffers.empty() && pushBuffers.empty();
@@ -349,13 +349,13 @@ public:
 	int semanticsMask_ = 0;
 };
 
-// Note: The GLRenderManager is created and destroyed on the render thread, and the latter
+// Note: The SCREEN_GLRenderManager is created and destroyed on the render thread, and the latter
 // happens after the emu thread has been destroyed. Therefore, it's safe to run wild deleting stuff
 // directly in the destructor.
-class GLRenderManager {
+class SCREEN_GLRenderManager {
 public:
-	GLRenderManager();
-	~GLRenderManager();
+	SCREEN_GLRenderManager();
+	~SCREEN_GLRenderManager();
 
 	void ThreadStart(SCREEN_Draw::DrawContext *draw);
 	void ThreadEnd();

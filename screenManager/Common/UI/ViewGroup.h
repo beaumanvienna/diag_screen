@@ -31,7 +31,7 @@ public:
 	virtual void Axis(const AxisInput &input) override;
 
 	// By default, a container will layout to its own bounds.
-	virtual void Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) override = 0;
+	virtual void Measure(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) override = 0;
 	virtual void Layout() override = 0;
 	virtual void Update() override;
 	virtual void Query(float x, float y, std::vector<View *> &list) override;
@@ -39,7 +39,7 @@ public:
 	virtual void DeviceLost() override;
 	virtual void DeviceRestored(SCREEN_Draw::DrawContext *draw) override;
 
-	virtual void Draw(UIContext &dc) override;
+	virtual void Draw(SCREEN_UIContext &dc) override;
 
 	// These should be unused.
 	virtual float GetContentWidth() const { return 0.0f; }
@@ -95,7 +95,7 @@ protected:
 // It simply centers the child view.
 class FrameLayout : public ViewGroup {
 public:
-	void Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) override;
+	void Measure(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) override;
 	void Layout() override;
 };
 
@@ -126,7 +126,7 @@ public:
 class AnchorLayout : public ViewGroup {
 public:
 	AnchorLayout(LayoutParams *layoutParams = 0) : ViewGroup(layoutParams), overflow_(true) {}
-	void Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) override;
+	void Measure(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) override;
 	void Layout() override;
 	void Overflow(bool allow) {
 		overflow_ = allow;
@@ -134,7 +134,7 @@ public:
 	std::string Describe() const override { return "AnchorLayout: " + View::Describe(); }
 
 private:
-	void MeasureViews(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert);
+	void MeasureViews(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert);
 	bool overflow_;
 };
 
@@ -176,7 +176,7 @@ public:
 	LinearLayout(Orientation orientation, LayoutParams *layoutParams = 0)
 		: ViewGroup(layoutParams), orientation_(orientation), defaultMargins_(0), spacing_(10) {}
 
-	void Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) override;
+	void Measure(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) override;
 	void Layout() override;
 	void SetSpacing(float spacing) {
 		spacing_ = spacing;
@@ -209,7 +209,7 @@ class GridLayout : public ViewGroup {
 public:
 	GridLayout(GridLayoutSettings settings, LayoutParams *layoutParams = 0);
 
-	void Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) override;
+	void Measure(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) override;
 	void Layout() override;
 	std::string Describe() const override { return "GridLayout: " + View::Describe(); }
 
@@ -224,12 +224,12 @@ public:
 	ScrollView(Orientation orientation, LayoutParams *layoutParams = 0)
 		: ViewGroup(layoutParams), orientation_(orientation) {}
 
-	void Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) override;
+	void Measure(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) override;
 	void Layout() override;
 
 	bool Key(const KeyInput &input) override;
 	void Touch(const TouchInput &input) override;
-	void Draw(UIContext &dc) override;
+	void Draw(SCREEN_UIContext &dc) override;
 	std::string Describe() const override { return "ScrollView: " + View::Describe(); }
 
 	void ScrollTo(float newScrollPos);
@@ -282,7 +282,7 @@ public:
 	bool Key(const KeyInput &input) override;
 
 	void SetTopTabs(bool tabs) { topTabs_ = tabs; }
-	void Draw(UIContext &dc) override;
+	void Draw(SCREEN_UIContext &dc) override;
 
 	std::string Describe() const override { return "ChoiceStrip: " + View::Describe(); }
 
@@ -377,7 +377,7 @@ public:
 	ListView(ListAdaptor *a, std::set<int> hidden = std::set<int>(), LayoutParams *layoutParams = 0);
 
 	int GetSelected() { return adaptor_->GetSelected(); }
-	virtual void Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) override;
+	virtual void Measure(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) override;
 	virtual void SetMaxHeight(float mh) { maxHeight_ = mh; }
 	Event OnChoice;
 	std::string Describe() const override { return "ListView: " + View::Describe(); }

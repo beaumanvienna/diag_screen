@@ -81,7 +81,7 @@ struct TextureShaderInfo {
 
 
 extern std::string boot_filename;
-void UIBackgroundInit(UIContext &dc);
+void UIBackgroundInit(SCREEN_UIContext &dc);
 void UIBackgroundShutdown();
 
 inline void NoOpVoidBool(bool) {}
@@ -90,7 +90,7 @@ class UIScreenWithBackground : public UIScreen {
 public:
 	UIScreenWithBackground() : UIScreen() {}
 protected:
-	void DrawBackground(UIContext &dc) override;
+	void DrawBackground(SCREEN_UIContext &dc) override;
 	void sendMessage(const char *message, const char *value) override;
 };
 
@@ -98,7 +98,7 @@ class UIScreenWithGameBackground : public UIScreenWithBackground {
 public:
 	UIScreenWithGameBackground(const std::string &gamePath)
 		: UIScreenWithBackground(), gamePath_(gamePath) {}
-	void DrawBackground(UIContext &dc) override;
+	void DrawBackground(SCREEN_UIContext &dc) override;
 	void sendMessage(const char *message, const char *value) override;
 protected:
 	std::string gamePath_;
@@ -108,7 +108,7 @@ class UIDialogScreenWithBackground : public UIDialogScreen {
 public:
 	UIDialogScreenWithBackground() : UIDialogScreen() {printf("jc: UIDialogScreenWithBackground() : UIDialogScreen()\n");}
 protected:
-	void DrawBackground(UIContext &dc) override;
+	void DrawBackground(SCREEN_UIContext &dc) override;
 	void sendMessage(const char *message, const char *value) override;
 
 	void AddStandardBack(SCREEN_UI::ViewGroup *parent);
@@ -118,7 +118,7 @@ class UIDialogScreenWithGameBackground : public UIDialogScreenWithBackground {
 public:
 	UIDialogScreenWithGameBackground(const std::string &gamePath)
 		: UIDialogScreenWithBackground(), gamePath_(gamePath) {}
-	void DrawBackground(UIContext &dc) override;
+	void DrawBackground(SCREEN_UIContext &dc) override;
 	void sendMessage(const char *message, const char *value) override;
 protected:
 	std::string gamePath_;

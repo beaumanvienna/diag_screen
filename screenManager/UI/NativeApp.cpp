@@ -105,7 +105,7 @@ static std::vector<PendingInputBox> pendingInputBoxes;
 static SCREEN_Draw::DrawContext *g_draw;
 static SCREEN_Draw::Pipeline *colorPipeline;
 static SCREEN_Draw::Pipeline *texColorPipeline;
-static UIContext *uiContext;
+static SCREEN_UIContext *uiContext;
 
 std::thread *graphicsLoadThread;
 
@@ -230,10 +230,10 @@ static void UIThemeInit() {
 	ui_theme.popupStyle = MakeStyle(0xFFFFFFFF, 0xFF303030);
 }
 
-void RenderOverlays(UIContext *dc, void *userdata);
+void RenderOverlays(SCREEN_UIContext *dc, void *userdata);
 bool CreateGlobalPipelines();
 
-bool NativeInitGraphics(GraphicsContext *graphicsContext) {
+bool NativeInitGraphics(SCREEN_GraphicsContext *graphicsContext) {
 	
 	g_draw = graphicsContext->GetDrawContext();
 
@@ -259,7 +259,7 @@ bool NativeInitGraphics(GraphicsContext *graphicsContext) {
 
 	UIThemeInit();
 
-	uiContext = new UIContext();
+	uiContext = new SCREEN_UIContext();
 	uiContext->theme = &ui_theme;
 
 	ui_draw2d.Init(g_draw, texColorPipeline);
@@ -337,7 +337,7 @@ void NativeShutdownGraphics() {
 }
 
 
-void NativeRender(GraphicsContext *graphicsContext) {
+void NativeRender(SCREEN_GraphicsContext *graphicsContext) {
 
 	float xres = dp_xres;
 	float yres = dp_yres;

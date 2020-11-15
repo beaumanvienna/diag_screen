@@ -8,9 +8,9 @@
 
 #include "Common/TimeUtil.h"
 
-OnScreenMessages osm;
+SCREEN_OnScreenMessages osm;
 
-void OnScreenMessagesView::Draw(UIContext &dc) {
+void SCREEN_OnScreenMessagesView::Draw(SCREEN_UIContext &dc) {
 	// First, clean out old messages.
 	osm.Lock();
 	osm.Clean();
@@ -21,7 +21,7 @@ void OnScreenMessagesView::Draw(UIContext &dc) {
 
 	float y = 10.0f;
 	// Then draw them all. 
-	const std::list<OnScreenMessages::Message> &messages = osm.Messages();
+	const std::list<SCREEN_OnScreenMessages::Message> &messages = osm.Messages();
 	double now = time_now_d();
 	for (auto iter = messages.begin(); iter != messages.end(); ++iter) {
 		float alpha = (iter->endTime - now) * 4.0f;
@@ -44,7 +44,7 @@ void OnScreenMessagesView::Draw(UIContext &dc) {
 	osm.Unlock();
 }
 
-void OnScreenMessages::Clean() {
+void SCREEN_OnScreenMessages::Clean() {
 restart:
 	double now = time_now_d();
 	for (auto iter = messages_.begin(); iter != messages_.end(); iter++) {
@@ -55,7 +55,7 @@ restart:
 	}
 }
 
-void OnScreenMessages::Show(const std::string &text, float duration_s, uint32_t color, int icon, bool checkUnique, const char *id) {
+void SCREEN_OnScreenMessages::Show(const std::string &text, float duration_s, uint32_t color, int icon, bool checkUnique, const char *id) {
 	double now = time_now_d();
 	std::lock_guard<std::mutex> guard(mutex_);
 	if (checkUnique) {
@@ -80,6 +80,6 @@ void OnScreenMessages::Show(const std::string &text, float duration_s, uint32_t 
 	messages_.insert(messages_.begin(), msg);
 }
 
-void OnScreenMessages::ShowOnOff(const std::string &message, bool b, float duration_s, uint32_t color, int icon) {
+void SCREEN_OnScreenMessages::ShowOnOff(const std::string &message, bool b, float duration_s, uint32_t color, int icon) {
 	Show(message + (b ? ": on" : ": off"), duration_s, color, icon);
 }

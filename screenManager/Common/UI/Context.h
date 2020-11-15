@@ -23,7 +23,7 @@ namespace SCREEN_Draw {
 
 class Texture;
 class ManagedTexture;
-class DrawBuffer;
+class SCREEN_DrawBuffer;
 class TextDrawer;
 
 namespace SCREEN_UI {
@@ -35,7 +35,7 @@ namespace SCREEN_UI {
 	class View;
 }
 
-class DrawBuffer;
+class SCREEN_DrawBuffer;
 
 struct UITransform {
 	// TODO: Or just use a matrix?
@@ -44,12 +44,12 @@ struct UITransform {
 	float alpha;
 };
 
-class UIContext {
+class SCREEN_UIContext {
 public:
-	UIContext();
-	~UIContext();
+	SCREEN_UIContext();
+	~SCREEN_UIContext();
 
-	void Init(SCREEN_Draw::DrawContext *thin3d, SCREEN_Draw::Pipeline *uipipe, SCREEN_Draw::Pipeline *uipipenotex, DrawBuffer *uidrawbuffer, DrawBuffer *uidrawbufferTop);
+	void Init(SCREEN_Draw::DrawContext *thin3d, SCREEN_Draw::Pipeline *uipipe, SCREEN_Draw::Pipeline *uipipenotex, SCREEN_DrawBuffer *uidrawbuffer, SCREEN_DrawBuffer *uidrawbufferTop);
 
 	void BeginFrame();
 
@@ -67,8 +67,8 @@ public:
 
 	void ActivateTopScissor();
 
-	DrawBuffer *Draw() const { return uidrawbuffer_; }
-	DrawBuffer *DrawTop() const { return uidrawbufferTop_; }
+	SCREEN_DrawBuffer *Draw() const { return uidrawbuffer_; }
+	SCREEN_DrawBuffer *DrawTop() const { return uidrawbufferTop_; }
 	const SCREEN_UI::Theme *theme;
 
 	// Utility methods
@@ -111,8 +111,8 @@ private:
 	SCREEN_Draw::Pipeline *ui_pipeline_notex_ = nullptr;
 	std::unique_ptr<ManagedTexture> uitexture_;
 
-	DrawBuffer *uidrawbuffer_ = nullptr;
-	DrawBuffer *uidrawbufferTop_ = nullptr;
+	SCREEN_DrawBuffer *uidrawbuffer_ = nullptr;
+	SCREEN_DrawBuffer *uidrawbufferTop_ = nullptr;
 
 	std::vector<Bounds> scissorStack_;
 	std::vector<UITransform> transformStack_;

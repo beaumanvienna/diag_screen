@@ -11,10 +11,10 @@
 #include "Common/Input/KeyCodes.h"
 
 
-class SDLJoystick{
+class SCREEN_SDLJoystick{
 public:
-	SDLJoystick(bool init_SDL = false);
-	~SDLJoystick();
+	SCREEN_SDLJoystick(bool init_SDL = false);
+	~SCREEN_SDLJoystick();
 
 	void registerEventHandler();
 	void ProcessInput(SDL_Event &event);

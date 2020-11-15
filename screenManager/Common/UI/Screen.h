@@ -33,7 +33,7 @@ enum DialogResult {
 };
 
 class ScreenManager;
-class UIContext;
+class SCREEN_UIContext;
 
 namespace SCREEN_Draw {
 	class DrawContext;
@@ -91,7 +91,7 @@ enum {
 	LAYER_TRANSPARENT = 2,
 };
 
-typedef void(*PostRenderCallback)(UIContext *ui, void *userdata);
+typedef void(*PostRenderCallback)(SCREEN_UIContext *ui, void *userdata);
 
 class ScreenManager {
 public:
@@ -101,8 +101,8 @@ public:
 	void switchScreen(Screen *screen);
 	void update();
 
-	void setUIContext(UIContext *context) { uiContext_ = context; }
-	UIContext *getUIContext() { return uiContext_; }
+	void setUIContext(SCREEN_UIContext *context) { uiContext_ = context; }
+	SCREEN_UIContext *getUIContext() { return uiContext_; }
 
 	void setDrawContext(SCREEN_Draw::DrawContext *context) { thin3DContext_ = context; }
 	SCREEN_Draw::DrawContext *getDrawContext() { return thin3DContext_; }
@@ -146,7 +146,7 @@ private:
 	void switchToNext();
 	void processFinishDialog();
 
-	UIContext *uiContext_;
+	SCREEN_UIContext *uiContext_;
 	SCREEN_Draw::DrawContext *thin3DContext_;
 
 	PostRenderCallback postRenderCb_ = nullptr;

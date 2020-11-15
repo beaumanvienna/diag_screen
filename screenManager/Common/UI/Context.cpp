@@ -13,18 +13,18 @@
 #include "Common/Log.h"
 #include "UI/TextureUtil.h"
 
-UIContext::UIContext() {
+SCREEN_UIContext::SCREEN_UIContext() {
 	fontStyle_ = new SCREEN_UI::FontStyle();
 	bounds_ = Bounds(0, 0, dp_xres, dp_yres);
 }
 
-UIContext::~UIContext() {
+SCREEN_UIContext::~SCREEN_UIContext() {
 	sampler_->Release();
 	delete fontStyle_;
 	delete textDrawer_;
 }
 
-void UIContext::Init(SCREEN_Draw::DrawContext *thin3d, SCREEN_Draw::Pipeline *uipipe, SCREEN_Draw::Pipeline *uipipenotex, DrawBuffer *uidrawbuffer, DrawBuffer *uidrawbufferTop) {
+void SCREEN_UIContext::Init(SCREEN_Draw::DrawContext *thin3d, SCREEN_Draw::Pipeline *uipipe, SCREEN_Draw::Pipeline *uipipenotex, SCREEN_DrawBuffer *uidrawbuffer, SCREEN_DrawBuffer *uidrawbufferTop) {
 	using namespace SCREEN_Draw;
 	draw_ = thin3d;
 	sampler_ = draw_->CreateSamplerState({ TextureFilter::LINEAR, TextureFilter::LINEAR, TextureFilter::LINEAR });
@@ -35,7 +35,7 @@ void UIContext::Init(SCREEN_Draw::DrawContext *thin3d, SCREEN_Draw::Pipeline *ui
 	textDrawer_ = TextDrawer::Create(thin3d);  // May return nullptr if no implementation is available for this platform.
 }
 
-void UIContext::BeginFrame() {
+void SCREEN_UIContext::BeginFrame() {
 	if (!uitexture_) {
 		uitexture_ = CreateTextureFromFile(draw_, "ui_atlas.zim", ImageFileType::ZIM, false);
 		printf("Failed to load ui_atlas.zim.\n\nPlace it in the directory \"assets\" under your PPSSPP directory.");
@@ -45,27 +45,27 @@ void UIContext::BeginFrame() {
 	ActivateTopScissor();
 }
 
-void UIContext::Begin() {
+void SCREEN_UIContext::Begin() {
 	BeginPipeline(ui_pipeline_, sampler_);
 }
 
-void UIContext::BeginNoTex() {
+void SCREEN_UIContext::BeginNoTex() {
 	draw_->BindSamplerStates(0, 1, &sampler_);
 	UIBegin(ui_pipeline_notex_);
 }
 
-void UIContext::BeginPipeline(SCREEN_Draw::Pipeline *pipeline, SCREEN_Draw::SamplerState *samplerState) {
+void SCREEN_UIContext::BeginPipeline(SCREEN_Draw::Pipeline *pipeline, SCREEN_Draw::SamplerState *samplerState) {
 	draw_->BindSamplerStates(0, 1, &samplerState);
 	RebindTexture();
 	UIBegin(pipeline);
 }
 
-void UIContext::RebindTexture() const {
+void SCREEN_UIContext::RebindTexture() const {
 	if (uitexture_)
 		draw_->BindTexture(0, uitexture_->GetTexture());
 }
 
-void UIContext::Flush() {
+void SCREEN_UIContext::Flush() {
 	if (uidrawbuffer_) {
 		uidrawbuffer_->Flush();
 	}
@@ -74,13 +74,13 @@ void UIContext::Flush() {
 	}
 }
 
-void UIContext::SetCurZ(float curZ) {
+void SCREEN_UIContext::SetCurZ(float curZ) {
 	ui_draw2d.SetCurZ(curZ);
 	ui_draw2d_front.SetCurZ(curZ);
 }
 
 // TODO: Support transformed bounds using stencil instead.
-void UIContext::PushScissor(const Bounds &bounds) {
+void SCREEN_UIContext::PushScissor(const Bounds &bounds) {
 	Flush();
 	Bounds clipped = TransformBounds(bounds);
 	if (scissorStack_.size())
@@ -91,20 +91,20 @@ void UIContext::PushScissor(const Bounds &bounds) {
 	ActivateTopScissor();
 }
 
-void UIContext::PopScissor() {
+void SCREEN_UIContext::PopScissor() {
 	Flush();
 	scissorStack_.pop_back();
 	ActivateTopScissor();
 }
 
-Bounds UIContext::GetScissorBounds() {
+Bounds SCREEN_UIContext::GetScissorBounds() {
 	if (!scissorStack_.empty())
 		return scissorStack_.back();
 	else
 		return bounds_;
 }
 
-Bounds UIContext::GetLayoutBounds() const {
+Bounds SCREEN_UIContext::GetLayoutBounds() const {
 	Bounds bounds = GetBounds();
 
 	float left = System_GetPropertyFloat(SYSPROP_DISPLAY_SAFE_INSET_LEFT);
@@ -123,7 +123,7 @@ Bounds UIContext::GetLayoutBounds() const {
 	return bounds;
 }
 
-void UIContext::ActivateTopScissor() {
+void SCREEN_UIContext::ActivateTopScissor() {
 	Bounds bounds;
 	if (scissorStack_.size()) {
 		float scale_x = pixel_in_dps_x;
@@ -140,12 +140,12 @@ void UIContext::ActivateTopScissor() {
 	}
 }
 
-void UIContext::SetFontScale(float scaleX, float scaleY) {
+void SCREEN_UIContext::SetFontScale(float scaleX, float scaleY) {
 	fontScaleX_ = scaleX;
 	fontScaleY_ = scaleY;
 }
 
-void UIContext::SetFontStyle(const SCREEN_UI::FontStyle &fontStyle) {
+void SCREEN_UIContext::SetFontStyle(const SCREEN_UI::FontStyle &fontStyle) {
 	*fontStyle_ = fontStyle;
 	if (textDrawer_) {
 		textDrawer_->SetFontScale(fontScaleX_, fontScaleY_);
@@ -153,11 +153,11 @@ void UIContext::SetFontStyle(const SCREEN_UI::FontStyle &fontStyle) {
 	}
 }
 
-void UIContext::MeasureText(const SCREEN_UI::FontStyle &style, float scaleX, float scaleY, const char *str, float *x, float *y, int align) const {
+void SCREEN_UIContext::MeasureText(const SCREEN_UI::FontStyle &style, float scaleX, float scaleY, const char *str, float *x, float *y, int align) const {
 	MeasureTextCount(style, scaleX, scaleY, str, (int)strlen(str), x, y, align);
 }
 
-void UIContext::MeasureTextCount(const SCREEN_UI::FontStyle &style, float scaleX, float scaleY, const char *str, int count, float *x, float *y, int align) const {
+void SCREEN_UIContext::MeasureTextCount(const SCREEN_UI::FontStyle &style, float scaleX, float scaleY, const char *str, int count, float *x, float *y, int align) const {
 	if (!textDrawer_ || (align & FLAG_DYNAMIC_ASCII)) {
 		float sizeFactor = (float)style.sizePts / 24.0f;
 		Draw()->SetFontScale(scaleX * sizeFactor, scaleY * sizeFactor);
@@ -170,7 +170,7 @@ void UIContext::MeasureTextCount(const SCREEN_UI::FontStyle &style, float scaleX
 	}
 }
 
-void UIContext::MeasureTextRect(const SCREEN_UI::FontStyle &style, float scaleX, float scaleY, const char *str, int count, const Bounds &bounds, float *x, float *y, int align) const {
+void SCREEN_UIContext::MeasureTextRect(const SCREEN_UI::FontStyle &style, float scaleX, float scaleY, const char *str, int count, const Bounds &bounds, float *x, float *y, int align) const {
 	if (!textDrawer_ || (align & FLAG_DYNAMIC_ASCII)) {
 		float sizeFactor = (float)style.sizePts / 24.0f;
 		Draw()->SetFontScale(scaleX * sizeFactor, scaleY * sizeFactor);
@@ -183,7 +183,7 @@ void UIContext::MeasureTextRect(const SCREEN_UI::FontStyle &style, float scaleX,
 	}
 }
 
-void UIContext::DrawText(const char *str, float x, float y, uint32_t color, int align) {
+void SCREEN_UIContext::DrawText(const char *str, float x, float y, uint32_t color, int align) {
 	if (!textDrawer_ || (align & FLAG_DYNAMIC_ASCII)) {
 		float sizeFactor = (float)fontStyle_->sizePts / 24.0f;
 		Draw()->SetFontScale(fontScaleX_ * sizeFactor, fontScaleY_ * sizeFactor);
@@ -195,13 +195,13 @@ void UIContext::DrawText(const char *str, float x, float y, uint32_t color, int 
 	}
 }
 
-void UIContext::DrawTextShadow(const char *str, float x, float y, uint32_t color, int align) {
+void SCREEN_UIContext::DrawTextShadow(const char *str, float x, float y, uint32_t color, int align) {
 	uint32_t alpha = (color >> 1) & 0xFF000000;
 	DrawText(str, x + 2, y + 2, alpha, align);
 	DrawText(str, x, y, color, align);
 }
 
-void UIContext::DrawTextRect(const char *str, const Bounds &bounds, uint32_t color, int align) {
+void SCREEN_UIContext::DrawTextRect(const char *str, const Bounds &bounds, uint32_t color, int align) {
 	if (!textDrawer_ || (align & FLAG_DYNAMIC_ASCII)) {
 		float sizeFactor = (float)fontStyle_->sizePts / 24.0f;
 		Draw()->SetFontScale(fontScaleX_ * sizeFactor, fontScaleY_ * sizeFactor);
@@ -216,7 +216,7 @@ void UIContext::DrawTextRect(const char *str, const Bounds &bounds, uint32_t col
 	}
 }
 
-void UIContext::FillRect(const SCREEN_UI::Drawable &drawable, const Bounds &bounds) {
+void SCREEN_UIContext::FillRect(const SCREEN_UI::Drawable &drawable, const Bounds &bounds) {
 	// Only draw if alpha is non-zero.
 	if ((drawable.color & 0xFF000000) == 0)
 		return;
@@ -236,7 +236,7 @@ void UIContext::FillRect(const SCREEN_UI::Drawable &drawable, const Bounds &boun
 	} 
 }
 
-void UIContext::PushTransform(const UITransform &transform) {
+void SCREEN_UIContext::PushTransform(const UITransform &transform) {
 	Flush();
 
 	using namespace SCREEN_Lin;
@@ -255,7 +255,7 @@ void UIContext::PushTransform(const UITransform &transform) {
 	transformStack_.push_back(transform);
 }
 
-void UIContext::PopTransform() {
+void SCREEN_UIContext::PopTransform() {
 	Flush();
 
 	transformStack_.pop_back();
@@ -264,7 +264,7 @@ void UIContext::PopTransform() {
 	Draw()->PopAlpha();
 }
 
-Bounds UIContext::TransformBounds(const Bounds &bounds) {
+Bounds SCREEN_UIContext::TransformBounds(const Bounds &bounds) {
 	if (!transformStack_.empty()) {
 		const UITransform t = transformStack_.back();
 		Bounds translated = bounds.Offset(t.translate.x, t.translate.y);

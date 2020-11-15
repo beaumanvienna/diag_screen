@@ -14,7 +14,7 @@ struct TouchInput;
 struct KeyInput;
 struct AxisInput;
 
-class GraphicsContext;
+class SCREEN_GraphicsContext;
 
 // The first function to get called, just write strings to the two pointers.
 // This might get called multiple times in some implementations, you must be able to handle that.
@@ -42,7 +42,7 @@ void NativeInit(int argc, const char *argv[], const char *savegame_dir, const ch
 
 // Runs after NativeInit() at some point. May (and probably should) call OpenGL.
 // Should not initialize anything screen-size-dependent - do that in NativeResized.
-bool NativeInitGraphics(GraphicsContext *graphicsContext);
+bool NativeInitGraphics(SCREEN_GraphicsContext *graphicsContext);
 
 // If you want to change DPI stuff (such as modifying dp_xres and dp_yres), this is the
 // place to do it. You should only read g_dpi_scale and pixel_xres and pixel_yres in this,
@@ -69,7 +69,7 @@ bool NativeAxis(const AxisInput &axis);
 
 // Called when it's time to render. If the device can keep up, this
 // will also be called sixty times per second. Main thread.
-void NativeRender(GraphicsContext *graphicsContext);
+void NativeRender(SCREEN_GraphicsContext *graphicsContext);
 
 // This should render num_samples 44khz stereo samples.
 // Try not to make too many assumptions on the granularity

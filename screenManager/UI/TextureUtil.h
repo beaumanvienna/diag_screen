@@ -47,8 +47,8 @@ public:
 	GameIconView(std::string gamePath, float scale, SCREEN_UI::LayoutParams *layoutParams = 0)
 		: InertView(layoutParams), gamePath_(gamePath), scale_(scale) {}
 
-	void GetContentDimensions(const UIContext &dc, float &w, float &h) const override;
-	void Draw(UIContext &dc) override;
+	void GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const override;
+	void Draw(SCREEN_UIContext &dc) override;
 
 private:
 	std::string gamePath_;

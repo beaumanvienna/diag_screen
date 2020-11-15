@@ -10,13 +10,13 @@
 
 using namespace std;
 
-static int SDLJoystickEventHandlerWrapper(void* userdata, SDL_Event* event)
+static int SCREEN_SDLJoystickEventHandlerWrapper(void* userdata, SDL_Event* event)
 {
-	static_cast<SDLJoystick *>(userdata)->ProcessInput(*event);
+	static_cast<SCREEN_SDLJoystick *>(userdata)->ProcessInput(*event);
 	return 0;
 }
 
-SDLJoystick::SDLJoystick(bool init_SDL ) : registeredAsEventHandler(false) {
+SCREEN_SDLJoystick::SCREEN_SDLJoystick(bool init_SDL ) : registeredAsEventHandler(false) {
 	SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
     #warning "JC: modified"
 	/*if (init_SDL) 
@@ -44,7 +44,7 @@ SDLJoystick::SDLJoystick(bool init_SDL ) : registeredAsEventHandler(false) {
 	setUpControllers();
 }
 
-void SDLJoystick::setUpControllers() {
+void SCREEN_SDLJoystick::setUpControllers() {
 	/*int numjoys = SDL_NumJoysticks();
 	for (int i = 0; i < numjoys; i++) {
 		setUpController(i);
@@ -63,7 +63,7 @@ void SDLJoystick::setUpControllers() {
     }
 }
 
-void SDLJoystick::setUpController(int deviceIndex) {
+void SCREEN_SDLJoystick::setUpController(int deviceIndex) {
 	/*if (!SDL_IsGameController(deviceIndex)) {
 		cout << "Control pad device " << deviceIndex << " not supported by SDL game controller database, attempting to create default mapping..." << endl;
 		int cbGUID = 33;
@@ -105,21 +105,21 @@ void SDLJoystick::setUpController(int deviceIndex) {
 	}
 }
 
-SDLJoystick::~SDLJoystick() {
+SCREEN_SDLJoystick::~SCREEN_SDLJoystick() {
 	if (registeredAsEventHandler) {
-		SDL_DelEventWatch(SDLJoystickEventHandlerWrapper, this);
+		SDL_DelEventWatch(SCREEN_SDLJoystickEventHandlerWrapper, this);
 	}
 	/*for (auto & controller : controllers) {
 		SDL_GameControllerClose(controller);
 	}*/
 }
 
-void SDLJoystick::registerEventHandler() {
-	SDL_AddEventWatch(SDLJoystickEventHandlerWrapper, this);
+void SCREEN_SDLJoystick::registerEventHandler() {
+	SDL_AddEventWatch(SCREEN_SDLJoystickEventHandlerWrapper, this);
 	registeredAsEventHandler = true;
 }
 
-keycode_t SDLJoystick::getKeycodeForButton(SDL_GameControllerButton button) {
+keycode_t SCREEN_SDLJoystick::getKeycodeForButton(SDL_GameControllerButton button) {
 	switch (button) {
 	case SDL_CONTROLLER_BUTTON_DPAD_UP:
 		return NKCODE_DPAD_UP;
@@ -157,7 +157,7 @@ keycode_t SDLJoystick::getKeycodeForButton(SDL_GameControllerButton button) {
 	}
 }
 
-void SDLJoystick::ProcessInput(SDL_Event &event){
+void SCREEN_SDLJoystick::ProcessInput(SDL_Event &event){
 	switch (event.type) {
 	case SDL_CONTROLLERBUTTONDOWN:
 		if (event.cbutton.state == SDL_PRESSED) {
@@ -215,7 +215,7 @@ void SDLJoystick::ProcessInput(SDL_Event &event){
 	}
 }
 
-int SDLJoystick::getDeviceIndex(int instanceId) {
+int SCREEN_SDLJoystick::getDeviceIndex(int instanceId) {
 	auto it = controllerDeviceMap.find(instanceId);
 	if (it == controllerDeviceMap.end()) {
 			// could not find device

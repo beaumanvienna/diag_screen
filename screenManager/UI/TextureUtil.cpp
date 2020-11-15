@@ -205,10 +205,10 @@ std::unique_ptr<ManagedTexture> CreateTextureFromFileData(SCREEN_Draw::DrawConte
 	}
 }
 
-void GameIconView::GetContentDimensions(const UIContext &dc, float &w, float &h) const {
+void GameIconView::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h) const {
 	w = textureWidth_;
 	h = textureHeight_;
 }
 
-void GameIconView::Draw(UIContext &dc) {
+void GameIconView::Draw(SCREEN_UIContext &dc) {
 }

@@ -40,7 +40,7 @@ public:
 
 protected:
 	virtual void CreateViews() = 0;
-	virtual void DrawBackground(UIContext &dc) {}
+	virtual void DrawBackground(SCREEN_UIContext &dc) {}
 
 	virtual void RecreateViews() override { recreateViews_ = true; }
 
@@ -258,7 +258,7 @@ public:
 		UpdateText();
 	}
 
-	virtual void Draw(UIContext &dc) override;
+	virtual void Draw(SCREEN_UIContext &dc) override;
 	virtual void Update() override;
 
 	void HideChoice(int c) {
@@ -327,7 +327,7 @@ public:
 	PopupSliderChoice(int *value, int minValue, int maxValue, const std::string &text, ScreenManager *screenManager, const std::string &units = "", LayoutParams *layoutParams = 0);
 	PopupSliderChoice(int *value, int minValue, int maxValue, const std::string &text, int step, ScreenManager *screenManager, const std::string &units = "", LayoutParams *layoutParams = 0);
 
-	virtual void Draw(UIContext &dc) override;
+	virtual void Draw(SCREEN_UIContext &dc) override;
 
 	void SetFormat(const char *fmt) {
 		fmt_ = fmt;
@@ -362,7 +362,7 @@ public:
 	PopupSliderChoiceFloat(float *value, float minValue, float maxValue, const std::string &text, ScreenManager *screenManager, const std::string &units = "", LayoutParams *layoutParams = 0);
 	PopupSliderChoiceFloat(float *value, float minValue, float maxValue, const std::string &text, float step, ScreenManager *screenManager, const std::string &units = "", LayoutParams *layoutParams = 0);
 
-	virtual void Draw(UIContext &dc) override;
+	virtual void Draw(SCREEN_UIContext &dc) override;
 
 	void SetFormat(const char *fmt) {
 		fmt_ = fmt;
@@ -391,7 +391,7 @@ class PopupTextInputChoice: public Choice {
 public:
 	PopupTextInputChoice(std::string *value, const std::string &title, const std::string &placeholder, int maxLen, ScreenManager *screenManager, LayoutParams *layoutParams = 0);
 
-	virtual void Draw(UIContext &dc) override;
+	virtual void Draw(SCREEN_UIContext &dc) override;
 
 	Event OnChange;
 
@@ -418,7 +418,7 @@ public:
 		: Choice(text, layoutParams), sValue_(value), translateCallback_(translateCallback) {
 	}
 
-	virtual void Draw(UIContext &dc) override;
+	virtual void Draw(SCREEN_UIContext &dc) override;
 
 private:
 	int *iValue_ = nullptr;

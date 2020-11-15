@@ -38,7 +38,7 @@ void GLDeleter::Take(GLDeleter &other) {
 }
 
 // Runs on the GPU thread.
-void GLDeleter::Perform(GLRenderManager *renderManager, bool skipGLCalls) {
+void GLDeleter::Perform(SCREEN_GLRenderManager *renderManager, bool skipGLCalls) {
 	for (auto pushBuffer : pushBuffers) {
 		renderManager->UnregisterPushBuffer(pushBuffer);
 		if (skipGLCalls) {
@@ -90,13 +90,13 @@ void GLDeleter::Perform(GLRenderManager *renderManager, bool skipGLCalls) {
 	framebuffers.clear();
 }
 
-GLRenderManager::GLRenderManager() {
+SCREEN_GLRenderManager::SCREEN_GLRenderManager() {
 	for (int i = 0; i < MAX_INFLIGHT_FRAMES; i++) {
 
 	}
 }
 
-GLRenderManager::~GLRenderManager() {
+SCREEN_GLRenderManager::~SCREEN_GLRenderManager() {
 	for (int i = 0; i < MAX_INFLIGHT_FRAMES; i++) {
 		_assert_(frameData_[i].deleter.IsEmpty());
 		_assert_(frameData_[i].deleter_prev.IsEmpty());
@@ -106,7 +106,7 @@ GLRenderManager::~GLRenderManager() {
 	_assert_(deleter_.IsEmpty());
 }
 
-void GLRenderManager::ThreadStart(SCREEN_Draw::DrawContext *draw) {
+void SCREEN_GLRenderManager::ThreadStart(SCREEN_Draw::DrawContext *draw) {
 	queueRunner_.CreateDeviceObjects();
 	threadFrame_ = threadInitFrame_;
 	renderThreadId = std::this_thread::get_id();
@@ -151,7 +151,7 @@ void GLRenderManager::ThreadStart(SCREEN_Draw::DrawContext *draw) {
 	}
 }
 
-void GLRenderManager::ThreadEnd() {
+void SCREEN_GLRenderManager::ThreadEnd() {
 	printf("ThreadEnd");
 
 	// Wait for any shutdown to complete in StopThread().
@@ -179,7 +179,7 @@ void GLRenderManager::ThreadEnd() {
 	initSteps_.clear();
 }
 
-bool GLRenderManager::ThreadFrame() {
+bool SCREEN_GLRenderManager::ThreadFrame() {
 	std::unique_lock<std::mutex> lock(mutex_);
 	if (!run_)
 		return false;
@@ -224,7 +224,7 @@ bool GLRenderManager::ThreadFrame() {
 	return true;
 }
 
-void GLRenderManager::StopThread() {
+void SCREEN_GLRenderManager::StopThread() {
 	// Since we don't control the thread directly, this will only pause the thread.
 
 	if (run_) {
@@ -276,7 +276,7 @@ void GLRenderManager::StopThread() {
 	}
 }
 
-void GLRenderManager::BindFramebufferAsRenderTarget(GLRFramebuffer *fb, GLRRenderPassAction color, GLRRenderPassAction depth, GLRRenderPassAction stencil, uint32_t clearColor, float clearDepth, uint8_t clearStencil, const char *tag) {
+void SCREEN_GLRenderManager::BindFramebufferAsRenderTarget(GLRFramebuffer *fb, GLRRenderPassAction color, GLRRenderPassAction depth, GLRRenderPassAction stencil, uint32_t clearColor, float clearDepth, uint8_t clearStencil, const char *tag) {
 	_assert_(insideFrame_);
 #ifdef _DEBUG
 	curProgram_ = nullptr;
@@ -336,7 +336,7 @@ void GLRenderManager::BindFramebufferAsRenderTarget(GLRFramebuffer *fb, GLRRende
 	}
 }
 
-void GLRenderManager::BindFramebufferAsTexture(GLRFramebuffer *fb, int binding, int aspectBit, int attachment) {
+void SCREEN_GLRenderManager::BindFramebufferAsTexture(GLRFramebuffer *fb, int binding, int aspectBit, int attachment) {
 	_dbg_assert_(curRenderStep_ && curRenderStep_->stepType == GLRStepType::RENDER);
 	GLRRenderData data{ GLRRenderCommand::BIND_FB_TEXTURE };
 	data.bind_fb_texture.slot = binding;
@@ -346,7 +346,7 @@ void GLRenderManager::BindFramebufferAsTexture(GLRFramebuffer *fb, int binding, 
 	curRenderStep_->dependencies.insert(fb);
 }
 
-void GLRenderManager::CopyFramebuffer(GLRFramebuffer *src, GLRect2D srcRect, GLRFramebuffer *dst, GLOffset2D dstPos, int aspectMask, const char *tag) {
+void SCREEN_GLRenderManager::CopyFramebuffer(GLRFramebuffer *src, GLRect2D srcRect, GLRFramebuffer *dst, GLOffset2D dstPos, int aspectMask, const char *tag) {
 	GLRStep *step = new GLRStep{ GLRStepType::COPY };
 	step->copy.srcRect = srcRect;
 	step->copy.dstPos = dstPos;
@@ -361,7 +361,7 @@ void GLRenderManager::CopyFramebuffer(GLRFramebuffer *src, GLRect2D srcRect, GLR
 	steps_.push_back(step);
 }
 
-void GLRenderManager::BlitFramebuffer(GLRFramebuffer *src, GLRect2D srcRect, GLRFramebuffer *dst, GLRect2D dstRect, int aspectMask, bool filter, const char *tag) {
+void SCREEN_GLRenderManager::BlitFramebuffer(GLRFramebuffer *src, GLRect2D srcRect, GLRFramebuffer *dst, GLRect2D dstRect, int aspectMask, bool filter, const char *tag) {
 	GLRStep *step = new GLRStep{ GLRStepType::BLIT };
 	step->blit.srcRect = srcRect;
 	step->blit.dstRect = dstRect;
@@ -377,7 +377,7 @@ void GLRenderManager::BlitFramebuffer(GLRFramebuffer *src, GLRect2D srcRect, GLR
 	steps_.push_back(step);
 }
 
-bool GLRenderManager::CopyFramebufferToMemorySync(GLRFramebuffer *src, int aspectBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
+bool SCREEN_GLRenderManager::CopyFramebufferToMemorySync(GLRFramebuffer *src, int aspectBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
 	_assert_(pixels);
 
 	GLRStep *step = new GLRStep{ GLRStepType::READBACK };
@@ -408,7 +408,7 @@ bool GLRenderManager::CopyFramebufferToMemorySync(GLRFramebuffer *src, int aspec
 	return true;
 }
 
-void GLRenderManager::CopyImageToMemorySync(GLRTexture *texture, int mipLevel, int x, int y, int w, int h, SCREEN_Draw::DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
+void SCREEN_GLRenderManager::CopyImageToMemorySync(GLRTexture *texture, int mipLevel, int x, int y, int w, int h, SCREEN_Draw::DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
 	_assert_(texture);
 	_assert_(pixels);
 	GLRStep *step = new GLRStep{ GLRStepType::READBACK_IMAGE };
@@ -424,7 +424,7 @@ void GLRenderManager::CopyImageToMemorySync(GLRTexture *texture, int mipLevel, i
 	queueRunner_.CopyReadbackBuffer(w, h, SCREEN_Draw::DataFormat::R8G8B8A8_UNORM, destFormat, pixelStride, pixels);
 }
 
-void GLRenderManager::BeginFrame() {
+void SCREEN_GLRenderManager::BeginFrame() {
 	printf("BeginFrame");
 
 #ifdef _DEBUG
@@ -462,7 +462,7 @@ void GLRenderManager::BeginFrame() {
 	renderStepOffset_ = 0;
 }
 
-void GLRenderManager::Finish() {
+void SCREEN_GLRenderManager::Finish() {
 	curRenderStep_ = nullptr;
 	int curFrame = GetCurFrame();
 	FrameData &frameData = frameData_[curFrame];
@@ -488,7 +488,7 @@ void GLRenderManager::Finish() {
 	insideFrame_ = false;
 }
 
-void GLRenderManager::BeginSubmitFrame(int frame) {
+void SCREEN_GLRenderManager::BeginSubmitFrame(int frame) {
 	FrameData &frameData = frameData_[frame];
 	if (!frameData.hasBegun) {
 		frameData.hasBegun = true;
@@ -496,7 +496,7 @@ void GLRenderManager::BeginSubmitFrame(int frame) {
 }
 
 // Render thread
-void GLRenderManager::Submit(int frame, bool triggerFence) {
+void SCREEN_GLRenderManager::Submit(int frame, bool triggerFence) {
 	FrameData &frameData = frameData_[frame];
 
 	// In GL, submission happens automatically in Run().
@@ -515,7 +515,7 @@ void GLRenderManager::Submit(int frame, bool triggerFence) {
 }
 
 // Render thread
-void GLRenderManager::EndSubmitFrame(int frame) {
+void SCREEN_GLRenderManager::EndSubmitFrame(int frame) {
 	FrameData &frameData = frameData_[frame];
 	frameData.hasBegun = false;
 
@@ -537,7 +537,7 @@ void GLRenderManager::EndSubmitFrame(int frame) {
 }
 
 // Render thread
-void GLRenderManager::Run(int frame) {
+void SCREEN_GLRenderManager::Run(int frame) {
 	BeginSubmitFrame(frame);
 
 	FrameData &frameData = frameData_[frame];
@@ -581,7 +581,7 @@ void GLRenderManager::Run(int frame) {
 	printf("PULL: Finished running frame %d", frame);
 }
 
-void GLRenderManager::FlushSync() {
+void SCREEN_GLRenderManager::FlushSync() {
 	// TODO: Reset curRenderStep_?
 	renderStepOffset_ += (int)steps_.size();
 
@@ -612,7 +612,7 @@ void GLRenderManager::FlushSync() {
 }
 
 // Render thread
-void GLRenderManager::EndSyncFrame(int frame) {
+void SCREEN_GLRenderManager::EndSyncFrame(int frame) {
 	FrameData &frameData = frameData_[frame];
 	Submit(frame, false);
 
@@ -632,7 +632,7 @@ void GLRenderManager::EndSyncFrame(int frame) {
 	}
 }
 
-void GLRenderManager::Wipe() {
+void SCREEN_GLRenderManager::Wipe() {
 	initSteps_.clear();
 	for (auto step : steps_) {
 		delete step;
@@ -640,7 +640,7 @@ void GLRenderManager::Wipe() {
 	steps_.clear();
 }
 
-void GLRenderManager::WaitUntilQueueIdle() {
+void SCREEN_GLRenderManager::WaitUntilQueueIdle() {
 	// Just wait for all frames to be ready.
 	for (int i = 0; i < MAX_INFLIGHT_FRAMES; i++) {
 		FrameData &frameData = frameData_[i];
@@ -654,7 +654,7 @@ void GLRenderManager::WaitUntilQueueIdle() {
 	}
 }
 
-GLPushBuffer::GLPushBuffer(GLRenderManager *render, GLuint target, size_t size) : render_(render), target_(target), size_(size) {
+GLPushBuffer::GLPushBuffer(SCREEN_GLRenderManager *render, GLuint target, size_t size) : render_(render), target_(target), size_(size) {
 	bool res = AddBuffer();
 	_assert_(res);
 }

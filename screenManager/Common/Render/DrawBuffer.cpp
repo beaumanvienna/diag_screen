@@ -19,18 +19,18 @@ enum {
 	MAX_VERTS = 65536,
 };
 
-DrawBuffer::DrawBuffer() : count_(0), atlas(0) {
+SCREEN_DrawBuffer::SCREEN_DrawBuffer() : count_(0), atlas(0) {
 	verts_ = new Vertex[MAX_VERTS];
 	fontscalex = 1.0f;
 	fontscaley = 1.0f;
 	inited_ = false;
 }
 
-DrawBuffer::~DrawBuffer() {
+SCREEN_DrawBuffer::~SCREEN_DrawBuffer() {
 	delete [] verts_;
 }
 
-void DrawBuffer::Init(SCREEN_Draw::DrawContext *t3d, SCREEN_Draw::Pipeline *pipeline) {
+void SCREEN_DrawBuffer::Init(SCREEN_Draw::DrawContext *t3d, SCREEN_Draw::Pipeline *pipeline) {
 	using namespace SCREEN_Draw;
 
 	if (inited_)
@@ -46,7 +46,7 @@ void DrawBuffer::Init(SCREEN_Draw::DrawContext *t3d, SCREEN_Draw::Pipeline *pipe
 	}
 }
 
-SCREEN_Draw::InputLayout *DrawBuffer::CreateInputLayout(SCREEN_Draw::DrawContext *t3d) {
+SCREEN_Draw::InputLayout *SCREEN_DrawBuffer::CreateInputLayout(SCREEN_Draw::DrawContext *t3d) {
 	using namespace SCREEN_Draw;
 	InputLayoutDesc desc = {
 		{
@@ -62,7 +62,7 @@ SCREEN_Draw::InputLayout *DrawBuffer::CreateInputLayout(SCREEN_Draw::DrawContext
 	return t3d->CreateInputLayout(desc);
 }
 
-void DrawBuffer::Shutdown() {
+void SCREEN_DrawBuffer::Shutdown() {
 	if (vbuf_) {
 		vbuf_->Release();
 		vbuf_ = nullptr;
@@ -75,17 +75,17 @@ void DrawBuffer::Shutdown() {
 	count_ = 0;
 }
 
-void DrawBuffer::Begin(SCREEN_Draw::Pipeline *program) {
+void SCREEN_DrawBuffer::Begin(SCREEN_Draw::Pipeline *program) {
 	pipeline_ = program;
 	count_ = 0;
 }
 
-void DrawBuffer::Flush(bool set_blend_state) {
+void SCREEN_DrawBuffer::Flush(bool set_blend_state) {
 	using namespace SCREEN_Draw;
 	if (count_ == 0)
 		return;
 	if (!pipeline_) {
-		printf("DrawBuffer: No program set, skipping flush!");
+		printf("SCREEN_DrawBuffer: No program set, skipping flush!");
 		count_ = 0;
 		return;
 	}
@@ -105,8 +105,8 @@ void DrawBuffer::Flush(bool set_blend_state) {
 	count_ = 0;
 }
 
-void DrawBuffer::V(float x, float y, float z, uint32_t color, float u, float v) {
-	_assert_msg_(count_ < MAX_VERTS, "Overflowed the DrawBuffer");
+void SCREEN_DrawBuffer::V(float x, float y, float z, uint32_t color, float u, float v) {
+	_assert_msg_(count_ < MAX_VERTS, "Overflowed the SCREEN_DrawBuffer");
 
 	Vertex *vert = &verts_[count_++];
 	vert->x = x;
@@ -117,24 +117,24 @@ void DrawBuffer::V(float x, float y, float z, uint32_t color, float u, float v) 
 	vert->v = v;
 }
 
-void DrawBuffer::Rect(float x, float y, float w, float h, uint32_t color, int align) {
+void SCREEN_DrawBuffer::Rect(float x, float y, float w, float h, uint32_t color, int align) {
 	DoAlign(align, &x, &y, &w, &h);
 	RectVGradient(x, y, w, h, color, color);
 }
 
-void DrawBuffer::hLine(float x1, float y, float x2, uint32_t color) {
+void SCREEN_DrawBuffer::hLine(float x1, float y, float x2, uint32_t color) {
 	Rect(x1, y, x2 - x1, pixel_in_dps_y, color);
 }
 
-void DrawBuffer::vLine(float x, float y1, float y2, uint32_t color) {
+void SCREEN_DrawBuffer::vLine(float x, float y1, float y2, uint32_t color) {
 	Rect(x, y1, pixel_in_dps_x, y2 - y1, color);
 }
 
-void DrawBuffer::vLineAlpha50(float x, float y1, float y2, uint32_t color) {
+void SCREEN_DrawBuffer::vLineAlpha50(float x, float y1, float y2, uint32_t color) {
 	Rect(x, y1, pixel_in_dps_x, y2 - y1, (color | 0xFF000000) & 0x7F000000);
 }
 
-void DrawBuffer::RectVGradient(float x, float y, float w, float h, uint32_t colorTop, uint32_t colorBottom) {
+void SCREEN_DrawBuffer::RectVGradient(float x, float y, float w, float h, uint32_t colorTop, uint32_t colorBottom) {
 	V(x,		 y,     0, colorTop,    0, 0);
 	V(x + w, y,		 0, colorTop,    1, 0);
 	V(x + w, y + h, 0, colorBottom, 1, 1);
@@ -143,7 +143,7 @@ void DrawBuffer::RectVGradient(float x, float y, float w, float h, uint32_t colo
 	V(x,		 y + h, 0, colorBottom, 0, 1);
 }
 
-void DrawBuffer::RectOutline(float x, float y, float w, float h, uint32_t color, int align) {
+void SCREEN_DrawBuffer::RectOutline(float x, float y, float w, float h, uint32_t color, int align) {
 	hLine(x, y, x + w + pixel_in_dps_x, color);
 	hLine(x, y + h, x + w + pixel_in_dps_x, color);
 
@@ -151,7 +151,7 @@ void DrawBuffer::RectOutline(float x, float y, float w, float h, uint32_t color,
 	vLine(x + w, y, y + h + pixel_in_dps_y, color);
 }
 
-void DrawBuffer::MultiVGradient(float x, float y, float w, float h, GradientStop *stops, int numStops) {
+void SCREEN_DrawBuffer::MultiVGradient(float x, float y, float w, float h, GradientStop *stops, int numStops) {
 	for (int i = 0; i < numStops - 1; i++) {
 		float t0 = stops[i].t, t1 = stops[i+1].t;
 		uint32_t c0 = stops[i].t, c1 = stops[i+1].t;
@@ -159,7 +159,7 @@ void DrawBuffer::MultiVGradient(float x, float y, float w, float h, GradientStop
 	}
 }
 
-void DrawBuffer::Rect(float x, float y, float w, float h,
+void SCREEN_DrawBuffer::Rect(float x, float y, float w, float h,
 	float u, float v, float uw, float uh,
 	uint32_t color) {
 		V(x,	   y,     0, color, u, v);
@@ -170,7 +170,7 @@ void DrawBuffer::Rect(float x, float y, float w, float h,
 		V(x,	   y + h, 0, color, u, v + uh);
 }
 
-void DrawBuffer::Line(ImageID atlas_image, float x1, float y1, float x2, float y2, float thickness, uint32_t color) {
+void SCREEN_DrawBuffer::Line(ImageID atlas_image, float x1, float y1, float x2, float y2, float thickness, uint32_t color) {
 	const AtlasImage *image = atlas->getImage(atlas_image);
 	if (!image)
 		return;
@@ -197,7 +197,7 @@ void DrawBuffer::Line(ImageID atlas_image, float x1, float y1, float x2, float y
 	V(x[3],	y[3], color, image->u2, image->v2);
 }
 
-bool DrawBuffer::MeasureImage(ImageID atlas_image, float *w, float *h) {
+bool SCREEN_DrawBuffer::MeasureImage(ImageID atlas_image, float *w, float *h) {
 	const AtlasImage *image = atlas->getImage(atlas_image);
 	if (image) {
 		*w = (float)image->w;
@@ -210,7 +210,7 @@ bool DrawBuffer::MeasureImage(ImageID atlas_image, float *w, float *h) {
 	}
 }
 
-void DrawBuffer::DrawImage(ImageID atlas_image, float x, float y, float scale, Color color, int align) {
+void SCREEN_DrawBuffer::DrawImage(ImageID atlas_image, float x, float y, float scale, Color color, int align) {
 	const AtlasImage *image = atlas->getImage(atlas_image);
 	if (!image)
 		return;
@@ -224,7 +224,7 @@ void DrawBuffer::DrawImage(ImageID atlas_image, float x, float y, float scale, C
 	DrawImageStretch(atlas_image, x, y, x + w, y + h, color);
 }
 
-void DrawBuffer::DrawImageStretch(ImageID atlas_image, float x1, float y1, float x2, float y2, Color color) {
+void SCREEN_DrawBuffer::DrawImageStretch(ImageID atlas_image, float x1, float y1, float x2, float y2, Color color) {
 	const AtlasImage *image = atlas->getImage(atlas_image);
 	if (!image)
 		return;
@@ -245,7 +245,7 @@ inline void rot(float *v, float angle, float xc, float yc) {
 	v[1] = x * sa + y *  ca + yc;
 }
 
-void DrawBuffer::DrawImageRotated(ImageID atlas_image, float x, float y, float scale, float angle, Color color, bool mirror_h) {
+void SCREEN_DrawBuffer::DrawImageRotated(ImageID atlas_image, float x, float y, float scale, float angle, Color color, bool mirror_h) {
 	const AtlasImage *image = atlas->getImage(atlas_image);
 	if (!image)
 		return;
@@ -286,7 +286,7 @@ void DrawBuffer::DrawImageRotated(ImageID atlas_image, float x, float y, float s
 }
 
 // TODO: add arc support
-void DrawBuffer::Circle(float xc, float yc, float radius, float thickness, int segments, float startAngle, uint32_t color, float u_mul) {
+void SCREEN_DrawBuffer::Circle(float xc, float yc, float radius, float thickness, int segments, float startAngle, uint32_t color, float u_mul) {
 	float angleDelta = PI * 2 / segments;
 	float uDelta = 1.0f / segments;
 	float t2 = thickness / 2.0f;
@@ -310,7 +310,7 @@ void DrawBuffer::Circle(float xc, float yc, float radius, float thickness, int s
 	}
 }
 
-void DrawBuffer::DrawTexRect(float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2, Color color) {
+void SCREEN_DrawBuffer::DrawTexRect(float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2, Color color) {
 	V(x1,	y1, color, u1, v1);
 	V(x2,	y1, color, u2, v1);
 	V(x2,	y2, color, u2, v2);
@@ -319,7 +319,7 @@ void DrawBuffer::DrawTexRect(float x1, float y1, float x2, float y2, float u1, f
 	V(x1,	y2, color, u1, v2);
 }
 
-void DrawBuffer::DrawImage4Grid(ImageID atlas_image, float x1, float y1, float x2, float y2, Color color, float corner_scale) {
+void SCREEN_DrawBuffer::DrawImage4Grid(ImageID atlas_image, float x1, float y1, float x2, float y2, Color color, float corner_scale) {
 	const AtlasImage *image = atlas->getImage(atlas_image);
 
 	if (!image) {
@@ -349,7 +349,7 @@ void DrawBuffer::DrawImage4Grid(ImageID atlas_image, float x1, float y1, float x
 	DrawTexRect(xb, yb, x2, y2, um, vm, u2, v2, color);
 }
 
-void DrawBuffer::DrawImage2GridH(ImageID atlas_image, float x1, float y1, float x2, Color color, float corner_scale) {
+void SCREEN_DrawBuffer::DrawImage2GridH(ImageID atlas_image, float x1, float y1, float x2, Color color, float corner_scale) {
 	const AtlasImage *image = atlas->getImage(atlas_image);
 	float um = (image->u1 + image->u2) * 0.5f;
 	float iw2 = (image->w * 0.5f) * corner_scale;
@@ -392,7 +392,7 @@ float AtlasWordWrapper::MeasureWidth(const char *str, size_t bytes) {
 	return w;
 }
 
-void DrawBuffer::MeasureTextCount(FontID font, const char *text, int count, float *w, float *h) {
+void SCREEN_DrawBuffer::MeasureTextCount(FontID font, const char *text, int count, float *w, float *h) {
 	const AtlasFont *atlasfont = atlas->getFont(font);
 	if (!atlasfont) {
 		*w = 0.0f;
@@ -434,7 +434,7 @@ void DrawBuffer::MeasureTextCount(FontID font, const char *text, int count, floa
 	if (h) *h = atlasfont->height * fontscaley * lines;
 }
 
-void DrawBuffer::MeasureTextRect(FontID font_id, const char *text, int count, const Bounds &bounds, float *w, float *h, int align) {
+void SCREEN_DrawBuffer::MeasureTextRect(FontID font_id, const char *text, int count, const Bounds &bounds, float *w, float *h, int align) {
 	if (!text || font_id.isInvalid()) {
 		*w = 0.0f;
 		*h = 0.0f;
@@ -456,17 +456,17 @@ void DrawBuffer::MeasureTextRect(FontID font_id, const char *text, int count, co
 	MeasureTextCount(font_id, toMeasure.c_str(), (int)toMeasure.length(), w, h);
 }
 
-void DrawBuffer::MeasureText(FontID font, const char *text, float *w, float *h) {
+void SCREEN_DrawBuffer::MeasureText(FontID font, const char *text, float *w, float *h) {
 	return MeasureTextCount(font, text, (int)strlen(text), w, h);
 }
 
-void DrawBuffer::DrawTextShadow(FontID font, const char *text, float x, float y, Color color, int flags) {
+void SCREEN_DrawBuffer::DrawTextShadow(FontID font, const char *text, float x, float y, Color color, int flags) {
 	uint32_t alpha = (color >> 1) & 0xFF000000;
 	DrawText(font, text, x + 2, y + 2, alpha, flags);
 	DrawText(font, text, x, y, color, flags);
 }
 
-void DrawBuffer::DoAlign(int flags, float *x, float *y, float *w, float *h) {
+void SCREEN_DrawBuffer::DoAlign(int flags, float *x, float *y, float *w, float *h) {
 	if (flags & ALIGN_HCENTER) *x -= *w / 2;
 	if (flags & ALIGN_RIGHT) *x -= *w;
 	if (flags & ALIGN_VCENTER) *y -= *h / 2;
@@ -479,7 +479,7 @@ void DrawBuffer::DoAlign(int flags, float *x, float *y, float *w, float *h) {
 
 
 // TODO: Actually use the rect properly, take bounds.
-void DrawBuffer::DrawTextRect(FontID font, const char *text, float x, float y, float w, float h, Color color, int align) {
+void SCREEN_DrawBuffer::DrawTextRect(FontID font, const char *text, float x, float y, float w, float h, Color color, int align) {
 	if (align & ALIGN_HCENTER) {
 		x += w / 2;
 	} else if (align & ALIGN_RIGHT) {
@@ -525,7 +525,7 @@ void DrawBuffer::DrawTextRect(FontID font, const char *text, float x, float y, f
 }
 
 // ROTATE_* doesn't yet work right.
-void DrawBuffer::DrawText(FontID font, const char *text, float x, float y, Color color, int align) {
+void SCREEN_DrawBuffer::DrawText(FontID font, const char *text, float x, float y, Color color, int align) {
 	// rough estimate
 	size_t textLen = strlen(text);
 	if (count_ + textLen * 6 > MAX_VERTS) {

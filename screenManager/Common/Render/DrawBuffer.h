@@ -35,7 +35,7 @@ enum {
 
 	// For "uncachable" text like debug log.
 	// Avoids using system font drawing as it's too slow.
-	// Not actually used here but is reserved for whatever system wraps DrawBuffer.
+	// Not actually used here but is reserved for whatever system wraps SCREEN_DrawBuffer.
 	FLAG_DYNAMIC_ASCII = 2048,
 	FLAG_NO_PREFIX = 4096,  // means to not process ampersands
 	FLAG_WRAP_TEXT = 8192,
@@ -53,10 +53,10 @@ struct GradientStop {
 
 class TextDrawer;
 
-class DrawBuffer {
+class SCREEN_DrawBuffer {
 public:
-	DrawBuffer();
-	~DrawBuffer();
+	SCREEN_DrawBuffer();
+	~SCREEN_DrawBuffer();
 
 	void Begin(SCREEN_Draw::Pipeline *pipeline);
 	void Flush(bool set_blend_state = true);

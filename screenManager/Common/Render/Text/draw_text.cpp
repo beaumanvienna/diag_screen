@@ -45,7 +45,7 @@ float TextDrawer::CalculateDPIScale() {
 	return scale;
 }
 
-void TextDrawer::DrawStringRect(DrawBuffer &target, const char *str, const Bounds &bounds, uint32_t color, int align) {
+void TextDrawer::DrawStringRect(SCREEN_DrawBuffer &target, const char *str, const Bounds &bounds, uint32_t color, int align) {
 	float x = bounds.x;
 	float y = bounds.y;
 	if (align & ALIGN_HCENTER) {

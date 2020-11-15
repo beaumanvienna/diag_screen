@@ -78,7 +78,7 @@ void UpdateUIState(GlobalUIState newState) {
 }
 
 
-void UIBackgroundInit(UIContext &dc) {
+void UIBackgroundInit(SCREEN_UIContext &dc) {
 	const std::string bgPng = "background.png";
 	if (SCREEN_PFile::Exists(bgPng)) {
 		const std::string &bgFile = bgPng;
@@ -91,7 +91,7 @@ void UIBackgroundShutdown() {
 	backgroundInited = false;
 }
 
-void DrawBackground(UIContext &dc, float alpha) {
+void DrawBackground(SCREEN_UIContext &dc, float alpha) {
 	if (!backgroundInited) {
 		UIBackgroundInit(dc);
 		backgroundInited = true;
@@ -137,7 +137,7 @@ void DrawBackground(UIContext &dc, float alpha) {
 
 }
 
-void DrawGameBackground(UIContext &dc, const std::string &gamePath) {
+void DrawGameBackground(SCREEN_UIContext &dc, const std::string &gamePath) {
     /*
 	std::shared_ptr<GameInfo> ginfo;
 	if (gamePath.size())
@@ -207,12 +207,12 @@ void HandleCommonMessages(const char *message, const char *value, ScreenManager 
 	}*/
 }
 
-void UIScreenWithBackground::DrawBackground(UIContext &dc) {
+void UIScreenWithBackground::DrawBackground(SCREEN_UIContext &dc) {
 	::DrawBackground(dc, 1.0f);
 	dc.Flush();
 }
 
-void UIScreenWithGameBackground::DrawBackground(UIContext &dc) {
+void UIScreenWithGameBackground::DrawBackground(SCREEN_UIContext &dc) {
 	if (!gamePath_.empty()) {
 		DrawGameBackground(dc, gamePath_);
 	} else {
@@ -231,7 +231,7 @@ void UIScreenWithGameBackground::sendMessage(const char *message, const char *va
 */
 }
 
-void UIDialogScreenWithGameBackground::DrawBackground(UIContext &dc) {
+void UIDialogScreenWithGameBackground::DrawBackground(SCREEN_UIContext &dc) {
 /*
 	DrawGameBackground(dc, gamePath_);
 */
@@ -251,7 +251,7 @@ void UIScreenWithBackground::sendMessage(const char *message, const char *value)
 	HandleCommonMessages(message, value, screenManager(), this);
 }
 
-void UIDialogScreenWithBackground::DrawBackground(UIContext &dc) {
+void UIDialogScreenWithBackground::DrawBackground(SCREEN_UIContext &dc) {
 	::DrawBackground(dc, 1.0f);
 	dc.Flush();
 }
@@ -513,7 +513,7 @@ void LogoScreen::render() {
 	using namespace SCREEN_Draw;
 
 	UIScreen::render();
-	UIContext &dc = *screenManager()->getUIContext();
+	SCREEN_UIContext &dc = *screenManager()->getUIContext();
 
 	const Bounds &bounds = dc.GetBounds();
 
@@ -769,7 +769,7 @@ void CreditsScreen::render() {
 	}
 	credits[0] = (const char *)temp;
 
-	UIContext &dc = *screenManager()->getUIContext();
+	SCREEN_UIContext &dc = *screenManager()->getUIContext();
 	dc.Begin();
 	const Bounds &bounds = dc.GetLayoutBounds();
 

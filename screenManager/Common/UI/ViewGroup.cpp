@@ -127,7 +127,7 @@ void ViewGroup::DeviceRestored(SCREEN_Draw::DrawContext *draw) {
 	}
 }
 
-void ViewGroup::Draw(UIContext &dc) {
+void ViewGroup::Draw(SCREEN_UIContext &dc) {
 	if (hasDropShadow_) {
 		// Darken things behind.
 		dc.FillRect(SCREEN_UI::Drawable(0x60000000), dc.GetBounds().Expand(dropShadowExpand_));
@@ -372,7 +372,7 @@ NeighborResult ViewGroup::FindNeighbor(View *view, FocusDirection direction, Nei
 }
 
 // TODO: This code needs some cleanup/restructuring...
-void LinearLayout::Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
+void LinearLayout::Measure(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
 	MeasureBySpec(layoutParams_->width, 0.0f, horiz, &measuredWidth_);
 	MeasureBySpec(layoutParams_->height, 0.0f, vert, &measuredHeight_);
 
@@ -582,7 +582,7 @@ void LinearLayout::Layout() {
 	}
 }
 
-void FrameLayout::Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
+void FrameLayout::Measure(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
 	if (views_.empty()) {
 		MeasureBySpec(layoutParams_->width, 0.0f, horiz, &measuredWidth_);
 		MeasureBySpec(layoutParams_->height, 0.0f, vert, &measuredHeight_);
@@ -613,7 +613,7 @@ void FrameLayout::Layout() {
 	}
 }
 
-void ScrollView::Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
+void ScrollView::Measure(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
 	// Respect margins
 	Margins margins;
 	if (views_.size()) {
@@ -769,7 +769,7 @@ void ScrollView::Touch(const TouchInput &input) {
 	}*/
 }
 
-void ScrollView::Draw(UIContext &dc) {
+void ScrollView::Draw(SCREEN_UIContext &dc) {
 	if (!views_.size()) {
 		ViewGroup::Draw(dc);
 		return;
@@ -971,7 +971,7 @@ void ScrollView::Update() {
 	}*/
 }
 
-void AnchorLayout::Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
+void AnchorLayout::Measure(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
 	MeasureBySpec(layoutParams_->width, 0.0f, horiz, &measuredWidth_);
 	MeasureBySpec(layoutParams_->height, 0.0f, vert, &measuredHeight_);
 
@@ -987,7 +987,7 @@ void AnchorLayout::Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec v
 	}
 }
 
-void AnchorLayout::MeasureViews(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
+void AnchorLayout::MeasureViews(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
 	for (size_t i = 0; i < views_.size(); i++) {
 		Size width = WRAP_CONTENT;
 		Size height = WRAP_CONTENT;
@@ -1087,7 +1087,7 @@ GridLayout::GridLayout(GridLayoutSettings settings, LayoutParams *layoutParams)
 		printf("GridLayout: Vertical layouts not yet supported");
 }
 
-void GridLayout::Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
+void GridLayout::Measure(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
 	MeasureSpecType measureType = settings_.fillCells ? EXACTLY : AT_MOST;
 
 	for (size_t i = 0; i < views_.size(); i++) {
@@ -1346,7 +1346,7 @@ bool ChoiceStrip::Key(const KeyInput &input) {
 	return ret || ViewGroup::Key(input);
 }
 
-void ChoiceStrip::Draw(UIContext &dc) {
+void ChoiceStrip::Draw(SCREEN_UIContext &dc) {
 	ViewGroup::Draw(dc);
 	if (topTabs_) {
 		if (orientation_ == ORIENT_HORIZONTAL)
@@ -1381,7 +1381,7 @@ void ListView::CreateAllItems() {
 	}
 }
 
-void ListView::Measure(const UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
+void ListView::Measure(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert) {
 	ScrollView::Measure(dc, horiz, vert);
 	if (maxHeight_ > 0 && measuredHeight_ > maxHeight_) {
 		measuredHeight_ = maxHeight_;

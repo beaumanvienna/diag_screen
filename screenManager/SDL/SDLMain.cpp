@@ -8,7 +8,7 @@
 #include "ppsspp_config.h"
 #include "SDL.h"
 #include "SDL/SDLJoystick.h"
-SDLJoystick *joystick = NULL;
+SCREEN_SDLJoystick *joystick = NULL;
 
 #if PPSSPP_PLATFORM(RPI)
 #include <bcm_host.h>
@@ -360,12 +360,12 @@ int ppsspp_main(int argc, char *argv[]) {
     int x,y;
     SDL_GetWindowPosition(gWindow,&x,&y);
 
-	GraphicsContext *graphicsContext = nullptr;
+	SCREEN_GraphicsContext *graphicsContext = nullptr;
 	SDL_Window *window = gWindow;
 
 	std::string error_message;
 
-    SDLGLGraphicsContext *ctx = new SDLGLGraphicsContext();
+    SDLGLSCREEN_GraphicsContext *ctx = new SDLGLSCREEN_GraphicsContext();
     if (ctx->Init(window, x, y, mode, &error_message) != 0) {
         printf("GL init error '%s'\n", error_message.c_str());
     }
@@ -376,7 +376,7 @@ int ppsspp_main(int argc, char *argv[]) {
 		printf("Init from thread error: '%s'\n", error_message.c_str());
 	}
 
-	joystick = new SDLJoystick();
+	joystick = new SCREEN_SDLJoystick();
 
 	NativeInitGraphics(graphicsContext);
     	

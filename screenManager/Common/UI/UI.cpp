@@ -11,8 +11,8 @@
 #include "Common/Render/TextureAtlas.h"
 #include "Common/Render/DrawBuffer.h"
 
-DrawBuffer ui_draw2d;
-DrawBuffer ui_draw2d_front;
+SCREEN_DrawBuffer ui_draw2d;
+SCREEN_DrawBuffer ui_draw2d_front;
 
 void UIBegin(SCREEN_Draw::Pipeline *pipeline) {
 	ui_draw2d.Begin(pipeline);

@@ -6,9 +6,9 @@
 
 // Init is done differently on each platform, and done close to the creation, so it's
 // expected to be implemented by subclasses.
-class GraphicsContext {
+class SCREEN_GraphicsContext {
 public:
-	virtual ~GraphicsContext() {}
+	virtual ~SCREEN_GraphicsContext() {}
 
 	virtual bool InitFromRenderThread(std::string *errorMessage) { return true; }
 	virtual void ShutdownFromRenderThread() {}

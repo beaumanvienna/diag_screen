@@ -164,7 +164,7 @@ public:
 	int colorMask;
 	// uint32_t fixedColor;
 
-	void Apply(GLRenderManager *render) {
+	void Apply(SCREEN_GLRenderManager *render) {
 		render->SetBlendAndMask(colorMask, enabled, srcCol, dstCol, srcAlpha, dstAlpha, eqCol, eqAlpha);
 	}
 };
@@ -193,7 +193,7 @@ public:
 	uint8_t stencilCompareMask;
 	uint8_t stencilWriteMask;
 
-	void Apply(GLRenderManager *render, uint8_t stencilRef) {
+	void Apply(SCREEN_GLRenderManager *render, uint8_t stencilRef) {
 		render->SetDepth(depthTestEnabled, depthWriteEnabled, depthComp);
 		render->SetStencilFunc(stencilEnabled, stencilCompareOp, stencilRef, stencilCompareMask);
 		render->SetStencilOp(stencilWriteMask, stencilFail, stencilZFail, stencilPass);
@@ -202,7 +202,7 @@ public:
 
 class OpenGLRasterState : public RasterState {
 public:
-	void Apply(GLRenderManager *render) {
+	void Apply(SCREEN_GLRenderManager *render) {
 		render->SetRaster(cullEnable, frontFace, cullMode, false);
 	}
 
@@ -228,7 +228,7 @@ GLuint ShaderStageToOpenGL(ShaderStage stage) {
 
 class OpenGLShaderModule : public ShaderModule {
 public:
-	OpenGLShaderModule(GLRenderManager *render, ShaderStage stage, const std::string &tag) : render_(render), stage_(stage), tag_(tag) {
+	OpenGLShaderModule(SCREEN_GLRenderManager *render, ShaderStage stage, const std::string &tag) : render_(render), stage_(stage), tag_(tag) {
 		printf("Shader module created (%p)", this);
 		glstage_ = ShaderStageToOpenGL(stage);
 	}
@@ -238,7 +238,7 @@ public:
 			render_->DeleteShader(shader_);
 	}
 
-	bool Compile(GLRenderManager *render, ShaderLanguage language, const uint8_t *data, size_t dataSize);
+	bool Compile(SCREEN_GLRenderManager *render, ShaderLanguage language, const uint8_t *data, size_t dataSize);
 	GLRShader *GetShader() const {
 		return shader_;
 	}
@@ -252,7 +252,7 @@ public:
 	}
 
 private:
-	GLRenderManager *render_;
+	SCREEN_GLRenderManager *render_;
 	ShaderStage stage_;
 	ShaderLanguage language_ = ShaderLanguage::GLSL_ES_200;
 	GLRShader *shader_ = nullptr;
@@ -261,7 +261,7 @@ private:
 	std::string tag_;
 };
 
-bool OpenGLShaderModule::Compile(GLRenderManager *render, ShaderLanguage language, const uint8_t *data, size_t dataSize) {
+bool OpenGLShaderModule::Compile(SCREEN_GLRenderManager *render, ShaderLanguage language, const uint8_t *data, size_t dataSize) {
 	source_ = std::string((const char *)data);
 	// Add the prelude on automatically.
 	if (glstage_ == GL_FRAGMENT_SHADER || glstage_ == GL_VERTEX_SHADER) {
@@ -276,7 +276,7 @@ bool OpenGLShaderModule::Compile(GLRenderManager *render, ShaderLanguage languag
 
 class OpenGLInputLayout : public InputLayout {
 public:
-	OpenGLInputLayout(GLRenderManager *render) : render_(render) {}
+	OpenGLInputLayout(SCREEN_GLRenderManager *render) : render_(render) {}
 	~OpenGLInputLayout();
 
 	void Compile(const InputLayoutDesc &desc);
@@ -287,12 +287,12 @@ public:
 	GLRInputLayout *inputLayout_ = nullptr;
 	int stride = 0;
 private:
-	GLRenderManager *render_;
+	SCREEN_GLRenderManager *render_;
 };
 
 class OpenGLPipeline : public Pipeline {
 public:
-	OpenGLPipeline(GLRenderManager *render) : render_(render) {
+	OpenGLPipeline(SCREEN_GLRenderManager *render) : render_(render) {
 	}
 	~OpenGLPipeline() {
 		for (auto &iter : shaders) {
@@ -325,7 +325,7 @@ public:
 	GLRProgram *program_ = nullptr;
 
 private:
-	GLRenderManager *render_;
+	SCREEN_GLRenderManager *render_;
 };
 
 class OpenGLFramebuffer;
@@ -486,7 +486,7 @@ public:
 private:
 	void ApplySamplers();
 
-	GLRenderManager renderManager_;
+	SCREEN_GLRenderManager renderManager_;
 
 	DeviceCaps caps_{};
 
@@ -507,7 +507,7 @@ private:
 	struct FrameData {
 		GLPushBuffer *push;
 	};
-	FrameData frameData_[GLRenderManager::MAX_INFLIGHT_FRAMES]{};
+	FrameData frameData_[SCREEN_GLRenderManager::MAX_INFLIGHT_FRAMES]{};
 };
 
 static constexpr int MakeIntelSimpleVer(int v1, int v2, int v3) {
@@ -558,7 +558,7 @@ OpenGLContext::OpenGLContext() {
 		caps_.vendor = GPUVendor::VENDOR_UNKNOWN;
 		break;
 	}
-	for (int i = 0; i < GLRenderManager::MAX_INFLIGHT_FRAMES; i++) {
+	for (int i = 0; i < SCREEN_GLRenderManager::MAX_INFLIGHT_FRAMES; i++) {
 		frameData_[i].push = renderManager_.CreatePushBuffer(i, GL_ARRAY_BUFFER, 64 * 1024);
 	}
 
@@ -601,7 +601,7 @@ OpenGLContext::OpenGLContext() {
 
 OpenGLContext::~OpenGLContext() {
 	DestroyPresets();
-	for (int i = 0; i < GLRenderManager::MAX_INFLIGHT_FRAMES; i++) {
+	for (int i = 0; i < SCREEN_GLRenderManager::MAX_INFLIGHT_FRAMES; i++) {
 		renderManager_.DeletePushBuffer(frameData_[i].push);
 	}
 }
@@ -657,7 +657,7 @@ GLuint TypeToTarget(TextureType type) {
 
 class OpenGLTexture : public Texture {
 public:
-	OpenGLTexture(GLRenderManager *render, const TextureDesc &desc);
+	OpenGLTexture(SCREEN_GLRenderManager *render, const TextureDesc &desc);
 	~OpenGLTexture();
 
 	bool HasMips() const {
@@ -677,7 +677,7 @@ public:
 private:
 	void SetImageData(int x, int y, int z, int width, int height, int depth, int level, int stride, const uint8_t *data, TextureCallback callback);
 
-	GLRenderManager *render_;
+	SCREEN_GLRenderManager *render_;
 	GLRTexture *tex_;
 
 	DataFormat format_;
@@ -687,7 +687,7 @@ private:
 	bool canWrap_;
 };
 
-OpenGLTexture::OpenGLTexture(GLRenderManager *render, const TextureDesc &desc) : render_(render) {
+OpenGLTexture::OpenGLTexture(SCREEN_GLRenderManager *render, const TextureDesc &desc) : render_(render) {
 	generatedMips_ = false;
 	width_ = desc.width;
 	height_ = desc.height;
@@ -731,12 +731,12 @@ OpenGLTexture::~OpenGLTexture() {
 
 class OpenGLFramebuffer : public Framebuffer {
 public:
-	OpenGLFramebuffer(GLRenderManager *render) : render_(render) {}
+	OpenGLFramebuffer(SCREEN_GLRenderManager *render) : render_(render) {}
 	~OpenGLFramebuffer() {
 		render_->DeleteFramebuffer(framebuffer);
 	}
 
-	GLRenderManager *render_;
+	SCREEN_GLRenderManager *render_;
 	GLRFramebuffer *framebuffer = nullptr;
 
 	FBColorDepth colorDepth = FBO_8888;
@@ -923,7 +923,7 @@ RasterState *OpenGLContext::CreateRasterState(const RasterStateDesc &desc) {
 
 class OpenGLBuffer : public Buffer {
 public:
-	OpenGLBuffer(GLRenderManager *render, size_t size, uint32_t flags) : render_(render) {
+	OpenGLBuffer(SCREEN_GLRenderManager *render, size_t size, uint32_t flags) : render_(render) {
 		target_ = (flags & BufferUsageFlag::INDEXDATA) ? GL_ELEMENT_ARRAY_BUFFER : GL_ARRAY_BUFFER;
 		usage_ = 0;
 		if (flags & BufferUsageFlag::DYNAMIC)
@@ -937,7 +937,7 @@ public:
 		render_->DeleteBuffer(buffer_);
 	}
 
-	GLRenderManager *render_;
+	SCREEN_GLRenderManager *render_;
 	GLRBuffer *buffer_;
 	GLuint target_;
 	GLuint usage_;

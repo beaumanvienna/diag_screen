@@ -117,7 +117,7 @@ void UIScreen::render() {
 	DoRecreateViews();
 
 	if (root_) {
-		UIContext *uiContext = screenManager()->getUIContext();
+		SCREEN_UIContext *uiContext = screenManager()->getUIContext();
 		SCREEN_UI::LayoutViewHierarchy(*uiContext, root_, ignoreInsets_);
 
 		uiContext->PushTransform({translation_, scale_, alpha_});
@@ -316,7 +316,7 @@ void PopupScreen::resized() {
 
 void PopupScreen::CreateViews() {
 	using namespace SCREEN_UI;
-	UIContext &dc = *screenManager()->getUIContext();
+	SCREEN_UIContext &dc = *screenManager()->getUIContext();
 
 	AnchorLayout *anchor = new AnchorLayout(new LayoutParams(FILL_PARENT, FILL_PARENT));
 	anchor->Overflow(false);
@@ -358,7 +358,7 @@ void PopupScreen::CreateViews() {
 
 void MessagePopupScreen::CreatePopupContents(SCREEN_UI::ViewGroup *parent) {
 	using namespace SCREEN_UI;
-	UIContext &dc = *screenManager()->getUIContext();
+	SCREEN_UIContext &dc = *screenManager()->getUIContext();
 
 	std::vector<std::string> messageLines;
 	PSplitString(message_, '\n', messageLines);
@@ -455,7 +455,7 @@ void PopupMultiChoice::ChoiceCallback(int num) {
 	}
 }
 
-void PopupMultiChoice::Draw(UIContext &dc) {
+void PopupMultiChoice::Draw(SCREEN_UIContext &dc) {
 	Style style = dc.theme->itemStyle;
 	if (!IsEnabled()) {
 		style = dc.theme->itemDisabledStyle;
@@ -518,7 +518,7 @@ EventReturn PopupSliderChoice::HandleChange(EventParams &e) {
 	return EVENT_DONE;
 }
 
-void PopupSliderChoice::Draw(UIContext &dc) {
+void PopupSliderChoice::Draw(SCREEN_UIContext &dc) {
 	Style style = dc.theme->itemStyle;
 	if (!IsEnabled()) {
 		style = dc.theme->itemDisabledStyle;
@@ -565,7 +565,7 @@ EventReturn PopupSliderChoiceFloat::HandleChange(EventParams &e) {
 	return EVENT_DONE;
 }
 
-void PopupSliderChoiceFloat::Draw(UIContext &dc) {
+void PopupSliderChoiceFloat::Draw(SCREEN_UIContext &dc) {
 	Style style = dc.theme->itemStyle;
 	if (!IsEnabled()) {
 		style = dc.theme->itemDisabledStyle;
@@ -639,7 +639,7 @@ EventReturn SliderPopupScreen::OnTextChange(EventParams &params) {
 
 void SliderPopupScreen::CreatePopupContents(SCREEN_UI::ViewGroup *parent) {
 	using namespace SCREEN_UI;
-	UIContext &dc = *screenManager()->getUIContext();
+	SCREEN_UIContext &dc = *screenManager()->getUIContext();
 
 	sliderValue_ = *value_;
 	if (disabled_ && sliderValue_ < 0)
@@ -675,7 +675,7 @@ void SliderPopupScreen::CreatePopupContents(SCREEN_UI::ViewGroup *parent) {
 
 void SliderFloatPopupScreen::CreatePopupContents(SCREEN_UI::ViewGroup *parent) {
 	using namespace SCREEN_UI;
-	UIContext &dc = *screenManager()->getUIContext();
+	SCREEN_UIContext &dc = *screenManager()->getUIContext();
 
 	sliderValue_ = *value_;
 	LinearLayout *vert = parent->Add(new LinearLayout(ORIENT_VERTICAL, new LinearLayoutParams(SCREEN_UI::Margins(10, 10))));
@@ -786,7 +786,7 @@ EventReturn PopupTextInputChoice::HandleClick(EventParams &e) {
 	return EVENT_DONE;
 }
 
-void PopupTextInputChoice::Draw(UIContext &dc) {
+void PopupTextInputChoice::Draw(SCREEN_UIContext &dc) {
 	Style style = dc.theme->itemStyle;
 	if (!IsEnabled()) {
 		style = dc.theme->itemDisabledStyle;
@@ -814,7 +814,7 @@ EventReturn PopupTextInputChoice::HandleChange(EventParams &e) {
 
 void TextEditPopupScreen::CreatePopupContents(SCREEN_UI::ViewGroup *parent) {
 	using namespace SCREEN_UI;
-	UIContext &dc = *screenManager()->getUIContext();
+	SCREEN_UIContext &dc = *screenManager()->getUIContext();
 
 	textEditValue_ = *value_;
 	LinearLayout *lin = parent->Add(new LinearLayout(ORIENT_HORIZONTAL, new LinearLayoutParams((SCREEN_UI::Size)300, WRAP_CONTENT)));
@@ -836,7 +836,7 @@ void TextEditPopupScreen::OnCompleted(DialogResult result) {
 	}
 }
 
-void ChoiceWithValueDisplay::Draw(UIContext &dc) {
+void ChoiceWithValueDisplay::Draw(SCREEN_UIContext &dc) {
 	Style style = dc.theme->itemStyle;
 	if (!IsEnabled()) {
 		style = dc.theme->itemDisabledStyle;

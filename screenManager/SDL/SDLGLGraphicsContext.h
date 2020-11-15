@@ -5,9 +5,9 @@
 #include "Common/GPU/OpenGL/GLCommon.h"
 #include "Common/GraphicsContext.h"
 
-class SDLGLGraphicsContext : public GraphicsContext {
+class SDLGLSCREEN_GraphicsContext : public SCREEN_GraphicsContext {
 public:
-	SDLGLGraphicsContext() {
+	SDLGLSCREEN_GraphicsContext() {
 	}
 
 	// Returns 0 on success.
@@ -50,5 +50,5 @@ private:
 	SCREEN_Draw::DrawContext *draw_ = nullptr;
 	SDL_Window *window_;
 	SDL_GLContext glContext = nullptr;
-	GLRenderManager *renderManager_ = nullptr;
+	SCREEN_GLRenderManager *renderManager_ = nullptr;
 };
