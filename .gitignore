@@ -1,6 +1,6 @@
-tests/settings_diag/SETTINGS_DIAG
-tests/settings_diag/PSP
-tests/settings_diag/*.ini
+tests/diag_screen/DIAG_SCREEN
+tests/diag_screen/PSP
+tests/diag_screen/*.ini
 *.o
 build
 ppsspp/build

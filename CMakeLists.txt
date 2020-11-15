@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.10)
 
 project(diag_screen)
 
-add_subdirectory(ppsspp/Common)
-add_subdirectory(ppsspp/UI)
-add_subdirectory(ppsspp/SDL)
+add_subdirectory(screenManager/Common)
+add_subdirectory(screenManager/UI)
+add_subdirectory(screenManager/SDL)
 
 add_executable(DIAG_SCREEN tests/diag_screen/main.cpp)
 
