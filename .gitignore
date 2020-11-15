@@ -1,0 +1,6 @@
+tests/settings_diag/SETTINGS_DIAG
+tests/settings_diag/PSP
+tests/settings_diag/*.ini
+*.o
+build
+ppsspp/build
