@@ -200,7 +200,7 @@ public:
 	}
 };
 
-class OpenGLRasterState : public RasterState {
+class OpenGLRasterState : public SCREEN_RasterState {
 public:
 	void Apply(SCREEN_GLRenderManager *render) {
 		render->SetRaster(cullEnable, frontFace, cullMode, false);
@@ -226,7 +226,7 @@ GLuint ShaderStageToOpenGL(SCREEN_ShaderStage stage) {
 	}
 }
 
-class OpenGLShaderModule : public ShaderModule {
+class OpenGLShaderModule : public SCREEN_ShaderModule {
 public:
 	OpenGLShaderModule(SCREEN_GLRenderManager *render, SCREEN_ShaderStage stage, const std::string &tag) : render_(render), stage_(stage), tag_(tag) {
 		printf("Shader module created (%p)", this);
@@ -274,7 +274,7 @@ bool OpenGLShaderModule::Compile(SCREEN_GLRenderManager *render, SCREEN_ShaderLa
 	return true;
 }
 
-class OpenGLInputLayout : public InputLayout {
+class OpenGLInputLayout : public SCREEN_InputLayout {
 public:
 	OpenGLInputLayout(SCREEN_GLRenderManager *render) : render_(render) {}
 	~OpenGLInputLayout();
@@ -290,7 +290,7 @@ private:
 	SCREEN_GLRenderManager *render_;
 };
 
-class OpenGLPipeline : public Pipeline {
+class OpenGLPipeline : public SCREEN_Pipeline {
 public:
 	OpenGLPipeline(SCREEN_GLRenderManager *render) : render_(render) {
 	}
@@ -355,30 +355,30 @@ public:
 	SCREEN_DepthStencilState *CreateDepthStencilState(const DepthStencilStateDesc &desc) override;
 	SCREEN_BlendState *CreateBlendState(const BlendStateDesc &desc) override;
 	SCREEN_SamplerState *CreateSamplerState(const SamplerStateDesc &desc) override;
-	RasterState *CreateRasterState(const RasterStateDesc &desc) override;
-	Pipeline *CreateGraphicsPipeline(const PipelineDesc &desc) override;
-	InputLayout *CreateInputLayout(const InputLayoutDesc &desc) override;
-	ShaderModule *CreateShaderModule(SCREEN_ShaderStage stage, SCREEN_ShaderLanguage language, const uint8_t *data, size_t dataSize, const std::string &tag) override;
+	SCREEN_RasterState *CreateRasterState(const RasterStateDesc &desc) override;
+	SCREEN_Pipeline *CreateGraphicsPipeline(const PipelineDesc &desc) override;
+	SCREEN_InputLayout *CreateInputLayout(const InputLayoutDesc &desc) override;
+	SCREEN_ShaderModule *CreateShaderModule(SCREEN_ShaderStage stage, SCREEN_ShaderLanguage language, const uint8_t *data, size_t dataSize, const std::string &tag) override;
 
 	SCREEN_Texture *CreateTexture(const TextureDesc &desc) override;
-	Buffer *CreateBuffer(size_t size, uint32_t usageFlags) override;
-	Framebuffer *CreateFramebuffer(const FramebufferDesc &desc) override;
+	SCREEN_Buffer *CreateBuffer(size_t size, uint32_t usageFlags) override;
+	SCREEN_Framebuffer *CreateFramebuffer(const FramebufferDesc &desc) override;
 
 	void BeginFrame() override;
 	void EndFrame() override;
 
-	void UpdateBuffer(Buffer *buffer, const uint8_t *data, size_t offset, size_t size, UpdateBufferFlags flags) override;
+	void UpdateBuffer(SCREEN_Buffer *buffer, const uint8_t *data, size_t offset, size_t size, UpdateBufferFlags flags) override;
 
-	void CopyFramebufferImage(Framebuffer *src, int level, int x, int y, int z, Framebuffer *dst, int dstLevel, int dstX, int dstY, int dstZ, int width, int height, int depth, int channelBits, const char *tag) override;
-	bool BlitFramebuffer(Framebuffer *src, int srcX1, int srcY1, int srcX2, int srcY2, Framebuffer *dst, int dstX1, int dstY1, int dstX2, int dstY2, int channelBits, FBBlitFilter filter, const char *tag) override;
-	bool CopyFramebufferToMemorySync(Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat format, void *pixels, int pixelStride, const char *tag) override;
+	void CopyFramebufferImage(SCREEN_Framebuffer *src, int level, int x, int y, int z, SCREEN_Framebuffer *dst, int dstLevel, int dstX, int dstY, int dstZ, int width, int height, int depth, int channelBits, const char *tag) override;
+	bool BlitFramebuffer(SCREEN_Framebuffer *src, int srcX1, int srcY1, int srcX2, int srcY2, SCREEN_Framebuffer *dst, int dstX1, int dstY1, int dstX2, int dstY2, int channelBits, FBBlitFilter filter, const char *tag) override;
+	bool CopyFramebufferToMemorySync(SCREEN_Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat format, void *pixels, int pixelStride, const char *tag) override;
 
 	// These functions should be self explanatory.
-	void BindFramebufferAsRenderTarget(Framebuffer *fbo, const RenderPassInfo &rp, const char *tag) override;
+	void BindFramebufferAsRenderTarget(SCREEN_Framebuffer *fbo, const RenderPassInfo &rp, const char *tag) override;
 	// color must be 0, for now.
-	void BindFramebufferAsTexture(Framebuffer *fbo, int binding, FBChannel channelBit, int attachment) override;
+	void BindFramebufferAsTexture(SCREEN_Framebuffer *fbo, int binding, FBChannel channelBit, int attachment) override;
 
-	void GetFramebufferDimensions(Framebuffer *fbo, int *w, int *h) override;
+	void GetFramebufferDimensions(SCREEN_Framebuffer *fbo, int *w, int *h) override;
 
 	void BindSamplerStates(int start, int count, SCREEN_SamplerState **states) override {
 		if (start + count >= MAX_TEXTURE_SLOTS) {
@@ -413,14 +413,14 @@ public:
 	}
 
 	void BindTextures(int start, int count, SCREEN_Texture **textures) override;
-	void BindPipeline(Pipeline *pipeline) override;
-	void BindVertexBuffers(int start, int count, Buffer **buffers, int *offsets) override {
+	void BindPipeline(SCREEN_Pipeline *pipeline) override;
+	void BindVertexBuffers(int start, int count, SCREEN_Buffer **buffers, int *offsets) override {
 		for (int i = 0; i < count; i++) {
 			curVBuffers_[i + start] = (OpenGLBuffer  *)buffers[i];
 			curVBufferOffsets_[i + start] = offsets ? offsets[i] : 0;
 		}
 	}
-	void BindIndexBuffer(Buffer *indexBuffer, int offset) override {
+	void BindIndexBuffer(SCREEN_Buffer *indexBuffer, int offset) override {
 		curIBuffer_ = (OpenGLBuffer  *)indexBuffer;
 		curIBufferOffset_ = offset;
 	}
@@ -631,7 +631,7 @@ void OpenGLContext::InvalidateCachedState() {
 	curPipeline_ = nullptr;
 }
 
-InputLayout *OpenGLContext::CreateInputLayout(const InputLayoutDesc &desc) {
+SCREEN_InputLayout *OpenGLContext::CreateInputLayout(const InputLayoutDesc &desc) {
 	OpenGLInputLayout *fmt = new OpenGLInputLayout(&renderManager_);
 	fmt->Compile(desc);
 	return fmt;
@@ -729,7 +729,7 @@ OpenGLTexture::~OpenGLTexture() {
 	}
 }
 
-class OpenGLFramebuffer : public Framebuffer {
+class OpenGLFramebuffer : public SCREEN_Framebuffer {
 public:
 	OpenGLFramebuffer(SCREEN_GLRenderManager *render) : render_(render) {}
 	~OpenGLFramebuffer() {
@@ -828,7 +828,7 @@ static void LogReadPixelsError(GLenum error) {
 }
 #endif
 
-bool OpenGLContext::CopyFramebufferToMemorySync(Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat dataFormat, void *pixels, int pixelStride, const char *tag) {
+bool OpenGLContext::CopyFramebufferToMemorySync(SCREEN_Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat dataFormat, void *pixels, int pixelStride, const char *tag) {
 	if (gl_extensions.IsGLES && (channelBits & FB_COLOR_BIT) == 0) {
 		// Can't readback depth or stencil on GLES.
 		return false;
@@ -889,7 +889,7 @@ SCREEN_SamplerState *OpenGLContext::CreateSamplerState(const SamplerStateDesc &d
 	return samps;
 }
 
-RasterState *OpenGLContext::CreateRasterState(const RasterStateDesc &desc) {
+SCREEN_RasterState *OpenGLContext::CreateRasterState(const RasterStateDesc &desc) {
 	OpenGLRasterState *rs = new OpenGLRasterState();
 	if (desc.cull == SCREEN_CullMode::NONE) {
 		rs->cullEnable = GL_FALSE;
@@ -921,7 +921,7 @@ RasterState *OpenGLContext::CreateRasterState(const RasterStateDesc &desc) {
 	return rs;
 }
 
-class OpenGLBuffer : public Buffer {
+class OpenGLBuffer : public SCREEN_Buffer {
 public:
 	OpenGLBuffer(SCREEN_GLRenderManager *render, size_t size, uint32_t flags) : render_(render) {
 		target_ = (flags & BufferUsageFlag::INDEXDATA) ? GL_ELEMENT_ARRAY_BUFFER : GL_ARRAY_BUFFER;
@@ -945,11 +945,11 @@ public:
 	size_t totalSize_;
 };
 
-Buffer *OpenGLContext::CreateBuffer(size_t size, uint32_t usageFlags) {
+SCREEN_Buffer *OpenGLContext::CreateBuffer(size_t size, uint32_t usageFlags) {
 	return new OpenGLBuffer(&renderManager_, size, usageFlags);
 }
 
-void OpenGLContext::UpdateBuffer(Buffer *buffer, const uint8_t *data, size_t offset, size_t size, UpdateBufferFlags flags) {
+void OpenGLContext::UpdateBuffer(SCREEN_Buffer *buffer, const uint8_t *data, size_t offset, size_t size, UpdateBufferFlags flags) {
 	OpenGLBuffer *buf = (OpenGLBuffer *)buffer;
 
 	if (size + offset > buf->totalSize_) {
@@ -963,7 +963,7 @@ void OpenGLContext::UpdateBuffer(Buffer *buffer, const uint8_t *data, size_t off
 	renderManager_.BufferSubdata(buf->buffer_, offset, size, dataCopy);
 }
 
-Pipeline *OpenGLContext::CreateGraphicsPipeline(const PipelineDesc &desc) {
+SCREEN_Pipeline *OpenGLContext::CreateGraphicsPipeline(const PipelineDesc &desc) {
 	if (!desc.shaders.size()) {
 		printf("Pipeline requires at least one shader");
 		return nullptr;
@@ -1052,7 +1052,7 @@ void OpenGLContext::ApplySamplers() {
 	}
 }
 
-ShaderModule *OpenGLContext::CreateShaderModule(SCREEN_ShaderStage stage, SCREEN_ShaderLanguage language, const uint8_t *data, size_t dataSize, const std::string &tag) {
+SCREEN_ShaderModule *OpenGLContext::CreateShaderModule(SCREEN_ShaderStage stage, SCREEN_ShaderLanguage language, const uint8_t *data, size_t dataSize, const std::string &tag) {
 	OpenGLShaderModule *shader = new OpenGLShaderModule(&renderManager_, stage, tag);
 	if (shader->Compile(&renderManager_, language, data, dataSize)) {
 		return shader;
@@ -1103,7 +1103,7 @@ bool OpenGLPipeline::LinkShaders() {
 	return true;
 }
 
-void OpenGLContext::BindPipeline(Pipeline *pipeline) {
+void OpenGLContext::BindPipeline(SCREEN_Pipeline *pipeline) {
 	curPipeline_ = (OpenGLPipeline *)pipeline;
 	if (!curPipeline_) {
 		return;
@@ -1124,13 +1124,13 @@ void OpenGLContext::UpdateDynamicUniformBuffer(const void *ub, size_t size) {
 		const GLint &loc = curPipeline_->dynamicUniformLocs_[i];
 		const float *data = (const float *)((uint8_t *)ub + uniform.offset);
 		switch (uniform.type) {
-		case UniformType::FLOAT1:
-		case UniformType::FLOAT2:
-		case UniformType::FLOAT3:
-		case UniformType::FLOAT4:
-			renderManager_.SetUniformF(&loc, 1 + (int)uniform.type - (int)UniformType::FLOAT1, data);
+		case SCREEN_UniformType::FLOAT1:
+		case SCREEN_UniformType::FLOAT2:
+		case SCREEN_UniformType::FLOAT3:
+		case SCREEN_UniformType::FLOAT4:
+			renderManager_.SetUniformF(&loc, 1 + (int)uniform.type - (int)SCREEN_UniformType::FLOAT1, data);
 			break;
-		case UniformType::MATRIX4X4:
+		case SCREEN_UniformType::MATRIX4X4:
 			renderManager_.SetUniformM4x4(&loc, data);
 			break;
 		}
@@ -1234,7 +1234,7 @@ void OpenGLInputLayout::Compile(const InputLayoutDesc &desc) {
 	inputLayout_ = render_->CreateInputLayout(entries);
 }
 
-Framebuffer *OpenGLContext::CreateFramebuffer(const FramebufferDesc &desc) {
+SCREEN_Framebuffer *OpenGLContext::CreateFramebuffer(const FramebufferDesc &desc) {
 	CheckGLExtensions();
 
 	OpenGLFramebuffer *fbo = new OpenGLFramebuffer(&renderManager_);
@@ -1242,7 +1242,7 @@ Framebuffer *OpenGLContext::CreateFramebuffer(const FramebufferDesc &desc) {
 	return fbo;
 }
 
-void OpenGLContext::BindFramebufferAsRenderTarget(Framebuffer *fbo, const RenderPassInfo &rp, const char *tag) {
+void OpenGLContext::BindFramebufferAsRenderTarget(SCREEN_Framebuffer *fbo, const RenderPassInfo &rp, const char *tag) {
 	OpenGLFramebuffer *fb = (OpenGLFramebuffer *)fbo;
 	GLRRenderPassAction color = (GLRRenderPassAction)rp.color;
 	GLRRenderPassAction depth = (GLRRenderPassAction)rp.depth;
@@ -1251,7 +1251,7 @@ void OpenGLContext::BindFramebufferAsRenderTarget(Framebuffer *fbo, const Render
 	renderManager_.BindFramebufferAsRenderTarget(fb ? fb->framebuffer : nullptr, color, depth, stencil, rp.clearColor, rp.clearDepth, rp.clearStencil, tag);
 }
 
-void OpenGLContext::CopyFramebufferImage(Framebuffer *fbsrc, int srcLevel, int srcX, int srcY, int srcZ, Framebuffer *fbdst, int dstLevel, int dstX, int dstY, int dstZ, int width, int height, int depth, int channelBits, const char *tag) {
+void OpenGLContext::CopyFramebufferImage(SCREEN_Framebuffer *fbsrc, int srcLevel, int srcX, int srcY, int srcZ, SCREEN_Framebuffer *fbdst, int dstLevel, int dstX, int dstY, int dstZ, int width, int height, int depth, int channelBits, const char *tag) {
 	OpenGLFramebuffer *src = (OpenGLFramebuffer *)fbsrc;
 	OpenGLFramebuffer *dst = (OpenGLFramebuffer *)fbdst;
 
@@ -1267,7 +1267,7 @@ void OpenGLContext::CopyFramebufferImage(Framebuffer *fbsrc, int srcLevel, int s
 	renderManager_.CopyFramebuffer(src->framebuffer, GLRect2D{ srcX, srcY, width, height }, dst->framebuffer, GLOffset2D{ dstX, dstY }, aspect, tag);
 }
 
-bool OpenGLContext::BlitFramebuffer(Framebuffer *fbsrc, int srcX1, int srcY1, int srcX2, int srcY2, Framebuffer *fbdst, int dstX1, int dstY1, int dstX2, int dstY2, int channels, FBBlitFilter linearFilter, const char *tag) {
+bool OpenGLContext::BlitFramebuffer(SCREEN_Framebuffer *fbsrc, int srcX1, int srcY1, int srcX2, int srcY2, SCREEN_Framebuffer *fbdst, int dstX1, int dstY1, int dstX2, int dstY2, int channels, FBBlitFilter linearFilter, const char *tag) {
 	OpenGLFramebuffer *src = (OpenGLFramebuffer *)fbsrc;
 	OpenGLFramebuffer *dst = (OpenGLFramebuffer *)fbdst;
 	GLuint aspect = 0;
@@ -1282,7 +1282,7 @@ bool OpenGLContext::BlitFramebuffer(Framebuffer *fbsrc, int srcX1, int srcY1, in
 	return true;
 }
 
-void OpenGLContext::BindFramebufferAsTexture(Framebuffer *fbo, int binding, FBChannel channelBit, int color) {
+void OpenGLContext::BindFramebufferAsTexture(SCREEN_Framebuffer *fbo, int binding, FBChannel channelBit, int color) {
 	OpenGLFramebuffer *fb = (OpenGLFramebuffer *)fbo;
 
 	GLuint aspect = 0;
@@ -1295,7 +1295,7 @@ void OpenGLContext::BindFramebufferAsTexture(Framebuffer *fbo, int binding, FBCh
 	renderManager_.BindFramebufferAsTexture(fb->framebuffer, binding, aspect, color);
 }
 
-void OpenGLContext::GetFramebufferDimensions(Framebuffer *fbo, int *w, int *h) {
+void OpenGLContext::GetFramebufferDimensions(SCREEN_Framebuffer *fbo, int *w, int *h) {
 	OpenGLFramebuffer *fb = (OpenGLFramebuffer *)fbo;
 	if (fb) {
 		*w = fb->framebuffer->width;

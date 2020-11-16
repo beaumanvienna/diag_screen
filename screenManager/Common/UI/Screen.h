@@ -39,10 +39,10 @@ namespace SCREEN_Draw {
 	class SCREEN_DrawContext;
 }
 
-class Screen {
+class SCREEN_Screen {
 public:
-	Screen() : screenManager_(nullptr) {printf("jc: Screen() : screenManager_(nullptr) \n"); }
-	virtual ~Screen() {
+	SCREEN_Screen() : screenManager_(nullptr) {printf("jc: Screen() : screenManager_(nullptr) \n"); }
+	virtual ~SCREEN_Screen() {
 		screenManager_ = nullptr;
 	}
 
@@ -52,7 +52,7 @@ public:
 	virtual void render() {}
 	virtual void postRender() {}
 	virtual void resized() {}
-	virtual void dialogFinished(const Screen *dialog, DialogResult result) {}
+	virtual void dialogFinished(const SCREEN_Screen *dialog, DialogResult result) {}
 	virtual bool touch(const TouchInput &touch) { return false;  }
 	virtual bool key(const KeyInput &key) { return false; }
 	virtual bool axis(const AxisInput &touch) { return false; }
@@ -78,7 +78,7 @@ public:
 
 private:
 	SCREEN_ScreenManager *screenManager_;
-	DISALLOW_COPY_AND_ASSIGN(Screen);
+	DISALLOW_COPY_AND_ASSIGN(SCREEN_Screen);
 };
 
 class Transition {
@@ -98,7 +98,7 @@ public:
 	SCREEN_ScreenManager();
 	virtual ~SCREEN_ScreenManager();
 
-	void switchScreen(Screen *screen);
+	void switchScreen(SCREEN_Screen *screen);
 	void update();
 
 	void setUIContext(SCREEN_UIContext *context) { uiContext_ = context; }
@@ -120,14 +120,14 @@ public:
 	void deviceRestored();
 
 	// Push a dialog box in front. Currently 1-level only.
-	void push(Screen *screen, int layerFlags = 0);
+	void push(SCREEN_Screen *screen, int layerFlags = 0);
 
 	// Recreate all views
 	void RecreateAllViews();
 
 	// Pops the dialog away.
-	void finishDialog(Screen *dialog, DialogResult result = DR_OK);
-	Screen *dialogParent(const Screen *dialog) const;
+	void finishDialog(SCREEN_Screen *dialog, DialogResult result = DR_OK);
+	SCREEN_Screen *dialogParent(const SCREEN_Screen *dialog) const;
 
 	// Instant touch, separate from the update() mechanism.
 	bool touch(const TouchInput &touch);
@@ -137,7 +137,7 @@ public:
 	// Generic facility for gross hacks :P
 	void sendMessage(const char *msg, const char *value);
 
-	Screen *topScreen() const;
+	SCREEN_Screen *topScreen() const;
 
 	std::recursive_mutex inputLock_;
 
@@ -152,11 +152,11 @@ private:
 	PostRenderCallback postRenderCb_ = nullptr;
 	void *postRenderUserdata_ = nullptr;
 
-	const Screen *dialogFinished_;
+	const SCREEN_Screen *dialogFinished_;
 	DialogResult dialogResult_;
 
 	struct Layer {
-		Screen *screen;
+		SCREEN_Screen *screen;
 		int flags;  // From LAYER_ enum above
 		SCREEN_UI::View *focusedView;  // TODO: save focus here. Going for quick solution now to reset focus.
 	};

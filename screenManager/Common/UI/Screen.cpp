@@ -18,7 +18,7 @@ SCREEN_ScreenManager::~SCREEN_ScreenManager() {
 	shutdown();
 }
 
-void SCREEN_ScreenManager::switchScreen(Screen *screen) {
+void SCREEN_ScreenManager::switchScreen(SCREEN_Screen *screen) {
 	if (!nextStack_.empty() && screen == nextStack_.front().screen) {
 		printf("Already switching to this screen");
 		return;
@@ -81,11 +81,11 @@ bool SCREEN_ScreenManager::touch(const TouchInput &touch) {
 	// Send release all events to every screen layer.
 	if (touch.flags & TOUCH_RELEASE_ALL) {
 		for (auto &layer : stack_) {
-			Screen *screen = layer.screen;
+			SCREEN_Screen *screen = layer.screen;
 			result = layer.screen->touch(screen->transformTouch(touch));
 		}
 	} else if (!stack_.empty()) {
-		Screen *screen = stack_.back().screen;
+		SCREEN_Screen *screen = stack_.back().screen;
 		result = stack_.back().screen->touch(screen->transformTouch(touch));
 	}
 	return result;
@@ -193,7 +193,7 @@ void SCREEN_ScreenManager::sendMessage(const char *msg, const char *value) {
 		stack_.back().screen->sendMessage(msg, value);
 }
 
-Screen *SCREEN_ScreenManager::topScreen() const {
+SCREEN_Screen *SCREEN_ScreenManager::topScreen() const {
 	if (!stack_.empty())
 		return stack_.back().screen;
 	else
@@ -210,7 +210,7 @@ void SCREEN_ScreenManager::shutdown() {
 	nextStack_.clear();
 }
 
-void SCREEN_ScreenManager::push(Screen *screen, int layerFlags) {
+void SCREEN_ScreenManager::push(SCREEN_Screen *screen, int layerFlags) {
 	std::lock_guard<std::recursive_mutex> guard(inputLock_);
 	screen->setSCREEN_ScreenManager(this);
 	if (screen->isTransparent()) {
@@ -248,7 +248,7 @@ void SCREEN_ScreenManager::RecreateAllViews() {
 	}
 }
 
-void SCREEN_ScreenManager::finishDialog(Screen *dialog, DialogResult result) {
+void SCREEN_ScreenManager::finishDialog(SCREEN_Screen *dialog, DialogResult result) {
 	if (stack_.empty()) {
 		printf("Must be in a dialog to finishDialog");
 		return;
@@ -262,7 +262,7 @@ void SCREEN_ScreenManager::finishDialog(Screen *dialog, DialogResult result) {
 	dialogResult_ = result;
 }
 
-Screen *SCREEN_ScreenManager::dialogParent(const Screen *dialog) const {
+SCREEN_Screen *SCREEN_ScreenManager::dialogParent(const SCREEN_Screen *dialog) const {
 	for (size_t i = 1; i < stack_.size(); ++i) {
 		if (stack_[i].screen == dialog) {
 			// The previous screen was the caller (not necessarily the topmost.)
@@ -278,7 +278,7 @@ void SCREEN_ScreenManager::processFinishDialog() {
 		{
 			std::lock_guard<std::recursive_mutex> guard(inputLock_);
 			// Another dialog may have been pushed before the render, so search for it.
-			Screen *caller = dialogParent(dialogFinished_);
+			SCREEN_Screen *caller = dialogParent(dialogFinished_);
 			for (size_t i = 0; i < stack_.size(); ++i) {
 				if (stack_[i].screen == dialogFinished_) {
 					stack_.erase(stack_.begin() + i);

@@ -30,7 +30,7 @@ public:
 	GamePauseScreenPCSX2() {printf("jc: GamePauseScreenPCSX2()\n");}
 	virtual ~GamePauseScreenPCSX2();
 
-	virtual void dialogFinished(const Screen *dialog, DialogResult dr) override;
+	virtual void dialogFinished(const SCREEN_Screen *dialog, DialogResult dr) override;
 
 protected:
 	virtual void CreateViews() override;

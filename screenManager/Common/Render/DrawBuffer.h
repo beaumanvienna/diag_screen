@@ -43,7 +43,7 @@ enum {
 };
 
 namespace SCREEN_Draw {
-	class Pipeline;
+	class SCREEN_Pipeline;
 }
 
 struct GradientStop {
@@ -51,22 +51,22 @@ struct GradientStop {
 	uint32_t color;
 };
 
-class TextDrawer;
+class SCREEN_TextDrawer;
 
 class SCREEN_DrawBuffer {
 public:
 	SCREEN_DrawBuffer();
 	~SCREEN_DrawBuffer();
 
-	void Begin(SCREEN_Draw::Pipeline *pipeline);
+	void Begin(SCREEN_Draw::SCREEN_Pipeline *pipeline);
 	void Flush(bool set_blend_state = true);
 
 	// TODO: Enforce these. Now Init is autocalled and shutdown not called.
-	void Init(SCREEN_Draw::SCREEN_DrawContext *t3d, SCREEN_Draw::Pipeline *pipeline);
+	void Init(SCREEN_Draw::SCREEN_DrawContext *t3d, SCREEN_Draw::SCREEN_Pipeline *pipeline);
 	void Shutdown();
 
 	// So that callers can create appropriate pipelines.
-	SCREEN_Draw::InputLayout *CreateInputLayout(SCREEN_Draw::SCREEN_DrawContext *t3d);
+	SCREEN_Draw::SCREEN_InputLayout *CreateInputLayout(SCREEN_Draw::SCREEN_DrawContext *t3d);
 
 	int Count() const { return count_; }
 
@@ -180,8 +180,8 @@ private:
 	std::vector<float> alphaStack_;
 
 	SCREEN_Draw::SCREEN_DrawContext *draw_;
-	SCREEN_Draw::Buffer *vbuf_;
-	SCREEN_Draw::Pipeline *pipeline_;
+	SCREEN_Draw::SCREEN_Buffer *vbuf_;
+	SCREEN_Draw::SCREEN_Pipeline *pipeline_;
 
 	Vertex *verts_;
 	int count_;

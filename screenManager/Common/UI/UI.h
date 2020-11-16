@@ -61,6 +61,6 @@ private:
 
 
 // Begins/flushes the two UI drawbuffers together.
-void UIBegin(SCREEN_Draw::Pipeline *shaderSet);
+void UIBegin(SCREEN_Draw::SCREEN_Pipeline *shaderSet);
 void UIFlush();
 

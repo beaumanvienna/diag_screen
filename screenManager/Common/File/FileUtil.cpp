@@ -668,26 +668,26 @@ const std::string &GetExeDirectory()
 }
 
 
-IOFile::IOFile()
+SCREEN_IOFile::SCREEN_IOFile()
 	: m_file(NULL), m_good(true)
 {}
 
-IOFile::IOFile(std::FILE* file)
+SCREEN_IOFile::SCREEN_IOFile(std::FILE* file)
 	: m_file(file), m_good(true)
 {}
 
-IOFile::IOFile(const std::string& filename, const char openmode[])
+SCREEN_IOFile::SCREEN_IOFile(const std::string& filename, const char openmode[])
 	: m_file(NULL), m_good(true)
 {
 	Open(filename, openmode);
 }
 
-IOFile::~IOFile()
+SCREEN_IOFile::~SCREEN_IOFile()
 {
 	Close();
 }
 
-bool IOFile::Open(const std::string& filename, const char openmode[])
+bool SCREEN_IOFile::Open(const std::string& filename, const char openmode[])
 {
 	Close();
 	m_file = SCREEN_PFile::OpenCFile(filename, openmode);
@@ -695,7 +695,7 @@ bool IOFile::Open(const std::string& filename, const char openmode[])
 	return m_good;
 }
 
-bool IOFile::Close()
+bool SCREEN_IOFile::Close()
 {
 	if (!IsOpen() || 0 != std::fclose(m_file))
 		m_good = false;
@@ -704,21 +704,21 @@ bool IOFile::Close()
 	return m_good;
 }
 
-std::FILE* IOFile::ReleaseHandle()
+std::FILE* SCREEN_IOFile::ReleaseHandle()
 {
 	std::FILE* const ret = m_file;
 	m_file = NULL;
 	return ret;
 }
 
-void IOFile::SetHandle(std::FILE* file)
+void SCREEN_IOFile::SetHandle(std::FILE* file)
 {
 	Close();
 	Clear();
 	m_file = file;
 }
 
-uint64_t IOFile::GetSize()
+uint64_t SCREEN_IOFile::GetSize()
 {
 	if (IsOpen())
 		return SCREEN_PFile::GetFileSize(m_file);
@@ -726,7 +726,7 @@ uint64_t IOFile::GetSize()
 		return 0;
 }
 
-bool IOFile::Seek(int64_t off, int origin)
+bool SCREEN_IOFile::Seek(int64_t off, int origin)
 {
 	if (!IsOpen() || 0 != fseeko(m_file, off, origin))
 		m_good = false;
@@ -734,7 +734,7 @@ bool IOFile::Seek(int64_t off, int origin)
 	return m_good;
 }
 
-uint64_t IOFile::Tell()
+uint64_t SCREEN_IOFile::Tell()
 {	
 	if (IsOpen())
 		return ftello(m_file);
@@ -742,7 +742,7 @@ uint64_t IOFile::Tell()
 		return -1;
 }
 
-bool IOFile::Flush()
+bool SCREEN_IOFile::Flush()
 {
 	if (!IsOpen() || 0 != std::fflush(m_file))
 		m_good = false;
@@ -750,7 +750,7 @@ bool IOFile::Flush()
 	return m_good;
 }
 
-bool IOFile::Resize(uint64_t size)
+bool SCREEN_IOFile::Resize(uint64_t size)
 {
 	if (!IsOpen() || 0 !=
 

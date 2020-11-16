@@ -111,16 +111,16 @@ const std::string &GetExeDirectory();
 // simple wrapper for cstdlib file functions to
 // hopefully will make error checking easier
 // and make forgetting an fclose() harder
-class IOFile {
+class SCREEN_IOFile {
 public:
-	IOFile();
-	IOFile(FILE* file);
-	IOFile(const std::string& filename, const char openmode[]);
-	~IOFile();
+	SCREEN_IOFile();
+	SCREEN_IOFile(FILE* file);
+	SCREEN_IOFile(const std::string& filename, const char openmode[]);
+	~SCREEN_IOFile();
 
 	// Prevent copies.
-	IOFile(const IOFile &) = delete;
-	void operator=(const IOFile &) = delete;
+	SCREEN_IOFile(const SCREEN_IOFile &) = delete;
+	void operator=(const SCREEN_IOFile &) = delete;
 
 	bool Open(const std::string& filename, const char openmode[]);
 	bool Close();

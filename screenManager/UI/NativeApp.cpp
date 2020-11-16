@@ -103,8 +103,8 @@ static std::mutex pendingMutex;
 static std::vector<PendingMessage> pendingMessages;
 static std::vector<PendingInputBox> pendingInputBoxes;
 static SCREEN_Draw::SCREEN_DrawContext *g_draw;
-static SCREEN_Draw::Pipeline *colorPipeline;
-static SCREEN_Draw::Pipeline *texColorPipeline;
+static SCREEN_Draw::SCREEN_Pipeline *colorPipeline;
+static SCREEN_Draw::SCREEN_Pipeline *texColorPipeline;
 static SCREEN_UIContext *uiContext;
 
 std::thread *graphicsLoadThread;
@@ -254,10 +254,10 @@ bool NativeInitGraphics(SCREEN_GraphicsContext *graphicsContext) {
 bool CreateGlobalPipelines() {
 	using namespace SCREEN_Draw;
 
-	InputLayout *inputLayout = ui_draw2d.CreateInputLayout(g_draw);
+	SCREEN_InputLayout *inputLayout = ui_draw2d.CreateInputLayout(g_draw);
 	SCREEN_BlendState *blendNormal = g_draw->CreateBlendState({ true, 0xF, SCREEN_BlendFactor::SRC_ALPHA, SCREEN_BlendFactor::ONE_MINUS_SRC_ALPHA });
 	SCREEN_DepthStencilState *depth = g_draw->CreateDepthStencilState({ false, false, SCREEN_Comparison::LESS });
-	RasterState *rasterNoCull = g_draw->CreateRasterState({});
+	SCREEN_RasterState *rasterNoCull = g_draw->CreateRasterState({});
 
 	PipelineDesc colorDesc{
 		SCREEN_Primitive::TRIANGLE_LIST,
@@ -370,7 +370,7 @@ bool NativeIsAtTopLevel() {
 		printf("No screen manager active");
 		return false;
 	}
-	Screen *currentScreen = screenManager->topScreen();
+	SCREEN_Screen *currentScreen = screenManager->topScreen();
 	if (currentScreen) {
 		bool top = currentScreen->isTopLevel();
 		printf("Screen toplevel: %i", (int)top);

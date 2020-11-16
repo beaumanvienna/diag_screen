@@ -168,7 +168,7 @@ void DrawGameBackground(SCREEN_UIContext &dc, const std::string &gamePath) {
     */
 }
 
-void HandleCommonMessages(const char *message, const char *value, SCREEN_ScreenManager *manager, Screen *activeScreen) {
+void HandleCommonMessages(const char *message, const char *value, SCREEN_ScreenManager *manager, SCREEN_Screen *activeScreen) {
 	bool isActiveScreen = manager->topScreen() == activeScreen;
 
 	/*if (!strcmp(message, "clear jit")) {

@@ -284,7 +284,7 @@ static const std::vector<ShaderSource> vsCol = {
 };
 
 const UniformBufferDesc vsColBufDesc { sizeof(VsColUB), {
-	{ "WorldViewProj", 0, -1, UniformType::MATRIX4X4, 0 }
+	{ "WorldViewProj", 0, -1, SCREEN_UniformType::MATRIX4X4, 0 }
 } };
 
 static const std::vector<ShaderSource> vsTexCol = {
@@ -353,10 +353,10 @@ static const std::vector<ShaderSource> vsTexCol = {
 };
 
 const UniformBufferDesc vsTexColBufDesc{ sizeof(VsTexColUB),{
-	{ "WorldViewProj", 0, -1, UniformType::MATRIX4X4, 0 }
+	{ "WorldViewProj", 0, -1, SCREEN_UniformType::MATRIX4X4, 0 }
 } };
 
-ShaderModule *CreateShader(SCREEN_DrawContext *draw, SCREEN_ShaderStage stage, const std::vector<ShaderSource> &sources) {
+SCREEN_ShaderModule *CreateShader(SCREEN_DrawContext *draw, SCREEN_ShaderStage stage, const std::vector<ShaderSource> &sources) {
 	uint32_t supported = draw->GetSupportedShaderLanguages();
 	for (auto iter : sources) {
 		if ((uint32_t)iter.lang & supported) {

@@ -375,7 +375,7 @@ bool StickyChoice::Key(const KeyInput &key) {
 	if (key.flags & KEY_DOWN) {
 		if (IsAcceptKey(key)) {
 			down_ = true;
-			SCREEN_UI::PlayUISound(SCREEN_UI::UISound::TOGGLE_ON);
+			SCREEN_UI::PlayUISound(SCREEN_UI::SCREEN_UISound::TOGGLE_ON);
 			Click();
 			return true;
 		}
@@ -426,7 +426,7 @@ void ClickableItem::Draw(SCREEN_UIContext &dc) {
 
 void Choice::Click() {
 	ClickableItem::Click();
-	SCREEN_UI::PlayUISound(SCREEN_UI::UISound::CONFIRM);
+	SCREEN_UI::PlayUISound(SCREEN_UI::SCREEN_UISound::CONFIRM);
 }
 
 void Choice::GetContentDimensionsBySpec(const SCREEN_UIContext &dc, MeasureSpec horiz, MeasureSpec vert, float &w, float &h) const {
@@ -603,7 +603,7 @@ void PopupHeader::Draw(SCREEN_UIContext &dc) {
 void CheckBox::Toggle() {
 	if (toggle_) {
 		*toggle_ = !(*toggle_);
-		SCREEN_UI::PlayUISound(*toggle_ ? SCREEN_UI::UISound::TOGGLE_ON : SCREEN_UI::UISound::TOGGLE_OFF);
+		SCREEN_UI::PlayUISound(*toggle_ ? SCREEN_UI::SCREEN_UISound::TOGGLE_ON : SCREEN_UI::SCREEN_UISound::TOGGLE_OFF);
 	}
 }
 
@@ -678,9 +678,9 @@ void BitCheckBox::Toggle() {
 	if (bitfield_) {
 		*bitfield_ = *bitfield_ ^ bit_;
 		if (*bitfield_ & bit_) {
-			SCREEN_UI::PlayUISound(SCREEN_UI::UISound::TOGGLE_ON);
+			SCREEN_UI::PlayUISound(SCREEN_UI::SCREEN_UISound::TOGGLE_ON);
 		} else {
-			SCREEN_UI::PlayUISound(SCREEN_UI::UISound::TOGGLE_OFF);
+			SCREEN_UI::PlayUISound(SCREEN_UI::SCREEN_UISound::TOGGLE_OFF);
 		}
 	}
 }
@@ -707,7 +707,7 @@ void Button::GetContentDimensions(const SCREEN_UIContext &dc, float &w, float &h
 
 void Button::Click() {
 	Clickable::Click();
-	SCREEN_UI::PlayUISound(SCREEN_UI::UISound::CONFIRM);
+	SCREEN_UI::PlayUISound(SCREEN_UI::SCREEN_UISound::CONFIRM);
 }
 
 void Button::Draw(SCREEN_UIContext &dc) {

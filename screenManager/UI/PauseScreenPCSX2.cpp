@@ -51,7 +51,7 @@ void GamePauseScreenPCSX2::CreateViews() {
 	rightColumnItems->Add(new Choice("Exit to Marley"))->OnClick.Handle(this, &GamePauseScreenPCSX2::OnExitToMarley);
 }
 
-void GamePauseScreenPCSX2::dialogFinished(const Screen *dialog, DialogResult dr) {
+void GamePauseScreenPCSX2::dialogFinished(const SCREEN_Screen *dialog, DialogResult dr) {
 
 }
 

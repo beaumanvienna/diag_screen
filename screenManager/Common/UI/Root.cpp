@@ -20,7 +20,7 @@ static bool focusMovementEnabled;
 bool focusForced;
 static std::mutex eventMutex_;
 
-static std::function<void(UISound)> soundCallback;
+static std::function<void(SCREEN_UISound)> soundCallback;
 static bool soundEnabled = true;
 
 
@@ -141,7 +141,7 @@ void MoveFocus(ViewGroup *root, FocusDirection direction) {
 		neigh.view->SetFocus();
 		root->SubviewFocused(neigh.view);
 
-		PlayUISound(UISound::SELECT);
+		PlayUISound(SCREEN_UISound::SELECT);
 	}
 }
 
@@ -149,11 +149,11 @@ void SetSoundEnabled(bool enabled) {
 	soundEnabled = enabled;
 }
 
-void SetSoundCallback(std::function<void(UISound)> func) {
+void SetSoundCallback(std::function<void(SCREEN_UISound)> func) {
 	soundCallback = func;
 }
 
-void PlayUISound(UISound sound) {
+void PlayUISound(SCREEN_UISound sound) {
 	if (soundEnabled && soundCallback) {
 		soundCallback(sound);
 	}

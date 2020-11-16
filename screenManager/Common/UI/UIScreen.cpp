@@ -19,7 +19,7 @@
 static const bool ClickDebug = false;
 
 SCREEN_UIScreen::SCREEN_UIScreen()
-	: Screen() {
+	: SCREEN_Screen() {
     printf("jc: SCREEN_UIScreen::SCREEN_UIScreen() \n");
 }
 
@@ -89,7 +89,7 @@ void SCREEN_UIScreen::preRender() {
 	}
 	draw->BeginFrame();
 	// Bind and clear the back buffer
-	draw->BindFramebufferAsRenderTarget(nullptr, { RPAction::CLEAR, RPAction::CLEAR, RPAction::CLEAR, 0xFF000000 }, "UI");
+	draw->BindFramebufferAsRenderTarget(nullptr, { SCREEN_RPAction::CLEAR, SCREEN_RPAction::CLEAR, SCREEN_RPAction::CLEAR, 0xFF000000 }, "UI");
 	screenManager()->getUIContext()->BeginFrame();
 
 	SCREEN_Draw::Viewport viewport;
@@ -179,7 +179,7 @@ bool SCREEN_UIDialogScreen::key(const KeyInput &key) {
 		} else {
 			finished_ = true;
 			TriggerFinish(DR_BACK);
-			SCREEN_UI::PlayUISound(SCREEN_UI::UISound::BACK);
+			SCREEN_UI::PlayUISound(SCREEN_UI::SCREEN_UISound::BACK);
 		}
 		return true;
 	}
@@ -187,7 +187,7 @@ bool SCREEN_UIDialogScreen::key(const KeyInput &key) {
 }
 
 void SCREEN_UIDialogScreen::sendMessage(const char *msg, const char *value) {
-	Screen *screen = screenManager()->dialogParent(this);
+	SCREEN_Screen *screen = screenManager()->dialogParent(this);
 	if (screen) {
 		screen->sendMessage(msg, value);
 	}

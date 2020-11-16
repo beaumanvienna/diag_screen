@@ -370,11 +370,11 @@ class SCREEN_DepthStencilState : public SCREEN_RefCountedObject {
 public:
 };
 
-class Framebuffer : public SCREEN_RefCountedObject {
+class SCREEN_Framebuffer : public SCREEN_RefCountedObject {
 public:
 };
 
-class Buffer : public SCREEN_RefCountedObject {
+class SCREEN_Buffer : public SCREEN_RefCountedObject {
 public:
 };
 
@@ -404,9 +404,9 @@ struct InputLayoutDesc {
 	std::vector<AttributeDesc> attributes;
 };
 
-class InputLayout : public SCREEN_RefCountedObject { };
+class SCREEN_InputLayout : public SCREEN_RefCountedObject { };
 
-enum class UniformType : int8_t {
+enum class SCREEN_UniformType : int8_t {
 	FLOAT1,
 	FLOAT2,
 	FLOAT3,
@@ -419,7 +419,7 @@ struct UniformDesc {
 	const char *name;  // For GL
 	int16_t vertexReg;        // For D3D
 	int16_t fragmentReg;      // For D3D
-	UniformType type;
+	SCREEN_UniformType type;
 	int16_t offset;
 	// TODO: Support array elements etc.
 };
@@ -429,18 +429,18 @@ struct UniformBufferDesc {
 	std::vector<UniformDesc> uniforms;
 };
 
-class ShaderModule : public SCREEN_RefCountedObject {
+class SCREEN_ShaderModule : public SCREEN_RefCountedObject {
 public:
 	virtual SCREEN_ShaderStage GetStage() const = 0;
 };
 
-class Pipeline : public SCREEN_RefCountedObject {
+class SCREEN_Pipeline : public SCREEN_RefCountedObject {
 public:
-	virtual ~Pipeline() {}
+	virtual ~SCREEN_Pipeline() {}
 	virtual bool RequiresBuffer() = 0;
 };
 
-class RasterState : public SCREEN_RefCountedObject {};
+class SCREEN_RasterState : public SCREEN_RefCountedObject {};
 
 struct StencilSide {
 	SCREEN_StencilOp failOp;
@@ -494,11 +494,11 @@ struct RasterStateDesc {
 
 struct PipelineDesc {
 	SCREEN_Primitive prim;
-	std::vector<ShaderModule *> shaders;
-	InputLayout *inputLayout;
+	std::vector<SCREEN_ShaderModule *> shaders;
+	SCREEN_InputLayout *inputLayout;
 	SCREEN_DepthStencilState *depthStencil;
 	SCREEN_BlendState *blend;
-	RasterState *raster;
+	SCREEN_RasterState *raster;
 	const UniformBufferDesc *uniformDesc;
 };
 
@@ -543,16 +543,16 @@ struct TextureDesc {
 	TextureCallback initDataCallback;
 };
 
-enum class RPAction {
+enum class SCREEN_RPAction {
 	DONT_CARE,
 	CLEAR,
 	KEEP,
 };
 
 struct RenderPassInfo {
-	RPAction color;
-	RPAction depth;
-	RPAction stencil;
+	SCREEN_RPAction color;
+	SCREEN_RPAction depth;
+	SCREEN_RPAction stencil;
 	uint32_t clearColor;
 	float clearDepth;
 	uint8_t clearStencil;
@@ -579,52 +579,52 @@ public:
 	virtual SCREEN_DepthStencilState *CreateDepthStencilState(const DepthStencilStateDesc &desc) = 0;
 	virtual SCREEN_BlendState *CreateBlendState(const BlendStateDesc &desc) = 0;
 	virtual SCREEN_SamplerState *CreateSamplerState(const SamplerStateDesc &desc) = 0;
-	virtual RasterState *CreateRasterState(const RasterStateDesc &desc) = 0;
+	virtual SCREEN_RasterState *CreateRasterState(const RasterStateDesc &desc) = 0;
 	// virtual ComputePipeline CreateComputePipeline(const ComputePipelineDesc &desc) = 0
-	virtual InputLayout *CreateInputLayout(const InputLayoutDesc &desc) = 0;
+	virtual SCREEN_InputLayout *CreateInputLayout(const InputLayoutDesc &desc) = 0;
 
 	// Note that these DO NOT AddRef so you must not ->Release presets unless you manually AddRef them.
-	ShaderModule *GetVshaderPreset(VertexShaderPreset preset) { return vsPresets_[preset]; }
-	ShaderModule *GetFshaderPreset(FragmentShaderPreset preset) { return fsPresets_[preset]; }
+	SCREEN_ShaderModule *GetVshaderPreset(VertexShaderPreset preset) { return vsPresets_[preset]; }
+	SCREEN_ShaderModule *GetFshaderPreset(FragmentShaderPreset preset) { return fsPresets_[preset]; }
 
 	// Resources
-	virtual Buffer *CreateBuffer(size_t size, uint32_t usageFlags) = 0;
+	virtual SCREEN_Buffer *CreateBuffer(size_t size, uint32_t usageFlags) = 0;
 	// Does not take ownership over pointed-to initData. After this returns, can dispose of it.
 	virtual SCREEN_Texture *CreateTexture(const TextureDesc &desc) = 0;
 	// On some hardware, you might get a 24-bit depth buffer even though you only wanted a 16-bit one.
-	virtual Framebuffer *CreateFramebuffer(const FramebufferDesc &desc) = 0;
+	virtual SCREEN_Framebuffer *CreateFramebuffer(const FramebufferDesc &desc) = 0;
 
-	virtual ShaderModule *CreateShaderModule(SCREEN_ShaderStage stage, SCREEN_ShaderLanguage language, const uint8_t *data, size_t dataSize, const std::string &tag = "thin3d") = 0;
-	virtual Pipeline *CreateGraphicsPipeline(const PipelineDesc &desc) = 0;
+	virtual SCREEN_ShaderModule *CreateShaderModule(SCREEN_ShaderStage stage, SCREEN_ShaderLanguage language, const uint8_t *data, size_t dataSize, const std::string &tag = "thin3d") = 0;
+	virtual SCREEN_Pipeline *CreateGraphicsPipeline(const PipelineDesc &desc) = 0;
 
 	// Copies data from the CPU over into the buffer, at a specific offset. This does not change the size of the buffer and cannot write outside it.
-	virtual void UpdateBuffer(Buffer *buffer, const uint8_t *data, size_t offset, size_t size, UpdateBufferFlags flags) = 0;
+	virtual void UpdateBuffer(SCREEN_Buffer *buffer, const uint8_t *data, size_t offset, size_t size, UpdateBufferFlags flags) = 0;
 
-	virtual void CopyFramebufferImage(Framebuffer *src, int level, int x, int y, int z, Framebuffer *dst, int dstLevel, int dstX, int dstY, int dstZ, int width, int height, int depth, int channelBits, const char *tag) = 0;
-	virtual bool BlitFramebuffer(Framebuffer *src, int srcX1, int srcY1, int srcX2, int srcY2, Framebuffer *dst, int dstX1, int dstY1, int dstX2, int dstY2, int channelBits, FBBlitFilter filter, const char *tag) = 0;
-	virtual bool CopyFramebufferToMemorySync(Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat format, void *pixels, int pixelStride, const char *tag) {
+	virtual void CopyFramebufferImage(SCREEN_Framebuffer *src, int level, int x, int y, int z, SCREEN_Framebuffer *dst, int dstLevel, int dstX, int dstY, int dstZ, int width, int height, int depth, int channelBits, const char *tag) = 0;
+	virtual bool BlitFramebuffer(SCREEN_Framebuffer *src, int srcX1, int srcY1, int srcX2, int srcY2, SCREEN_Framebuffer *dst, int dstX1, int dstY1, int dstX2, int dstY2, int channelBits, FBBlitFilter filter, const char *tag) = 0;
+	virtual bool CopyFramebufferToMemorySync(SCREEN_Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat format, void *pixels, int pixelStride, const char *tag) {
 		return false;
 	}
-	virtual DataFormat PreferredFramebufferReadbackFormat(Framebuffer *src) {
+	virtual DataFormat PreferredFramebufferReadbackFormat(SCREEN_Framebuffer *src) {
 		return DataFormat::R8G8B8A8_UNORM;
 	}
 
 	// These functions should be self explanatory.
 	// Binding a zero render target means binding the backbuffer.
-	virtual void BindFramebufferAsRenderTarget(Framebuffer *fbo, const RenderPassInfo &rp, const char *tag) = 0;
+	virtual void BindFramebufferAsRenderTarget(SCREEN_Framebuffer *fbo, const RenderPassInfo &rp, const char *tag) = 0;
 
 	// binding must be < MAX_TEXTURE_SLOTS (0, 1 are okay if it's 2).
-	virtual void BindFramebufferAsTexture(Framebuffer *fbo, int binding, FBChannel channelBit, int attachment) = 0;
+	virtual void BindFramebufferAsTexture(SCREEN_Framebuffer *fbo, int binding, FBChannel channelBit, int attachment) = 0;
 
 	// deprecated
-	virtual uintptr_t GetFramebufferAPITexture(Framebuffer *fbo, int channelBits, int attachment) {
+	virtual uintptr_t GetFramebufferAPITexture(SCREEN_Framebuffer *fbo, int channelBits, int attachment) {
 		return 0;
 	}
 
-	virtual void GetFramebufferDimensions(Framebuffer *fbo, int *w, int *h) = 0;
+	virtual void GetFramebufferDimensions(SCREEN_Framebuffer *fbo, int *w, int *h) = 0;
 
 	// Useful in OpenGL ES to give hints about framebuffers on tiler GPUs.
-	virtual void InvalidateFramebuffer(Framebuffer *fbo) {}
+	virtual void InvalidateFramebuffer(SCREEN_Framebuffer *fbo) {}
 
 	// Dynamic state
 	virtual void SetScissorRect(int left, int top, int width, int height) = 0;
@@ -634,8 +634,8 @@ public:
 
 	virtual void BindSamplerStates(int start, int count, SCREEN_SamplerState **state) = 0;
 	virtual void BindTextures(int start, int count, SCREEN_Texture **textures) = 0;
-	virtual void BindVertexBuffers(int start, int count, Buffer **buffers, int *offsets) = 0;
-	virtual void BindIndexBuffer(Buffer *indexBuffer, int offset) = 0;
+	virtual void BindVertexBuffers(int start, int count, SCREEN_Buffer **buffers, int *offsets) = 0;
+	virtual void BindIndexBuffer(SCREEN_Buffer *indexBuffer, int offset) = 0;
 
 	// Only supports a single dynamic uniform buffer, for maximum compatibility with the old APIs and ease of emulation.
 	// More modern methods will be added later.
@@ -651,7 +651,7 @@ public:
 	// Must not actually perform any API calls itself since this can be called when no framebuffer is bound for rendering.
 	virtual void InvalidateCachedState() = 0;
 
-	virtual void BindPipeline(Pipeline *pipeline) = 0;
+	virtual void BindPipeline(SCREEN_Pipeline *pipeline) = 0;
 
 	virtual void Draw(int vertexCount, int offset) = 0;
 	virtual void DrawIndexed(int vertexCount, int offset) = 0;  // Always 16-bit indices.
@@ -683,8 +683,8 @@ public:
 	virtual int GetCurrentStepId() const = 0;
 
 protected:
-	ShaderModule *vsPresets_[VS_MAX_PRESET];
-	ShaderModule *fsPresets_[FS_MAX_PRESET];
+	SCREEN_ShaderModule *vsPresets_[VS_MAX_PRESET];
+	SCREEN_ShaderModule *fsPresets_[FS_MAX_PRESET];
 
 	int targetWidth_;
 	int targetHeight_;
@@ -712,6 +712,6 @@ struct ShaderSource {
 	const char *src;
 };
 
-ShaderModule *CreateShader(SCREEN_DrawContext *draw, SCREEN_ShaderStage stage, const std::vector<ShaderSource> &sources);
+SCREEN_ShaderModule *CreateShader(SCREEN_DrawContext *draw, SCREEN_ShaderStage stage, const std::vector<ShaderSource> &sources);
 
 }  // namespace SCREEN_Draw

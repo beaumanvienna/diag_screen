@@ -7,35 +7,32 @@
 #include "Common/Data/Encoding/Utf8.h"
 
 #include "Common/Render/Text/draw_text.h"
-#include "Common/Render/Text/draw_text_win.h"
-#include "Common/Render/Text/draw_text_uwp.h"
-#include "Common/Render/Text/draw_text_qt.h"
-#include "Common/Render/Text/draw_text_android.h"
 
-TextDrawer::TextDrawer(SCREEN_Draw::SCREEN_DrawContext *draw) : draw_(draw) {
+
+SCREEN_TextDrawer::SCREEN_TextDrawer(SCREEN_Draw::SCREEN_DrawContext *draw) : draw_(draw) {
 	// These probably shouldn't be state.
 	dpiScale_ = CalculateDPIScale();
 }
-TextDrawer::~TextDrawer() {
+SCREEN_TextDrawer::~SCREEN_TextDrawer() {
 }
 
-float TextDrawerWordWrapper::MeasureWidth(const char *str, size_t bytes) {
+float SCREEN_TextDrawerWordWrapper::MeasureWidth(const char *str, size_t bytes) {
 	float w, h;
 	drawer_->MeasureString(str, bytes, &w, &h);
 	return w;
 }
 
-void TextDrawer::WrapString(std::string &out, const char *str, float maxW, int flags) {
-	TextDrawerWordWrapper wrapper(this, str, maxW, flags);
+void SCREEN_TextDrawer::WrapString(std::string &out, const char *str, float maxW, int flags) {
+	SCREEN_TextDrawerWordWrapper wrapper(this, str, maxW, flags);
 	out = wrapper.Wrapped();
 }
 
-void TextDrawer::SetFontScale(float xscale, float yscale) {
+void SCREEN_TextDrawer::SetFontScale(float xscale, float yscale) {
 	fontScaleX_ = xscale;
 	fontScaleY_ = yscale;
 }
 
-float TextDrawer::CalculateDPIScale() {
+float SCREEN_TextDrawer::CalculateDPIScale() {
 	if (ignoreGlobalDpi_)
 		return dpiScale_;
 	float scale = g_dpi_scale_y;
@@ -45,7 +42,7 @@ float TextDrawer::CalculateDPIScale() {
 	return scale;
 }
 
-void TextDrawer::DrawStringRect(SCREEN_DrawBuffer &target, const char *str, const Bounds &bounds, uint32_t color, int align) {
+void SCREEN_TextDrawer::DrawStringRect(SCREEN_DrawBuffer &target, const char *str, const Bounds &bounds, uint32_t color, int align) {
 	float x = bounds.x;
 	float y = bounds.y;
 	if (align & ALIGN_HCENTER) {
@@ -69,7 +66,7 @@ void TextDrawer::DrawStringRect(SCREEN_DrawBuffer &target, const char *str, cons
 	DrawString(target, toDraw.c_str(), x, y, color, align);
 }
 
-void TextDrawer::DrawStringBitmapRect(std::vector<uint8_t> &bitmapData, TextStringEntry &entry, SCREEN_Draw::DataFormat texFormat, const char *str, const Bounds &bounds, int align) {
+void SCREEN_TextDrawer::DrawStringBitmapRect(std::vector<uint8_t> &bitmapData, TextStringEntry &entry, SCREEN_Draw::DataFormat texFormat, const char *str, const Bounds &bounds, int align) {
 	std::string toDraw = str;
 	int wrap = align & (FLAG_WRAP_TEXT | FLAG_ELLIPSIZE_TEXT);
 	if (wrap) {
@@ -80,8 +77,8 @@ void TextDrawer::DrawStringBitmapRect(std::vector<uint8_t> &bitmapData, TextStri
 	DrawStringBitmap(bitmapData, entry, texFormat, toDraw.c_str(), align);
 }
 
-TextDrawer *TextDrawer::Create(SCREEN_Draw::SCREEN_DrawContext *draw) {
-	TextDrawer *drawer = nullptr;
+SCREEN_TextDrawer *SCREEN_TextDrawer::Create(SCREEN_Draw::SCREEN_DrawContext *draw) {
+	SCREEN_TextDrawer *drawer = nullptr;
 
 	if (drawer && !drawer->IsReady()) {
 		delete drawer;

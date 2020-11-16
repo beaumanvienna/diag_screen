@@ -13,7 +13,7 @@ namespace SCREEN_Draw {
 	class SCREEN_DrawContext;
 }
 
-class SCREEN_UIScreen : public Screen {
+class SCREEN_UIScreen : public SCREEN_Screen {
 public:
 	SCREEN_UIScreen();
 	~SCREEN_UIScreen();

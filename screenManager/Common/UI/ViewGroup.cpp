@@ -1332,13 +1332,13 @@ bool ChoiceStrip::Key(const KeyInput &input) {
 		if (IsTabLeftKey(input)) {
 			if (selected_ > 0) {
 				SetSelection(selected_ - 1);
-				SCREEN_UI::PlayUISound(SCREEN_UI::UISound::TOGGLE_OFF);  // Maybe make specific sounds for this at some point?
+				SCREEN_UI::PlayUISound(SCREEN_UI::SCREEN_UISound::TOGGLE_OFF);  // Maybe make specific sounds for this at some point?
 			}
 			ret = true;
 		} else if (IsTabRightKey(input)) {
 			if (selected_ < (int)views_.size() - 1) {
 				SetSelection(selected_ + 1);
-				SCREEN_UI::PlayUISound(SCREEN_UI::UISound::TOGGLE_ON);
+				SCREEN_UI::PlayUISound(SCREEN_UI::SCREEN_UISound::TOGGLE_ON);
 			}
 			ret = true;
 		}

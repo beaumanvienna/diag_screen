@@ -36,9 +36,9 @@ struct TextMeasureEntry {
 	int lastUsedFrame;
 };
 
-class TextDrawer {
+class SCREEN_TextDrawer {
 public:
-	virtual ~TextDrawer();
+	virtual ~SCREEN_TextDrawer();
 
 	virtual bool IsReady() const { return true; }
 	virtual uint32_t SetFont(const char *fontName, int size, int flags) = 0;
@@ -60,10 +60,10 @@ public:
 	}
 
 	// Factory function that selects implementation.
-	static TextDrawer *Create(SCREEN_Draw::SCREEN_DrawContext *draw);
+	static SCREEN_TextDrawer *Create(SCREEN_Draw::SCREEN_DrawContext *draw);
 
 protected:
-	TextDrawer(SCREEN_Draw::SCREEN_DrawContext *draw);
+	SCREEN_TextDrawer(SCREEN_Draw::SCREEN_DrawContext *draw);
 
 	SCREEN_Draw::SCREEN_DrawContext *draw_;
 	virtual void ClearCache() = 0;
@@ -88,13 +88,13 @@ protected:
 	bool ignoreGlobalDpi_ = false;
 };
 
-class TextDrawerWordWrapper : public WordWrapper {
+class SCREEN_TextDrawerWordWrapper : public WordWrapper {
 public:
-	TextDrawerWordWrapper(TextDrawer *drawer, const char *str, float maxW, int flags)
+	SCREEN_TextDrawerWordWrapper(SCREEN_TextDrawer *drawer, const char *str, float maxW, int flags)
 		: WordWrapper(str, maxW, flags), drawer_(drawer) {}
 
 protected:
 	float MeasureWidth(const char *str, size_t bytes) override;
 
-	TextDrawer *drawer_;
+	SCREEN_TextDrawer *drawer_;
 };

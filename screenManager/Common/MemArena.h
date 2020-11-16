@@ -31,9 +31,9 @@
 // Multiple views can mirror the same section of the block, which makes it very convient for emulating
 // memory mirrors.
 
-struct MemArenaData;
+struct SCREEN_MemArenaData;
 
-class MemArena {
+class SCREEN_MemArena {
 public:
 	size_t roundup(size_t x);
 	void GrabLowMemSpace(size_t size);

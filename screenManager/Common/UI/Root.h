@@ -28,7 +28,7 @@ bool KeyEvent(const KeyInput &key, ViewGroup *root);
 bool TouchEvent(const TouchInput &touch, ViewGroup *root);
 bool AxisEvent(const AxisInput &axis, ViewGroup *root);
 
-enum class UISound {
+enum class SCREEN_UISound {
 	SELECT = 0,
 	BACK,
 	CONFIRM,
@@ -38,8 +38,8 @@ enum class UISound {
 };
 
 void SetSoundEnabled(bool enabled);
-void SetSoundCallback(std::function<void(UISound)> func);
+void SetSoundCallback(std::function<void(SCREEN_UISound)> func);
 
-void PlayUISound(UISound sound);
+void PlayUISound(SCREEN_UISound sound);
 
 }  // namespace SCREEN_UI

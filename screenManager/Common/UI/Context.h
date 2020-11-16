@@ -13,7 +13,7 @@
 
 namespace SCREEN_Draw {
 	class SCREEN_DrawContext;
-	class Pipeline;
+	class SCREEN_Pipeline;
 	class DepthStencilState;
 	class SCREEN_Texture;
 	class BlendState;
@@ -24,7 +24,7 @@ namespace SCREEN_Draw {
 class SCREEN_Texture;
 class SCREEN_ManagedTexture;
 class SCREEN_DrawBuffer;
-class TextDrawer;
+class SCREEN_TextDrawer;
 
 namespace SCREEN_UI {
 	struct Drawable;
@@ -49,13 +49,13 @@ public:
 	SCREEN_UIContext();
 	~SCREEN_UIContext();
 
-	void Init(SCREEN_Draw::SCREEN_DrawContext *thin3d, SCREEN_Draw::Pipeline *uipipe, SCREEN_Draw::Pipeline *uipipenotex, SCREEN_DrawBuffer *uidrawbuffer, SCREEN_DrawBuffer *uidrawbufferTop);
+	void Init(SCREEN_Draw::SCREEN_DrawContext *thin3d, SCREEN_Draw::SCREEN_Pipeline *uipipe, SCREEN_Draw::SCREEN_Pipeline *uipipenotex, SCREEN_DrawBuffer *uidrawbuffer, SCREEN_DrawBuffer *uidrawbufferTop);
 
 	void BeginFrame();
 
 	void Begin();
 	void BeginNoTex();
-	void BeginPipeline(SCREEN_Draw::Pipeline *pipeline, SCREEN_Draw::SCREEN_SamplerState *samplerState);
+	void BeginPipeline(SCREEN_Draw::SCREEN_Pipeline *pipeline, SCREEN_Draw::SCREEN_SamplerState *samplerState);
 	void Flush();
 
 	void RebindTexture() const;
@@ -73,7 +73,7 @@ public:
 
 	// Utility methods
 
-	TextDrawer *Text() const { return textDrawer_; }
+	SCREEN_TextDrawer *Text() const { return textDrawer_; }
 
 	void SetFontStyle(const SCREEN_UI::FontStyle &style);
 	const SCREEN_UI::FontStyle &GetFontStyle() { return *fontStyle_; }
@@ -104,11 +104,11 @@ private:
 	float fontScaleX_ = 1.0f;
 	float fontScaleY_ = 1.0f;
 	SCREEN_UI::FontStyle *fontStyle_ = nullptr;
-	TextDrawer *textDrawer_ = nullptr;
+	SCREEN_TextDrawer *textDrawer_ = nullptr;
 
 	SCREEN_Draw::SCREEN_SamplerState *sampler_;
-	SCREEN_Draw::Pipeline *ui_pipeline_ = nullptr;
-	SCREEN_Draw::Pipeline *ui_pipeline_notex_ = nullptr;
+	SCREEN_Draw::SCREEN_Pipeline *ui_pipeline_ = nullptr;
+	SCREEN_Draw::SCREEN_Pipeline *ui_pipeline_notex_ = nullptr;
 	std::unique_ptr<SCREEN_ManagedTexture> uitexture_;
 
 	SCREEN_DrawBuffer *uidrawbuffer_ = nullptr;
