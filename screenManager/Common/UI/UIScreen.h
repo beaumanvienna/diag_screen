@@ -8,7 +8,7 @@
 
 using namespace SCREEN_Lin;
 
-class I18NCategory;
+class SCREEN_I18NCategory;
 namespace SCREEN_Draw {
 	class SCREEN_DrawContext;
 }
@@ -45,8 +45,8 @@ protected:
 	virtual void RecreateViews() override { recreateViews_ = true; }
 
 	SCREEN_UI::ViewGroup *root_ = nullptr;
-	Vec3 translation_ = Vec3(0.0f);
-	Vec3 scale_ = Vec3(1.0f);
+	SCREEN_Vec3 translation_ = SCREEN_Vec3(0.0f);
+	SCREEN_Vec3 scale_ = SCREEN_Vec3(1.0f);
 	float alpha_ = 1.0f;
 	bool ignoreInsets_ = false;
 

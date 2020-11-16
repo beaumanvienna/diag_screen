@@ -139,11 +139,11 @@ static std::string EscapeComments(const std::string &value) {
 	return result;
 }
 
-void Section::Clear() {
+void SCREEN_Section::Clear() {
 	lines.clear();
 }
 
-std::string* Section::GetLine(const char* key, std::string* valueOut, std::string* commentOut)
+std::string* SCREEN_Section::GetLine(const char* key, std::string* valueOut, std::string* commentOut)
 {
 	for (std::vector<std::string>::iterator iter = lines.begin(); iter != lines.end(); ++iter)
 	{
@@ -156,23 +156,23 @@ std::string* Section::GetLine(const char* key, std::string* valueOut, std::strin
 	return 0;
 }
 
-void Section::Set(const char* key, uint32_t newValue) {
+void SCREEN_Section::Set(const char* key, uint32_t newValue) {
 	Set(key, PStringFromFormat("0x%08x", newValue).c_str());
 }
 
-void Section::Set(const char* key, float newValue) {
+void SCREEN_Section::Set(const char* key, float newValue) {
 	Set(key, PStringFromFormat("%f", newValue).c_str());
 }
 
-void Section::Set(const char* key, double newValue) {
+void SCREEN_Section::Set(const char* key, double newValue) {
 	Set(key, PStringFromFormat("%f", newValue).c_str());
 }
 
-void Section::Set(const char* key, int newValue) {
+void SCREEN_Section::Set(const char* key, int newValue) {
 	Set(key, StringFromInt(newValue).c_str());
 }
 
-void Section::Set(const char* key, const char* newValue)
+void SCREEN_Section::Set(const char* key, const char* newValue)
 {
 	std::string value, commented;
 	std::string* line = GetLine(key, &value, &commented);
@@ -188,7 +188,7 @@ void Section::Set(const char* key, const char* newValue)
 	}
 }
 
-void Section::Set(const char* key, const std::string& newValue, const std::string& defaultValue)
+void SCREEN_Section::Set(const char* key, const std::string& newValue, const std::string& defaultValue)
 {
 	if (newValue != defaultValue)
 		Set(key, newValue);
@@ -196,7 +196,7 @@ void Section::Set(const char* key, const std::string& newValue, const std::strin
 		Delete(key);
 }
 
-bool Section::Get(const char* key, std::string* value, const char* defaultValue)
+bool SCREEN_Section::Get(const char* key, std::string* value, const char* defaultValue)
 {
 	const std::string* line = GetLine(key, value, 0);
 	if (!line)
@@ -210,7 +210,7 @@ bool Section::Get(const char* key, std::string* value, const char* defaultValue)
 	return true;
 }
 
-void Section::Set(const char* key, const float newValue, const float defaultValue)
+void SCREEN_Section::Set(const char* key, const float newValue, const float defaultValue)
 {
 	if (newValue != defaultValue)
 		Set(key, newValue);
@@ -218,7 +218,7 @@ void Section::Set(const char* key, const float newValue, const float defaultValu
 		Delete(key);
 }
 
-void Section::Set(const char* key, int newValue, int defaultValue)
+void SCREEN_Section::Set(const char* key, int newValue, int defaultValue)
 {
 	if (newValue != defaultValue)
 		Set(key, newValue);
@@ -226,7 +226,7 @@ void Section::Set(const char* key, int newValue, int defaultValue)
 		Delete(key);
 }
 
-void Section::Set(const char* key, bool newValue, bool defaultValue)
+void SCREEN_Section::Set(const char* key, bool newValue, bool defaultValue)
 {
 	if (newValue != defaultValue)
 		Set(key, newValue);
@@ -234,7 +234,7 @@ void Section::Set(const char* key, bool newValue, bool defaultValue)
 		Delete(key);
 }
 
-void Section::Set(const char* key, const std::vector<std::string>& newValues) 
+void SCREEN_Section::Set(const char* key, const std::vector<std::string>& newValues) 
 {
 	std::string temp;
 	// Join the strings with , 
@@ -249,11 +249,11 @@ void Section::Set(const char* key, const std::vector<std::string>& newValues)
 	Set(key, temp.c_str());
 }
 
-void Section::AddComment(const std::string &comment) {
+void SCREEN_Section::AddComment(const std::string &comment) {
 	lines.push_back("# " + comment);
 }
 
-bool Section::Get(const char* key, std::vector<std::string>& values) 
+bool SCREEN_Section::Get(const char* key, std::vector<std::string>& values) 
 {
 	std::string temp;
 	bool retval = Get(key, &temp, 0);
@@ -281,7 +281,7 @@ bool Section::Get(const char* key, std::vector<std::string>& values)
 	return true;
 }
 
-bool Section::Get(const char* key, int* value, int defaultValue)
+bool SCREEN_Section::Get(const char* key, int* value, int defaultValue)
 {
 	std::string temp;
 	bool retval = Get(key, &temp, 0);
@@ -291,7 +291,7 @@ bool Section::Get(const char* key, int* value, int defaultValue)
 	return false;
 }
 
-bool Section::Get(const char* key, uint32_t* value, uint32_t defaultValue)
+bool SCREEN_Section::Get(const char* key, uint32_t* value, uint32_t defaultValue)
 {
 	std::string temp;
 	bool retval = Get(key, &temp, 0);
@@ -301,7 +301,7 @@ bool Section::Get(const char* key, uint32_t* value, uint32_t defaultValue)
 	return false;
 }
 
-bool Section::Get(const char* key, bool* value, bool defaultValue)
+bool SCREEN_Section::Get(const char* key, bool* value, bool defaultValue)
 {
 	std::string temp;
 	bool retval = Get(key, &temp, 0);
@@ -311,7 +311,7 @@ bool Section::Get(const char* key, bool* value, bool defaultValue)
 	return false;
 }
 
-bool Section::Get(const char* key, float* value, float defaultValue)
+bool SCREEN_Section::Get(const char* key, float* value, float defaultValue)
 {
 	std::string temp;
 	bool retval = Get(key, &temp, 0);
@@ -321,7 +321,7 @@ bool Section::Get(const char* key, float* value, float defaultValue)
 	return false;
 }
 
-bool Section::Get(const char* key, double* value, double defaultValue)
+bool SCREEN_Section::Get(const char* key, double* value, double defaultValue)
 {
 	std::string temp;
 	bool retval = Get(key, &temp, 0);
@@ -331,7 +331,7 @@ bool Section::Get(const char* key, double* value, double defaultValue)
 	return false;
 }
 
-bool Section::Exists(const char *key) const
+bool SCREEN_Section::Exists(const char *key) const
 {
 	for (std::vector<std::string>::const_iterator iter = lines.begin(); iter != lines.end(); ++iter)
 	{
@@ -343,7 +343,7 @@ bool Section::Exists(const char *key) const
 	return false;
 }
 
-std::map<std::string, std::string> Section::ToMap() const
+std::map<std::string, std::string> SCREEN_Section::ToMap() const
 {
 	std::map<std::string, std::string> outMap;
 	for (std::vector<std::string>::const_iterator iter = lines.begin(); iter != lines.end(); ++iter)
@@ -357,7 +357,7 @@ std::map<std::string, std::string> Section::ToMap() const
 }
 
 
-bool Section::Delete(const char *key)
+bool SCREEN_Section::Delete(const char *key)
 {
 	std::string* line = GetLine(key, 0, 0);
 	for (std::vector<std::string>::iterator liter = lines.begin(); liter != lines.end(); ++liter)
@@ -373,39 +373,39 @@ bool Section::Delete(const char *key)
 
 // PIniFile
 
-const Section* PIniFile::GetSection(const char* sectionName) const
+const SCREEN_Section* SCREEN_IniFile::GetSection(const char* sectionName) const
 {
-	for (std::vector<Section>::const_iterator iter = sections.begin(); iter != sections.end(); ++iter)
+	for (std::vector<SCREEN_Section>::const_iterator iter = sections.begin(); iter != sections.end(); ++iter)
 		if (!strcasecmp(iter->name().c_str(), sectionName))
 			return (&(*iter));
 	return 0;
 }
 
-Section* PIniFile::GetSection(const char* sectionName)
+SCREEN_Section* SCREEN_IniFile::GetSection(const char* sectionName)
 {
-	for (std::vector<Section>::iterator iter = sections.begin(); iter != sections.end(); ++iter)
+	for (std::vector<SCREEN_Section>::iterator iter = sections.begin(); iter != sections.end(); ++iter)
 		if (!strcasecmp(iter->name().c_str(), sectionName))
 			return (&(*iter));
 	return 0;
 }
 
-Section* PIniFile::GetOrCreateSection(const char* sectionName)
+SCREEN_Section* SCREEN_IniFile::GetOrCreateSection(const char* sectionName)
 {
-	Section* section = GetSection(sectionName);
+	SCREEN_Section* section = GetSection(sectionName);
 	if (!section)
 	{
-		sections.push_back(Section(sectionName));
+		sections.push_back(SCREEN_Section(sectionName));
 		section = &sections[sections.size() - 1];
 	}
 	return section;
 }
 
-bool PIniFile::DeleteSection(const char* sectionName)
+bool SCREEN_IniFile::DeleteSection(const char* sectionName)
 {
-	Section* s = GetSection(sectionName);
+	SCREEN_Section* s = GetSection(sectionName);
 	if (!s)
 		return false;
-	for (std::vector<Section>::iterator iter = sections.begin(); iter != sections.end(); ++iter)
+	for (std::vector<SCREEN_Section>::iterator iter = sections.begin(); iter != sections.end(); ++iter)
 	{
 		if (&(*iter) == s)
 		{
@@ -416,17 +416,17 @@ bool PIniFile::DeleteSection(const char* sectionName)
 	return false;
 }
 
-bool PIniFile::Exists(const char* sectionName, const char* key) const
+bool SCREEN_IniFile::Exists(const char* sectionName, const char* key) const
 {
-	const Section* section = GetSection(sectionName);
+	const SCREEN_Section* section = GetSection(sectionName);
 	if (!section)
 		return false;
 	return section->Exists(key);
 }
 
-void PIniFile::SetLines(const char* sectionName, const std::vector<std::string> &lines)
+void SCREEN_IniFile::SetLines(const char* sectionName, const std::vector<std::string> &lines)
 {
-	Section* section = GetOrCreateSection(sectionName);
+	SCREEN_Section* section = GetOrCreateSection(sectionName);
 	section->lines.clear();
 	for (std::vector<std::string>::const_iterator iter = lines.begin(); iter != lines.end(); ++iter)
 	{
@@ -434,9 +434,9 @@ void PIniFile::SetLines(const char* sectionName, const std::vector<std::string> 
 	}
 }
 
-bool PIniFile::DeleteKey(const char* sectionName, const char* key)
+bool SCREEN_IniFile::DeleteKey(const char* sectionName, const char* key)
 {
-	Section* section = GetSection(sectionName);
+	SCREEN_Section* section = GetSection(sectionName);
 	if (!section)
 		return false;
 	std::string* line = section->GetLine(key, 0, 0);
@@ -452,9 +452,9 @@ bool PIniFile::DeleteKey(const char* sectionName, const char* key)
 }
 
 // Return a list of all keys in a section
-bool PIniFile::GetKeys(const char* sectionName, std::vector<std::string>& keys) const
+bool SCREEN_IniFile::GetKeys(const char* sectionName, std::vector<std::string>& keys) const
 {
-	const Section* section = GetSection(sectionName);
+	const SCREEN_Section* section = GetSection(sectionName);
 	if (!section)
 		return false;
 	keys.clear();
@@ -469,9 +469,9 @@ bool PIniFile::GetKeys(const char* sectionName, std::vector<std::string>& keys) 
 }
 
 // Return a list of all lines in a section
-bool PIniFile::GetLines(const char* sectionName, std::vector<std::string>& lines, const bool remove_comments) const
+bool SCREEN_IniFile::GetLines(const char* sectionName, std::vector<std::string>& lines, const bool remove_comments) const
 {
-	const Section* section = GetSection(sectionName);
+	const SCREEN_Section* section = GetSection(sectionName);
 	if (!section)
 		return false;
 
@@ -501,15 +501,15 @@ bool PIniFile::GetLines(const char* sectionName, std::vector<std::string>& lines
 }
 
 
-void PIniFile::SortSections()
+void SCREEN_IniFile::SortSections()
 {
 	std::sort(sections.begin(), sections.end());
 }
 
-bool PIniFile::Load(const char* filename)
+bool SCREEN_IniFile::Load(const char* filename)
 {
 	sections.clear();
-	sections.push_back(Section(""));
+	sections.push_back(SCREEN_Section(""));
 	// first section consists of the comments before the first real section
 
 	// Open file
@@ -526,7 +526,7 @@ bool PIniFile::Load(const char* filename)
 	return success;
 }
 
-bool PIniFile::LoadFromVFS(const std::string &filename) {
+bool SCREEN_IniFile::LoadFromVFS(const std::string &filename) {
 	size_t size;
 	uint8_t *data = VFSReadFile(filename.c_str(), &size);
 	if (!data)
@@ -538,7 +538,7 @@ bool PIniFile::LoadFromVFS(const std::string &filename) {
 	return Load(sstream);
 }
 
-bool PIniFile::Load(std::istream &in) {
+bool SCREEN_IniFile::Load(std::istream &in) {
 	// Maximum number of letters in a line
 	static const int MAX_BYTES = 1024*32;
 
@@ -567,14 +567,14 @@ bool PIniFile::Load(std::istream &in) {
 			if (sectionNameEnd != std::string::npos) {
 				// New section!
 				std::string sub = line.substr(1, sectionNameEnd - 1);
-				sections.push_back(Section(sub));
+				sections.push_back(SCREEN_Section(sub));
 
 				if (sectionNameEnd + 1 < line.size()) {
 					sections[sections.size() - 1].comment = line.substr(sectionNameEnd + 1);
 				}
 			} else {
 				if (sections.empty()) {
-					sections.push_back(Section(""));
+					sections.push_back(SCREEN_Section(""));
 				}
 				sections[sections.size() - 1].lines.push_back(line);
 			}
@@ -584,7 +584,7 @@ bool PIniFile::Load(std::istream &in) {
 	return true;
 }
 
-bool PIniFile::Save(const char* filename)
+bool SCREEN_IniFile::Save(const char* filename)
 {
 	std::ofstream out;
 
@@ -598,7 +598,7 @@ bool PIniFile::Save(const char* filename)
 	// UTF-8 byte order mark. To make sure notepad doesn't go nuts.
 	out << "\xEF\xBB\xBF";
 
-	for (const Section &section : sections) {
+	for (const SCREEN_Section &section : sections) {
 		if (!section.name().empty() && (!section.lines.empty() || !section.comment.empty())) {
 			out << "[" << section.name() << "]" << section.comment << std::endl;
 		}
@@ -612,9 +612,9 @@ bool PIniFile::Save(const char* filename)
 	return true;
 }
 
-bool PIniFile::Get(const char* sectionName, const char* key, std::string* value, const char* defaultValue)
+bool SCREEN_IniFile::Get(const char* sectionName, const char* key, std::string* value, const char* defaultValue)
 {
-	Section* section = GetSection(sectionName);
+	SCREEN_Section* section = GetSection(sectionName);
 	if (!section) {
 		if (defaultValue) {
 			*value = defaultValue;
@@ -624,17 +624,17 @@ bool PIniFile::Get(const char* sectionName, const char* key, std::string* value,
 	return section->Get(key, value, defaultValue);
 }
 
-bool PIniFile::Get(const char *sectionName, const char* key, std::vector<std::string>& values) 
+bool SCREEN_IniFile::Get(const char *sectionName, const char* key, std::vector<std::string>& values) 
 {
-	Section *section = GetSection(sectionName);
+	SCREEN_Section *section = GetSection(sectionName);
 	if (!section)
 		return false;
 	return section->Get(key, values);
 }
 
-bool PIniFile::Get(const char* sectionName, const char* key, int* value, int defaultValue)
+bool SCREEN_IniFile::Get(const char* sectionName, const char* key, int* value, int defaultValue)
 {
-	Section *section = GetSection(sectionName);
+	SCREEN_Section *section = GetSection(sectionName);
 	if (!section) {
 		*value = defaultValue;
 		return false;
@@ -643,9 +643,9 @@ bool PIniFile::Get(const char* sectionName, const char* key, int* value, int def
 	}
 }
 
-bool PIniFile::Get(const char* sectionName, const char* key, uint32_t* value, uint32_t defaultValue)
+bool SCREEN_IniFile::Get(const char* sectionName, const char* key, uint32_t* value, uint32_t defaultValue)
 {
-	Section *section = GetSection(sectionName);
+	SCREEN_Section *section = GetSection(sectionName);
 	if (!section) {
 		*value = defaultValue;
 		return false;
@@ -654,9 +654,9 @@ bool PIniFile::Get(const char* sectionName, const char* key, uint32_t* value, ui
 	}
 }
 
-bool PIniFile::Get(const char* sectionName, const char* key, bool* value, bool defaultValue)
+bool SCREEN_IniFile::Get(const char* sectionName, const char* key, bool* value, bool defaultValue)
 {
-	Section *section = GetSection(sectionName);
+	SCREEN_Section *section = GetSection(sectionName);
 	if (!section) {
 		*value = defaultValue;
 		return false;

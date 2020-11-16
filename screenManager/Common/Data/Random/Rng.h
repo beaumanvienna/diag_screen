@@ -3,9 +3,9 @@
 #include <cstdint>
 
 // George Marsaglia-style random number generator.
-class GMRng {
+class SCREEN_GMRng {
 public:
-	GMRng() {
+	SCREEN_GMRng() {
 		m_w = 0x23E866ED;
 		m_z = 0x80FD5AF2;
 	}
@@ -32,9 +32,9 @@ public:
 
 // Data must consist only of the index and the twister array. This matches the PSP
 // MT context exactly.
-class MersenneTwister {
+class SCREEN_MersenneTwister {
 public:
-	MersenneTwister(uint32_t seed) : index_(0) {
+	SCREEN_MersenneTwister(uint32_t seed) : index_(0) {
 		mt_[0] = seed;
 		for (uint32_t i = 1; i < MT_SIZE; i++)
 			mt_[i] = (1812433253UL * (mt_[i - 1] ^ (mt_[i - 1] >> 30)) + i);

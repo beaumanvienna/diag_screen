@@ -39,8 +39,8 @@ class SCREEN_DrawBuffer;
 
 struct UITransform {
 	// TODO: Or just use a matrix?
-	SCREEN_Lin::Vec3 translate;
-	SCREEN_Lin::Vec3 scale;
+	SCREEN_Lin::SCREEN_Vec3 translate;
+	SCREEN_Lin::SCREEN_Vec3 scale;
 	float alpha;
 };
 

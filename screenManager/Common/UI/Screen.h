@@ -81,9 +81,9 @@ private:
 	DISALLOW_COPY_AND_ASSIGN(SCREEN_Screen);
 };
 
-class Transition {
+class SCREEN_Transition {
 public:
-	Transition() {}
+	SCREEN_Transition() {}
 };
 
 enum {

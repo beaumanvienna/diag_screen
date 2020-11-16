@@ -4,17 +4,17 @@
 
 #include "Common/StringUtils.h"
 
-I18NRepo i18nrepo;
+SCREEN_I18NRepo i18nrepo;
 
-I18NRepo::~I18NRepo() {
+SCREEN_I18NRepo::~SCREEN_I18NRepo() {
 	Clear();
 }
 
-std::string I18NRepo::LanguageID() {
+std::string SCREEN_I18NRepo::LanguageID() {
 	return languageID_;
 }
 
-void I18NRepo::Clear() {
+void SCREEN_I18NRepo::Clear() {
 	std::lock_guard<std::mutex> guard(catsLock_);
 	for (auto iter = cats_.begin(); iter != cats_.end(); ++iter) {
 		iter->second.reset();
@@ -22,7 +22,7 @@ void I18NRepo::Clear() {
 	cats_.clear();
 }
 
-const char *I18NCategory::T(const char *key, const char *def) {
+const char *SCREEN_I18NCategory::T(const char *key, const char *def) {
 	if (!key) {
 		return "ERROR";
 	}
@@ -45,7 +45,7 @@ const char *I18NCategory::T(const char *key, const char *def) {
 	}
 }
 
-void I18NCategory::SetMap(const std::map<std::string, std::string> &m) {
+void SCREEN_I18NCategory::SetMap(const std::map<std::string, std::string> &m) {
 	for (auto iter = m.begin(); iter != m.end(); ++iter) {
 		if (map_.find(iter->first) == map_.end()) {
 			std::string text = ReplaceAll(iter->second, "\\n", "\n");
@@ -55,23 +55,23 @@ void I18NCategory::SetMap(const std::map<std::string, std::string> &m) {
 	}
 }
 
-std::shared_ptr<I18NCategory> I18NRepo::GetCategory(const char *category) {
+std::shared_ptr<SCREEN_I18NCategory> SCREEN_I18NRepo::GetCategory(const char *category) {
 	std::lock_guard<std::mutex> guard(catsLock_);
 	auto iter = cats_.find(category);
 	if (iter != cats_.end()) {
 		return iter->second;
 	} else {
-		I18NCategory *c = new I18NCategory(this, category);
+		SCREEN_I18NCategory *c = new SCREEN_I18NCategory(this, category);
 		cats_[category].reset(c);
 		return cats_[category];
 	}
 }
 
-std::string I18NRepo::GetIniPath(const std::string &languageID) const {
+std::string SCREEN_I18NRepo::GetIniPath(const std::string &languageID) const {
 	return "lang/" + languageID + ".ini";
 }
 
-bool I18NRepo::IniExists(const std::string &languageID) const {
+bool SCREEN_I18NRepo::IniExists(const std::string &languageID) const {
 	FileInfo info;
 	if (!VFSGetFileInfo(GetIniPath(languageID).c_str(), &info))
 		return false;
@@ -80,8 +80,8 @@ bool I18NRepo::IniExists(const std::string &languageID) const {
 	return true;
 }
 
-bool I18NRepo::LoadIni(const std::string &languageID, const std::string &overridePath) {
-	PIniFile ini;
+bool SCREEN_I18NRepo::LoadIni(const std::string &languageID, const std::string &overridePath) {
+	SCREEN_IniFile ini;
 	std::string iniPath;
 
 //	INFO_LOG(SYSTEM, "Loading lang ini %s", iniPath.c_str());
@@ -96,7 +96,7 @@ bool I18NRepo::LoadIni(const std::string &languageID, const std::string &overrid
 
 	Clear();
 
-	const std::vector<Section> &sections = ini.Sections();
+	const std::vector<SCREEN_Section> &sections = ini.Sections();
 
 	std::lock_guard<std::mutex> guard(catsLock_);
 	for (auto iter = sections.begin(); iter != sections.end(); ++iter) {
@@ -109,8 +109,8 @@ bool I18NRepo::LoadIni(const std::string &languageID, const std::string &overrid
 	return true;
 }
 
-I18NCategory *I18NRepo::LoadSection(const Section *section, const char *name) {
-	I18NCategory *cat = new I18NCategory(this, name);
+SCREEN_I18NCategory *SCREEN_I18NRepo::LoadSection(const SCREEN_Section *section, const char *name) {
+	SCREEN_I18NCategory *cat = new SCREEN_I18NCategory(this, name);
 	std::map<std::string, std::string> sectionMap = section->ToMap();
 	cat->SetMap(sectionMap);
 	return cat;
@@ -118,19 +118,19 @@ I18NCategory *I18NRepo::LoadSection(const Section *section, const char *name) {
 
 // This is a very light touched save variant - it won't overwrite 
 // anything, only create new entries.
-void I18NRepo::SaveIni(const std::string &languageID) {
-	PIniFile ini;
+void SCREEN_I18NRepo::SaveIni(const std::string &languageID) {
+	SCREEN_IniFile ini;
 	ini.Load(GetIniPath(languageID));
 	std::lock_guard<std::mutex> guard(catsLock_);
 	for (auto iter = cats_.begin(); iter != cats_.end(); ++iter) {
 		std::string categoryName = iter->first;
-		Section *section = ini.GetOrCreateSection(categoryName.c_str());
+		SCREEN_Section *section = ini.GetOrCreateSection(categoryName.c_str());
 		SaveSection(ini, section, iter->second);
 	}
 	ini.Save(GetIniPath(languageID));
 }
 
-void I18NRepo::SaveSection(PIniFile &ini, Section *section, std::shared_ptr<I18NCategory> cat) {
+void SCREEN_I18NRepo::SaveSection(SCREEN_IniFile &ini, SCREEN_Section *section, std::shared_ptr<SCREEN_I18NCategory> cat) {
 	const std::map<std::string, std::string> &missed = cat->Missed();
 
 	for (auto iter = missed.begin(); iter != missed.end(); ++iter) {

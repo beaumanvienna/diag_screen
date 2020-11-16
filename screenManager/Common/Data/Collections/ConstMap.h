@@ -1,17 +1,17 @@
 #pragma once
 
 template <typename T, typename U>
-class InitConstMap
+class SCREEN_InitConstMap
 {
 private:
     std::map<T, U> m_map;
 public:
-    InitConstMap(const T& key, const U& val)
+    SCREEN_InitConstMap(const T& key, const U& val)
     {
         m_map[key] = val;
     }
 
-    InitConstMap<T, U>& operator()(const T& key, const U& val)
+    SCREEN_InitConstMap<T, U>& operator()(const T& key, const U& val)
     {
         m_map[key] = val;
         return *this;

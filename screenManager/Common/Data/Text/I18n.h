@@ -18,9 +18,9 @@
 
 // Reasonably thread safe.
 
-class I18NRepo;
-class PIniFile;
-class Section;
+class SCREEN_I18NRepo;
+class SCREEN_IniFile;
+class SCREEN_Section;
 
 struct I18NEntry {
 	I18NEntry(const std::string &t) : text(t), readFlag(false) {}
@@ -36,10 +36,10 @@ struct I18NCandidate {
 	const char *defVal;
 };
 
-class I18NCategory {
+class SCREEN_I18NCategory {
 public:
 	// NOTE: Name must be a global constant string - it is not copied.
-	I18NCategory(const char *name) : name_(name) {}
+	SCREEN_I18NCategory(const char *name) : name_(name) {}
 	const char *T(const char *key, const char *def = 0);
 	const char *T(const std::string &key) {
 		return T(key.c_str(), nullptr);
@@ -55,7 +55,7 @@ public:
 	const char *GetName() const { return name_.c_str(); }
 
 private:
-	I18NCategory(I18NRepo *repo, const char *name) : name_(name) {}
+	SCREEN_I18NCategory(SCREEN_I18NRepo *repo, const char *name) : name_(name) {}
 	void SetMap(const std::map<std::string, std::string> &m);
 
 	std::string name_;
@@ -65,15 +65,15 @@ private:
 	std::map<std::string, std::string> missedKeyLog_;
 
 	// Noone else can create these.
-	friend class I18NRepo;
+	friend class SCREEN_I18NRepo;
 
-	DISALLOW_COPY_AND_ASSIGN(I18NCategory);
+	DISALLOW_COPY_AND_ASSIGN(SCREEN_I18NCategory);
 };
 
-class I18NRepo {
+class SCREEN_I18NRepo {
 public:
-	I18NRepo() {}
-	~I18NRepo();
+	SCREEN_I18NRepo() {}
+	~SCREEN_I18NRepo();
 
 	bool IniExists(const std::string &languageID) const;
 	bool LoadIni(const std::string &languageID, const std::string &overridePath = ""); // NOT the filename!
@@ -81,7 +81,7 @@ public:
 
 	std::string LanguageID();
 
-	std::shared_ptr<I18NCategory> GetCategory(const char *categoryName);
+	std::shared_ptr<SCREEN_I18NCategory> GetCategory(const char *categoryName);
 	bool HasCategory(const char *categoryName) const {
 		std::lock_guard<std::mutex> guard(catsLock_);
 		return cats_.find(categoryName) != cats_.end();
@@ -91,21 +91,21 @@ public:
 private:
 	std::string GetIniPath(const std::string &languageID) const;
 	void Clear();
-	I18NCategory *LoadSection(const Section *section, const char *name);
-	void SaveSection(PIniFile &ini, Section *section, std::shared_ptr<I18NCategory> cat);
+	SCREEN_I18NCategory *LoadSection(const SCREEN_Section *section, const char *name);
+	void SaveSection(SCREEN_IniFile &ini, SCREEN_Section *section, std::shared_ptr<SCREEN_I18NCategory> cat);
 
 	mutable std::mutex catsLock_;
-	std::map<std::string, std::shared_ptr<I18NCategory>> cats_;
+	std::map<std::string, std::shared_ptr<SCREEN_I18NCategory>> cats_;
 	std::string languageID_;
 
-	DISALLOW_COPY_AND_ASSIGN(I18NRepo);
+	DISALLOW_COPY_AND_ASSIGN(SCREEN_I18NRepo);
 };
 
-extern I18NRepo i18nrepo;
+extern SCREEN_I18NRepo i18nrepo;
 
-// These are simply talking to the one global instance of I18NRepo.
+// These are simply talking to the one global instance of SCREEN_I18NRepo.
 
-inline std::shared_ptr<I18NCategory> GetI18NCategory(const char *categoryName) {
+inline std::shared_ptr<SCREEN_I18NCategory> GetI18NCategory(const char *categoryName) {
 	if (!categoryName)
 		return nullptr;
 	return i18nrepo.GetCategory(categoryName);

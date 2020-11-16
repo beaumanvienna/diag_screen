@@ -17,7 +17,7 @@
 //   For each char:
 //     AtlasChar
 
-struct Atlas;
+struct SCREEN_Atlas;
 
 struct ImageID {
 public:
@@ -49,7 +49,7 @@ public:
 
 private:
 	const char *id;
-	friend struct Atlas;
+	friend struct SCREEN_Atlas;
 };
 
 struct FontID {
@@ -66,7 +66,7 @@ public:
 
 private:
 	const char *id;
-	friend struct Atlas;
+	friend struct SCREEN_Atlas;
 };
 
 struct AtlasChar {
@@ -126,8 +126,8 @@ struct AtlasHeader {
 	int numImages;
 };
 
-struct Atlas {
-	~Atlas();
+struct SCREEN_Atlas {
+	~SCREEN_Atlas();
 	bool Load(const uint8_t *data, size_t data_size);
 	bool IsMetadataLoaded() {
 		return images != nullptr;

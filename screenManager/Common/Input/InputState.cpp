@@ -28,20 +28,20 @@ const char *GetDeviceName(int deviceId) {
 	}
 }
 
-std::vector<KeyDef> dpadKeys;
-std::vector<KeyDef> confirmKeys;
-std::vector<KeyDef> cancelKeys;
-std::vector<KeyDef> tabLeftKeys;
-std::vector<KeyDef> tabRightKeys;
+std::vector<SCREEN_KeyDef> dpadKeys;
+std::vector<SCREEN_KeyDef> confirmKeys;
+std::vector<SCREEN_KeyDef> cancelKeys;
+std::vector<SCREEN_KeyDef> tabLeftKeys;
+std::vector<SCREEN_KeyDef> tabRightKeys;
 
-static void AppendKeys(std::vector<KeyDef> &keys, const std::vector<KeyDef> &newKeys) {
+static void AppendKeys(std::vector<SCREEN_KeyDef> &keys, const std::vector<SCREEN_KeyDef> &newKeys) {
 	for (auto iter = newKeys.begin(); iter != newKeys.end(); ++iter) {
 		keys.push_back(*iter);
 	}
 }
 
-void SetDPadKeys(const std::vector<KeyDef> &leftKey, const std::vector<KeyDef> &rightKey,
-		const std::vector<KeyDef> &upKey, const std::vector<KeyDef> &downKey) {
+void SetDPadKeys(const std::vector<SCREEN_KeyDef> &leftKey, const std::vector<SCREEN_KeyDef> &rightKey,
+		const std::vector<SCREEN_KeyDef> &upKey, const std::vector<SCREEN_KeyDef> &downKey) {
 	dpadKeys.clear();
 
 	// Store all directions into one vector for now.  In the future it might be
@@ -52,12 +52,12 @@ void SetDPadKeys(const std::vector<KeyDef> &leftKey, const std::vector<KeyDef> &
 	AppendKeys(dpadKeys, downKey);
 }
 
-void SetConfirmCancelKeys(const std::vector<KeyDef> &confirm, const std::vector<KeyDef> &cancel) {
+void SetConfirmCancelKeys(const std::vector<SCREEN_KeyDef> &confirm, const std::vector<SCREEN_KeyDef> &cancel) {
 	confirmKeys = confirm;
 	cancelKeys = cancel;
 }
 
-void SetTabLeftRightKeys(const std::vector<KeyDef> &tabLeft, const std::vector<KeyDef> &tabRight) {
+void SetTabLeftRightKeys(const std::vector<SCREEN_KeyDef> &tabLeft, const std::vector<SCREEN_KeyDef> &tabRight) {
 	tabLeftKeys = tabLeft;
 	tabRightKeys = tabRight;
 }

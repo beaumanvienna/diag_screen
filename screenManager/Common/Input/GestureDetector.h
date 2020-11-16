@@ -14,9 +14,9 @@ enum Gesture {
 
 // May track multiple gestures at the same time. You simply call GetGestureInfo
 // with the gesture you are interested in.
-class GestureDetector {
+class SCREEN_GestureDetector {
 public:
-	GestureDetector();
+	SCREEN_GestureDetector();
 	TouchInput Update(const TouchInput &touch, const Bounds &bounds);
 	void UpdateFrame();
 	bool IsGestureActive(Gesture gesture, int touchId) const;

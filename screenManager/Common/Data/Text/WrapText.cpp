@@ -3,7 +3,7 @@
 #include "Common/Data/Encoding/Utf8.h"
 #include "Common/Data/Text/WrapText.h"
 
-bool WordWrapper::IsCJK(uint32_t c) {
+bool SCREEN_WordWrapper::IsCJK(uint32_t c) {
 	if (c < 0x1000) {
 		return false;
 	}
@@ -22,7 +22,7 @@ bool WordWrapper::IsCJK(uint32_t c) {
 	return result;
 }
 
-bool WordWrapper::IsPunctuation(uint32_t c) {
+bool SCREEN_WordWrapper::IsPunctuation(uint32_t c) {
 	switch (c) {
 	// TODO: This list of punctuation is very incomplete.
 	case ',':
@@ -45,7 +45,7 @@ bool WordWrapper::IsPunctuation(uint32_t c) {
 	}
 }
 
-bool WordWrapper::IsSpace(uint32_t c) {
+bool SCREEN_WordWrapper::IsSpace(uint32_t c) {
 	switch (c) {
 	case '\t':
 	case ' ':
@@ -59,18 +59,18 @@ bool WordWrapper::IsSpace(uint32_t c) {
 	}
 }
 
-bool WordWrapper::IsShy(uint32_t c) {
+bool SCREEN_WordWrapper::IsShy(uint32_t c) {
 	return c == 0x00AD; // SOFT HYPHEN
 }
 
-std::string WordWrapper::Wrapped() {
+std::string SCREEN_WordWrapper::Wrapped() {
 	if (out_.empty()) {
 		Wrap();
 	}
 	return out_;
 }
 
-bool WordWrapper::WrapBeforeWord() {
+bool SCREEN_WordWrapper::WrapBeforeWord() {
 	if (flags_ & FLAG_WRAP_TEXT) {
 		if (x_ + wordWidth_ > maxW_ && !out_.empty()) {
 			if (IsShy(out_[out_.size() - 1])) {
@@ -99,11 +99,11 @@ bool WordWrapper::WrapBeforeWord() {
 	return false;
 }
 
-void WordWrapper::AppendWord(int endIndex, bool addNewline) {
+void SCREEN_WordWrapper::AppendWord(int endIndex, bool addNewline) {
 	int lastWordStartIndex = lastIndex_;
 	if (WrapBeforeWord()) {
 		// Advance to the first non-whitespace UTF-8 character in the following word (if any) to prevent starting the new line with a whitespace
-		UTF8 utf8Word(str_, lastWordStartIndex);
+		SCREEN_UTF8 utf8Word(str_, lastWordStartIndex);
 		while (lastWordStartIndex < endIndex) {
 			const uint32_t c = utf8Word.next();
 			if (!IsSpace(c)) {
@@ -133,7 +133,7 @@ void WordWrapper::AppendWord(int endIndex, bool addNewline) {
 	lastIndex_ = endIndex;
 }
 
-void WordWrapper::Wrap() {
+void SCREEN_WordWrapper::Wrap() {
 	out_.clear();
 
 	// First, let's check if it fits as-is.
@@ -152,7 +152,7 @@ void WordWrapper::Wrap() {
 		ellipsisWidth_ = MeasureWidth("...", 3);
 	}
 
-	for (UTF8 utf(str_); !utf.end(); ) {
+	for (SCREEN_UTF8 utf(str_); !utf.end(); ) {
 		int beforeIndex = utf.byteIndex();
 		uint32_t c = utf.next();
 		int afterIndex = utf.byteIndex();

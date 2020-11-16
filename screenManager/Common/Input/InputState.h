@@ -76,21 +76,21 @@ enum {
 #endif
 
 // Represents a single bindable key
-class KeyDef {
+class SCREEN_KeyDef {
 public:
-	KeyDef() : deviceId(0), keyCode(0) {}
-	KeyDef(int devId, int k) : deviceId(devId), keyCode(k) {}
+	SCREEN_KeyDef() : deviceId(0), keyCode(0) {}
+	SCREEN_KeyDef(int devId, int k) : deviceId(devId), keyCode(k) {}
 	int deviceId;
 	int keyCode;
 
 	// If you want to use std::find and match ANY, you need to perform an explicit search for that.
-	bool operator < (const KeyDef &other) const {
+	bool operator < (const SCREEN_KeyDef &other) const {
 		if (deviceId < other.deviceId) return true;
 		if (deviceId > other.deviceId) return false;
 		if (keyCode < other.keyCode) return true;
 		return false;
 	}
-	bool operator == (const KeyDef &other) const {
+	bool operator == (const SCREEN_KeyDef &other) const {
 		if (deviceId != other.deviceId && deviceId != DEVICE_ID_ANY && other.deviceId != DEVICE_ID_ANY) return false;
 		if (keyCode != other.keyCode) return false;
 		return true;
@@ -153,12 +153,12 @@ struct AxisInput {
 };
 
 // Is there a nicer place for this stuff? It's here to avoid dozens of linking errors in UnitTest..
-extern std::vector<KeyDef> dpadKeys;
-extern std::vector<KeyDef> confirmKeys;
-extern std::vector<KeyDef> cancelKeys;
-extern std::vector<KeyDef> tabLeftKeys;
-extern std::vector<KeyDef> tabRightKeys;
-void SetDPadKeys(const std::vector<KeyDef> &leftKey, const std::vector<KeyDef> &rightKey,
-		const std::vector<KeyDef> &upKey, const std::vector<KeyDef> &downKey);
-void SetConfirmCancelKeys(const std::vector<KeyDef> &confirm, const std::vector<KeyDef> &cancel);
-void SetTabLeftRightKeys(const std::vector<KeyDef> &tabLeft, const std::vector<KeyDef> &tabRight);
+extern std::vector<SCREEN_KeyDef> dpadKeys;
+extern std::vector<SCREEN_KeyDef> confirmKeys;
+extern std::vector<SCREEN_KeyDef> cancelKeys;
+extern std::vector<SCREEN_KeyDef> tabLeftKeys;
+extern std::vector<SCREEN_KeyDef> tabRightKeys;
+void SetDPadKeys(const std::vector<SCREEN_KeyDef> &leftKey, const std::vector<SCREEN_KeyDef> &rightKey,
+		const std::vector<SCREEN_KeyDef> &upKey, const std::vector<SCREEN_KeyDef> &downKey);
+void SetConfirmCancelKeys(const std::vector<SCREEN_KeyDef> &confirm, const std::vector<SCREEN_KeyDef> &cancel);
+void SetTabLeftRightKeys(const std::vector<SCREEN_KeyDef> &tabLeft, const std::vector<SCREEN_KeyDef> &tabRight);

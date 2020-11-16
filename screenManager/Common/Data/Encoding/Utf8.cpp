@@ -400,7 +400,7 @@ int u8_is_locale_utf8(const char *locale)
 }
 
 int UTF8StringNonASCIICount(const char *utf8string) {
-	UTF8 utf(utf8string);
+	SCREEN_UTF8 utf(utf8string);
 	int count = 0;
 	while (!utf.end()) {
 		int c = utf.next();
@@ -464,7 +464,7 @@ std::string ConvertUCS2ToUTF8(const std::u16string &wstr) {
 
 	size_t pos = 0;
 	for (wchar_t c : wstr) {
-		pos += UTF8::encode(&s[pos], c);
+		pos += SCREEN_UTF8::encode(&s[pos], c);
 	}
 
 	s.resize(pos);
@@ -475,7 +475,7 @@ static size_t ConvertUTF8ToUCS2Internal(char16_t *dest, size_t destSize, const s
 	const char16_t *const orig = dest;
 	const char16_t *const destEnd = dest + destSize;
 
-	UTF8 utf(source.c_str());
+	SCREEN_UTF8 utf(source.c_str());
 
 	char16_t *destw = (char16_t *)dest;
 	const char16_t *const destwEnd = destw + destSize;
@@ -520,7 +520,7 @@ std::string ConvertWStringToUTF8(const std::wstring &wstr) {
 
 	size_t pos = 0;
 	for (wchar_t c : wstr) {
-		pos += UTF8::encode(&s[pos], c);
+		pos += SCREEN_UTF8::encode(&s[pos], c);
 	}
 
 	s.resize(pos);
@@ -531,7 +531,7 @@ static size_t ConvertUTF8ToWStringInternal(wchar_t *dest, size_t destSize, const
 	const wchar_t *const orig = dest;
 	const wchar_t *const destEnd = dest + destSize;
 
-	UTF8 utf(source.c_str());
+	SCREEN_UTF8 utf(source.c_str());
 
 	if (sizeof(wchar_t) == 2) {
 		char16_t *destw = (char16_t *)dest;

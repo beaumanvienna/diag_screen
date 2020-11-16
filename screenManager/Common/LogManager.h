@@ -42,16 +42,16 @@ struct LogMessage {
 };
 
 // pure virtual interface
-class LogListener {
+class SCREEN_LogListener {
 public:
-	virtual ~LogListener() {}
+	virtual ~SCREEN_LogListener() {}
 
 	virtual void Log(const LogMessage &msg) = 0;
 };
 
-class FileLogListener : public LogListener {
+class SCREEN_FileLogListener : public SCREEN_LogListener {
 public:
-	FileLogListener(const char *filename);
+	SCREEN_FileLogListener(const char *filename);
 
 	void Log(const LogMessage &msg);
 
@@ -67,14 +67,14 @@ private:
 	bool m_enable;
 };
 
-class OutputDebugStringLogListener : public LogListener {
+class SCREEN_OutputDebugStringLogListener : public SCREEN_LogListener {
 public:
 	void Log(const LogMessage &msg);
 };
 
-class RingbufferLogListener : public LogListener {
+class SCREEN_RingbufferLogListener : public SCREEN_LogListener {
 public:
-	RingbufferLogListener() : curMessage_(0), count_(0), enabled_(false) {}
+	SCREEN_RingbufferLogListener() : curMessage_(0), count_(0), enabled_(false) {}
 	void Log(const LogMessage &msg);
 
 	bool IsEnabled() const { return enabled_; }
@@ -102,31 +102,31 @@ struct LogChannel {
 	bool enabled;
 };
 
-class PConsoleListener;
+class SCREEN_ConsoleListener;
 
-class LogManager {
+class SCREEN_LogManager {
 private:
-	LogManager(bool *enabledSetting);
-	~LogManager();
+	SCREEN_LogManager(bool *enabledSetting);
+	~SCREEN_LogManager();
 
 	// Prevent copies.
-	LogManager(const LogManager &) = delete;
-	void operator=(const LogManager &) = delete;
+	SCREEN_LogManager(const SCREEN_LogManager &) = delete;
+	void operator=(const SCREEN_LogManager &) = delete;
 
 	LogChannel log_[SCREEN_LogTypes::NUMBER_OF_LOGS];
-	FileLogListener *fileLog_ = nullptr;
-	PConsoleListener *consoleLog_ = nullptr;
-	OutputDebugStringLogListener *debuggerLog_ = nullptr;
-	RingbufferLogListener *ringLog_ = nullptr;
-	static LogManager *logManager_;  // Singleton. Ugh.
+	SCREEN_FileLogListener *fileLog_ = nullptr;
+	SCREEN_ConsoleListener *consoleLog_ = nullptr;
+	SCREEN_OutputDebugStringLogListener *debuggerLog_ = nullptr;
+	SCREEN_RingbufferLogListener *ringLog_ = nullptr;
+	static SCREEN_LogManager *logManager_;  // Singleton. Ugh.
 
 	std::mutex log_lock_;
 	std::mutex listeners_lock_;
-	std::vector<LogListener*> listeners_;
+	std::vector<SCREEN_LogListener*> listeners_;
 
 public:
-	void AddListener(LogListener *listener);
-	void RemoveListener(LogListener *listener);
+	void AddListener(SCREEN_LogListener *listener);
+	void RemoveListener(SCREEN_LogListener *listener);
 
 	static u32 GetMaxLevel() { return MAX_LOGLEVEL;	}
 	static int GetNumChannels() { return SCREEN_LogTypes::NUMBER_OF_LOGS; }
@@ -157,23 +157,23 @@ public:
 		return log_[type].level;
 	}
 
-	PConsoleListener *GetPConsoleListener() const {
+	SCREEN_ConsoleListener *GetPConsoleListener() const {
 		return consoleLog_;
 	}
 
-	OutputDebugStringLogListener *GetDebuggerListener() const {
+	SCREEN_OutputDebugStringLogListener *GetDebuggerListener() const {
 		return debuggerLog_;
 	}
 
-	RingbufferLogListener *GetRingbufferListener() const {
+	SCREEN_RingbufferLogListener *GetRingbufferListener() const {
 		return ringLog_;
 	}
 
-	static inline LogManager* GetInstance() {
+	static inline SCREEN_LogManager* GetInstance() {
 		return logManager_;
 	}
 
-	static void SetInstance(LogManager *logManager) {
+	static void SetInstance(SCREEN_LogManager *logManager) {
 		logManager_ = logManager;
 	}
 
@@ -182,6 +182,6 @@ public:
 
 	void ChangeFileLog(const char *filename);
 
-	void SaveConfig(Section *section);
-	void LoadConfig(Section *section, bool debugDefaults);
+	void SaveConfig(SCREEN_Section *section);
+	void LoadConfig(SCREEN_Section *section, bool debugDefaults);
 };

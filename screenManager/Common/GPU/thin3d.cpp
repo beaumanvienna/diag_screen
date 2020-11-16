@@ -9,57 +9,57 @@
 
 namespace SCREEN_Draw {
 
-size_t DataFormatSizeInBytes(DataFormat fmt) {
+size_t DataFormatSizeInBytes(SCREEN_DataFormat fmt) {
 	switch (fmt) {
-	case DataFormat::R8_UNORM: return 1;
-	case DataFormat::R8G8_UNORM: return 2;
-	case DataFormat::R8G8B8_UNORM: return 3;
+	case SCREEN_DataFormat::R8_UNORM: return 1;
+	case SCREEN_DataFormat::R8G8_UNORM: return 2;
+	case SCREEN_DataFormat::R8G8B8_UNORM: return 3;
 
-	case DataFormat::R4G4_UNORM_PACK8: return 1;
-	case DataFormat::R4G4B4A4_UNORM_PACK16: return 2;
-	case DataFormat::B4G4R4A4_UNORM_PACK16: return 2;
-	case DataFormat::A4R4G4B4_UNORM_PACK16: return 2;
-	case DataFormat::R5G5B5A1_UNORM_PACK16: return 2;
-	case DataFormat::B5G5R5A1_UNORM_PACK16: return 2;
-	case DataFormat::R5G6B5_UNORM_PACK16: return 2;
-	case DataFormat::B5G6R5_UNORM_PACK16: return 2;
-	case DataFormat::A1R5G5B5_UNORM_PACK16: return 2;
+	case SCREEN_DataFormat::R4G4_UNORM_PACK8: return 1;
+	case SCREEN_DataFormat::R4G4B4A4_UNORM_PACK16: return 2;
+	case SCREEN_DataFormat::B4G4R4A4_UNORM_PACK16: return 2;
+	case SCREEN_DataFormat::A4R4G4B4_UNORM_PACK16: return 2;
+	case SCREEN_DataFormat::R5G5B5A1_UNORM_PACK16: return 2;
+	case SCREEN_DataFormat::B5G5R5A1_UNORM_PACK16: return 2;
+	case SCREEN_DataFormat::R5G6B5_UNORM_PACK16: return 2;
+	case SCREEN_DataFormat::B5G6R5_UNORM_PACK16: return 2;
+	case SCREEN_DataFormat::A1R5G5B5_UNORM_PACK16: return 2;
 
-	case DataFormat::R8G8B8A8_UNORM:
-	case DataFormat::R8G8B8A8_UNORM_SRGB: return 4;
-	case DataFormat::B8G8R8A8_UNORM:
-	case DataFormat::B8G8R8A8_UNORM_SRGB: return 4;
+	case SCREEN_DataFormat::R8G8B8A8_UNORM:
+	case SCREEN_DataFormat::R8G8B8A8_UNORM_SRGB: return 4;
+	case SCREEN_DataFormat::B8G8R8A8_UNORM:
+	case SCREEN_DataFormat::B8G8R8A8_UNORM_SRGB: return 4;
 
-	case DataFormat::R8G8B8A8_SNORM: return 4;
-	case DataFormat::R8G8B8A8_UINT: return 4;
-	case DataFormat::R8G8B8A8_SINT: return 4;
-	case DataFormat::R16_FLOAT: return 2;
-	case DataFormat::R16G16_FLOAT: return 4;
-	case DataFormat::R16G16B16A16_FLOAT: return 8;
-	case DataFormat::R32_FLOAT: return 4;
-	case DataFormat::R32G32_FLOAT: return 8;
-	case DataFormat::R32G32B32_FLOAT: return 12;
-	case DataFormat::R32G32B32A32_FLOAT: return 16;
+	case SCREEN_DataFormat::R8G8B8A8_SNORM: return 4;
+	case SCREEN_DataFormat::R8G8B8A8_UINT: return 4;
+	case SCREEN_DataFormat::R8G8B8A8_SINT: return 4;
+	case SCREEN_DataFormat::R16_FLOAT: return 2;
+	case SCREEN_DataFormat::R16G16_FLOAT: return 4;
+	case SCREEN_DataFormat::R16G16B16A16_FLOAT: return 8;
+	case SCREEN_DataFormat::R32_FLOAT: return 4;
+	case SCREEN_DataFormat::R32G32_FLOAT: return 8;
+	case SCREEN_DataFormat::R32G32B32_FLOAT: return 12;
+	case SCREEN_DataFormat::R32G32B32A32_FLOAT: return 16;
 
-	case DataFormat::S8: return 1;
-	case DataFormat::D16: return 2;
-	case DataFormat::D24_S8: return 4;
-	case DataFormat::D32F: return 4;
+	case SCREEN_DataFormat::S8: return 1;
+	case SCREEN_DataFormat::D16: return 2;
+	case SCREEN_DataFormat::D24_S8: return 4;
+	case SCREEN_DataFormat::D32F: return 4;
 	// Or maybe 8...
-	case DataFormat::D32F_S8: return 5;
+	case SCREEN_DataFormat::D32F_S8: return 5;
 
 	default:
 		return 0;
 	}
 }
 
-bool DataFormatIsDepthStencil(DataFormat fmt) {
+bool DataFormatIsDepthStencil(SCREEN_DataFormat fmt) {
 	switch (fmt) {
-	case DataFormat::D16:
-	case DataFormat::D24_S8:
-	case DataFormat::S8:
-	case DataFormat::D32F:
-	case DataFormat::D32F_S8:
+	case SCREEN_DataFormat::D16:
+	case SCREEN_DataFormat::D24_S8:
+	case SCREEN_DataFormat::S8:
+	case SCREEN_DataFormat::D32F:
+	case SCREEN_DataFormat::D32F_S8:
 		return true;
 	default:
 		return false;
@@ -398,11 +398,11 @@ SCREEN_DrawContext::~SCREEN_DrawContext() {
 
 // TODO: SSE/NEON
 // Could also make C fake-simd for 64-bit, two 8888 pixels fit in a register :)
-void ConvertFromRGBA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_t srcStride, uint32_t width, uint32_t height, DataFormat format) {
+void ConvertFromRGBA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_t srcStride, uint32_t width, uint32_t height, SCREEN_DataFormat format) {
 	// Must skip stride in the cases below.  Some games pack data into the cracks, like MotoGP.
 	const uint32_t *src32 = (const uint32_t *)src;
 
-	if (format == SCREEN_Draw::DataFormat::R8G8B8A8_UNORM) {
+	if (format == SCREEN_Draw::SCREEN_DataFormat::R8G8B8A8_UNORM) {
 		uint32_t *dst32 = (uint32_t *)dst;
 		if (src == dst) {
 			return;
@@ -413,7 +413,7 @@ void ConvertFromRGBA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, u
 				dst32 += dstStride;
 			}
 		}
-	} else if (format == SCREEN_Draw::DataFormat::R8G8B8_UNORM) {
+	} else if (format == SCREEN_Draw::SCREEN_DataFormat::R8G8B8_UNORM) {
 		for (uint32_t y = 0; y < height; ++y) {
 			for (uint32_t x = 0; x < width; ++x) {
 				memcpy(dst + x * 3, src32 + x, 3);
@@ -425,29 +425,29 @@ void ConvertFromRGBA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, u
 		// But here it shouldn't matter if they do intersect
 		uint16_t *dst16 = (uint16_t *)dst;
 		switch (format) {
-		case SCREEN_Draw::DataFormat::R5G6B5_UNORM_PACK16: // BGR 565
+		case SCREEN_Draw::SCREEN_DataFormat::R5G6B5_UNORM_PACK16: // BGR 565
 			for (uint32_t y = 0; y < height; ++y) {
 				ConvertRGBA8888ToRGB565(dst16, src32, width);
 				src32 += srcStride;
 				dst16 += dstStride;
 			}
 			break;
-		case SCREEN_Draw::DataFormat::A1R5G5B5_UNORM_PACK16: // ABGR 1555
+		case SCREEN_Draw::SCREEN_DataFormat::A1R5G5B5_UNORM_PACK16: // ABGR 1555
 			for (uint32_t y = 0; y < height; ++y) {
 				ConvertRGBA8888ToRGBA5551(dst16, src32, width);
 				src32 += srcStride;
 				dst16 += dstStride;
 			}
 			break;
-		case SCREEN_Draw::DataFormat::A4R4G4B4_UNORM_PACK16: // ABGR 4444
+		case SCREEN_Draw::SCREEN_DataFormat::A4R4G4B4_UNORM_PACK16: // ABGR 4444
 			for (uint32_t y = 0; y < height; ++y) {
 				ConvertRGBA8888ToRGBA4444(dst16, src32, width);
 				src32 += srcStride;
 				dst16 += dstStride;
 			}
 			break;
-		case SCREEN_Draw::DataFormat::R8G8B8A8_UNORM:
-		case SCREEN_Draw::DataFormat::UNDEFINED:
+		case SCREEN_Draw::SCREEN_DataFormat::R8G8B8A8_UNORM:
+		case SCREEN_Draw::SCREEN_DataFormat::UNDEFINED:
 		default:
 			printf("Unable to convert from format: %d", (int)format);
 			break;
@@ -457,11 +457,11 @@ void ConvertFromRGBA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, u
 
 // TODO: SSE/NEON
 // Could also make C fake-simd for 64-bit, two 8888 pixels fit in a register :)
-void ConvertFromBGRA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_t srcStride, uint32_t width, uint32_t height, DataFormat format) {
+void ConvertFromBGRA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_t srcStride, uint32_t width, uint32_t height, SCREEN_DataFormat format) {
 	// Must skip stride in the cases below.  Some games pack data into the cracks, like MotoGP.
 	const uint32_t *src32 = (const uint32_t *)src;
 
-	if (format == SCREEN_Draw::DataFormat::B8G8R8A8_UNORM) {
+	if (format == SCREEN_Draw::SCREEN_DataFormat::B8G8R8A8_UNORM) {
 		uint32_t *dst32 = (uint32_t *)dst;
 		if (src == dst) {
 			return;
@@ -472,14 +472,14 @@ void ConvertFromBGRA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, u
 				dst32 += dstStride;
 			}
 		}
-	} else if (format == SCREEN_Draw::DataFormat::R8G8B8A8_UNORM) {
+	} else if (format == SCREEN_Draw::SCREEN_DataFormat::R8G8B8A8_UNORM) {
 		uint32_t *dst32 = (uint32_t *)dst;
 		for (uint32_t y = 0; y < height; ++y) {
 			ConvertBGRA8888ToRGBA8888(dst32, src32, width);
 			src32 += srcStride;
 			dst32 += dstStride;
 		}
-	} else if (format == SCREEN_Draw::DataFormat::R8G8B8_UNORM) {
+	} else if (format == SCREEN_Draw::SCREEN_DataFormat::R8G8B8_UNORM) {
 		for (uint32_t y = 0; y < height; ++y) {
 			for (uint32_t x = 0; x < width; ++x) {
 				uint32_t c = src32[x];
@@ -495,8 +495,8 @@ void ConvertFromBGRA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, u
 	}
 }
 
-void ConvertToD32F(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_t srcStride, uint32_t width, uint32_t height, DataFormat format) {
-	if (format == SCREEN_Draw::DataFormat::D32F) {
+void ConvertToD32F(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_t srcStride, uint32_t width, uint32_t height, SCREEN_DataFormat format) {
+	if (format == SCREEN_Draw::SCREEN_DataFormat::D32F) {
 		const float *src32 = (const float *)src;
 		float *dst32 = (float *)dst;
 		if (src == dst) {
@@ -508,7 +508,7 @@ void ConvertToD32F(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_
 				dst32 += dstStride;
 			}
 		}
-	} else if (format == SCREEN_Draw::DataFormat::D16) {
+	} else if (format == SCREEN_Draw::SCREEN_DataFormat::D16) {
 		const uint16_t *src16 = (const uint16_t *)src;
 		float *dst32 = (float *)dst;
 		for (uint32_t y = 0; y < height; ++y) {
@@ -518,7 +518,7 @@ void ConvertToD32F(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_
 			src16 += srcStride;
 			dst32 += dstStride;
 		}
-	} else if (format == SCREEN_Draw::DataFormat::D24_S8) {
+	} else if (format == SCREEN_Draw::SCREEN_DataFormat::D24_S8) {
 		const uint32_t *src32 = (const uint32_t *)src;
 		float *dst32 = (float *)dst;
 		for (uint32_t y = 0; y < height; ++y) {

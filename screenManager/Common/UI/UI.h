@@ -31,7 +31,7 @@
 
 class SCREEN_UIContext;
 
-struct Atlas;
+struct SCREEN_Atlas;
 
 // This is the drawbuffer used for UI. Remember to flush it at the end of the frame.
 // TODO: One should probably pass it in through UIInit.
@@ -41,7 +41,7 @@ extern SCREEN_DrawBuffer ui_draw2d_front;	// for things that need to be on top o
 // TODO: These don't really belong here.
 
 // Implement this interface to style your lists
-class UIListAdapter {
+class SCREEN_UIListAdapter {
 public:
 	virtual size_t getCount() const = 0;
 	virtual void drawItem(int item, int x, int y, int w, int h, bool active) const = 0;
@@ -49,7 +49,7 @@ public:
 	virtual bool itemEnabled(int itemIndex) const { return true; }
 };
 
-class StringVectorListAdapter : public UIListAdapter {
+class StringVectorListAdapter : public SCREEN_UIListAdapter {
 public:
 	StringVectorListAdapter(const std::vector<std::string> *items) : items_(items) {}
 	virtual size_t getCount() const { return items_->size(); }

@@ -48,8 +48,8 @@ public:
 	virtual void MeasureStringRect(const char *str, size_t len, const Bounds &bounds, float *w, float *h, int align = ALIGN_TOPLEFT) = 0;
 	virtual void DrawString(SCREEN_DrawBuffer &target, const char *str, float x, float y, uint32_t color, int align = ALIGN_TOPLEFT) = 0;
 	void DrawStringRect(SCREEN_DrawBuffer &target, const char *str, const Bounds &bounds, uint32_t color, int align);
-	virtual void DrawStringBitmap(std::vector<uint8_t> &bitmapData, TextStringEntry &entry, SCREEN_Draw::DataFormat texFormat, const char *str, int align = ALIGN_TOPLEFT) = 0;
-	void DrawStringBitmapRect(std::vector<uint8_t> &bitmapData, TextStringEntry &entry, SCREEN_Draw::DataFormat texFormat, const char *str, const Bounds &bounds, int align);
+	virtual void DrawStringBitmap(std::vector<uint8_t> &bitmapData, TextStringEntry &entry, SCREEN_Draw::SCREEN_DataFormat texFormat, const char *str, int align = ALIGN_TOPLEFT) = 0;
+	void DrawStringBitmapRect(std::vector<uint8_t> &bitmapData, TextStringEntry &entry, SCREEN_Draw::SCREEN_DataFormat texFormat, const char *str, const Bounds &bounds, int align);
 	// Use for housekeeping like throwing out old strings.
 	virtual void OncePerFrame() = 0;
 
@@ -88,10 +88,10 @@ protected:
 	bool ignoreGlobalDpi_ = false;
 };
 
-class SCREEN_TextDrawerWordWrapper : public WordWrapper {
+class SCREEN_TextDrawerWordWrapper : public SCREEN_WordWrapper {
 public:
 	SCREEN_TextDrawerWordWrapper(SCREEN_TextDrawer *drawer, const char *str, float maxW, int flags)
-		: WordWrapper(str, maxW, flags), drawer_(drawer) {}
+		: SCREEN_WordWrapper(str, maxW, flags), drawer_(drawer) {}
 
 protected:
 	float MeasureWidth(const char *str, size_t bytes) override;

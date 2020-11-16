@@ -5,7 +5,7 @@
 
 namespace SCREEN_Draw {
 
-enum class DataFormat : uint8_t {
+enum class SCREEN_DataFormat : uint8_t {
 	UNDEFINED,
 
 	R8_UNORM,
@@ -68,14 +68,14 @@ enum class DataFormat : uint8_t {
 	D32F_S8,
 };
 
-size_t DataFormatSizeInBytes(DataFormat fmt);
-bool DataFormatIsDepthStencil(DataFormat fmt);
-inline bool DataFormatIsColor(DataFormat fmt) {
+size_t DataFormatSizeInBytes(SCREEN_DataFormat fmt);
+bool DataFormatIsDepthStencil(SCREEN_DataFormat fmt);
+inline bool DataFormatIsColor(SCREEN_DataFormat fmt) {
 	return !DataFormatIsDepthStencil(fmt);
 }
 
-void ConvertFromRGBA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_t srcStride, uint32_t width, uint32_t height, DataFormat format);
-void ConvertFromBGRA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_t srcStride, uint32_t width, uint32_t height, DataFormat format);
-void ConvertToD32F(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_t srcStride, uint32_t width, uint32_t height, DataFormat format);
+void ConvertFromRGBA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_t srcStride, uint32_t width, uint32_t height, SCREEN_DataFormat format);
+void ConvertFromBGRA8888(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_t srcStride, uint32_t width, uint32_t height, SCREEN_DataFormat format);
+void ConvertToD32F(uint8_t *dst, const uint8_t *src, uint32_t dstStride, uint32_t srcStride, uint32_t width, uint32_t height, SCREEN_DataFormat format);
 
 }  // namespace

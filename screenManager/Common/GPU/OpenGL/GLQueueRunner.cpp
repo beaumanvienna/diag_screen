@@ -1390,7 +1390,7 @@ void GLQueueRunner::PerformReadback(const GLRStep &pass) {
 
 	GLRect2D rect = pass.readback.srcRect;
 
-	bool convert = internalFormat == GL_RGBA && pass.readback.dstFormat != DataFormat::R8G8B8A8_UNORM;
+	bool convert = internalFormat == GL_RGBA && pass.readback.dstFormat != SCREEN_DataFormat::R8G8B8A8_UNORM;
 
 	int tempSize = srcAlignment * rect.w * rect.h;
 	int readbackSize = dstAlignment * rect.w * rect.h;
@@ -1492,7 +1492,7 @@ void GLQueueRunner::PerformBindFramebufferAsRenderTarget(const GLRStep &pass) {
 	CHECK_GL_ERROR_IF_DEBUG();
 }
 
-void GLQueueRunner::CopyReadbackBuffer(int width, int height, SCREEN_Draw::DataFormat srcFormat, SCREEN_Draw::DataFormat destFormat, int pixelStride, uint8_t *pixels) {
+void GLQueueRunner::CopyReadbackBuffer(int width, int height, SCREEN_Draw::SCREEN_DataFormat srcFormat, SCREEN_Draw::SCREEN_DataFormat destFormat, int pixelStride, uint8_t *pixels) {
 	// TODO: Maybe move data format conversion here, and always read back 8888. Drivers
 	// don't usually provide very optimized conversion implementations, though some do.
 	// Just need to be careful about dithering, which may break Danganronpa.

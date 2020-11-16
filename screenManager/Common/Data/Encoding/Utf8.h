@@ -25,11 +25,11 @@ int u8_strlen(const char *s);
 void u8_inc(const char *s, int *i);
 void u8_dec(const char *s, int *i);
 
-class UTF8 {
+class SCREEN_UTF8 {
 public:
 	static const uint32_t INVALID = (uint32_t)-1;
-	UTF8(const char *c) : c_(c), index_(0) {}
-	UTF8(const char *c, int index) : c_(c), index_(index) {}
+	SCREEN_UTF8(const char *c) : c_(c), index_(0) {}
+	SCREEN_UTF8(const char *c, int index) : c_(c), index_(index) {}
 	bool end() const { return c_[index_] == 0; }
 	uint32_t next() {
 		return u8_nextchar(c_, &index_);

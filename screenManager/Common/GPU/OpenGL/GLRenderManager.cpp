@@ -377,7 +377,7 @@ void SCREEN_GLRenderManager::BlitFramebuffer(GLRFramebuffer *src, GLRect2D srcRe
 	steps_.push_back(step);
 }
 
-bool SCREEN_GLRenderManager::CopyFramebufferToMemorySync(GLRFramebuffer *src, int aspectBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
+bool SCREEN_GLRenderManager::CopyFramebufferToMemorySync(GLRFramebuffer *src, int aspectBits, int x, int y, int w, int h, SCREEN_Draw::SCREEN_DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
 	_assert_(pixels);
 
 	GLRStep *step = new GLRStep{ GLRStepType::READBACK };
@@ -392,15 +392,15 @@ bool SCREEN_GLRenderManager::CopyFramebufferToMemorySync(GLRFramebuffer *src, in
 	curRenderStep_ = nullptr;
 	FlushSync();
 
-	SCREEN_Draw::DataFormat srcFormat;
+	SCREEN_Draw::SCREEN_DataFormat srcFormat;
 	if (aspectBits & GL_COLOR_BUFFER_BIT) {
-		srcFormat = SCREEN_Draw::DataFormat::R8G8B8A8_UNORM;
+		srcFormat = SCREEN_Draw::SCREEN_DataFormat::R8G8B8A8_UNORM;
 	} else if (aspectBits & GL_STENCIL_BUFFER_BIT) {
 		// Copies from stencil are always S8.
-		srcFormat = SCREEN_Draw::DataFormat::S8;
+		srcFormat = SCREEN_Draw::SCREEN_DataFormat::S8;
 	} else if (aspectBits & GL_DEPTH_BUFFER_BIT) {
 		// TODO: Do this properly.
-		srcFormat = SCREEN_Draw::DataFormat::D24_S8;
+		srcFormat = SCREEN_Draw::SCREEN_DataFormat::D24_S8;
 	} else {
 		return false;
 	}
@@ -408,7 +408,7 @@ bool SCREEN_GLRenderManager::CopyFramebufferToMemorySync(GLRFramebuffer *src, in
 	return true;
 }
 
-void SCREEN_GLRenderManager::CopyImageToMemorySync(GLRTexture *texture, int mipLevel, int x, int y, int w, int h, SCREEN_Draw::DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
+void SCREEN_GLRenderManager::CopyImageToMemorySync(GLRTexture *texture, int mipLevel, int x, int y, int w, int h, SCREEN_Draw::SCREEN_DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
 	_assert_(texture);
 	_assert_(pixels);
 	GLRStep *step = new GLRStep{ GLRStepType::READBACK_IMAGE };
@@ -421,7 +421,7 @@ void SCREEN_GLRenderManager::CopyImageToMemorySync(GLRTexture *texture, int mipL
 	curRenderStep_ = nullptr;
 	FlushSync();
 
-	queueRunner_.CopyReadbackBuffer(w, h, SCREEN_Draw::DataFormat::R8G8B8A8_UNORM, destFormat, pixelStride, pixels);
+	queueRunner_.CopyReadbackBuffer(w, h, SCREEN_Draw::SCREEN_DataFormat::R8G8B8A8_UNORM, destFormat, pixelStride, pixels);
 }
 
 void SCREEN_GLRenderManager::BeginFrame() {

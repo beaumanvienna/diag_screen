@@ -350,7 +350,7 @@ public:
 		else
 			return (uint32_t)SCREEN_ShaderLanguage::GLSL_ES_200 | (uint32_t)SCREEN_ShaderLanguage::GLSL_410;
 	}
-	uint32_t GetDataFormatSupport(DataFormat fmt) const override;
+	uint32_t GetDataFormatSupport(SCREEN_DataFormat fmt) const override;
 
 	SCREEN_DepthStencilState *CreateDepthStencilState(const DepthStencilStateDesc &desc) override;
 	SCREEN_BlendState *CreateBlendState(const BlendStateDesc &desc) override;
@@ -371,7 +371,7 @@ public:
 
 	void CopyFramebufferImage(SCREEN_Framebuffer *src, int level, int x, int y, int z, SCREEN_Framebuffer *dst, int dstLevel, int dstX, int dstY, int dstZ, int width, int height, int depth, int channelBits, const char *tag) override;
 	bool BlitFramebuffer(SCREEN_Framebuffer *src, int srcX1, int srcY1, int srcX2, int srcY2, SCREEN_Framebuffer *dst, int dstX1, int dstY1, int dstX2, int dstY2, int channelBits, FBBlitFilter filter, const char *tag) override;
-	bool CopyFramebufferToMemorySync(SCREEN_Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat format, void *pixels, int pixelStride, const char *tag) override;
+	bool CopyFramebufferToMemorySync(SCREEN_Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::SCREEN_DataFormat format, void *pixels, int pixelStride, const char *tag) override;
 
 	// These functions should be self explanatory.
 	void BindFramebufferAsRenderTarget(SCREEN_Framebuffer *fbo, const RenderPassInfo &rp, const char *tag) override;
@@ -534,12 +534,12 @@ OpenGLContext::OpenGLContext() {
 	// TODO: Detect more caps
 	if (gl_extensions.IsGLES) {
 		if (gl_extensions.OES_packed_depth_stencil || gl_extensions.OES_depth24) {
-			caps_.preferredDepthBufferFormat = DataFormat::D24_S8;
+			caps_.preferredDepthBufferFormat = SCREEN_DataFormat::D24_S8;
 		} else {
-			caps_.preferredDepthBufferFormat = DataFormat::D16;
+			caps_.preferredDepthBufferFormat = SCREEN_DataFormat::D16;
 		}
 	} else {
-		caps_.preferredDepthBufferFormat = DataFormat::D24_S8;
+		caps_.preferredDepthBufferFormat = SCREEN_DataFormat::D24_S8;
 	}
 	caps_.framebufferBlitSupported = gl_extensions.NV_framebuffer_blit || gl_extensions.ARB_framebuffer_object;
 	caps_.framebufferDepthBlitSupported = caps_.framebufferBlitSupported;
@@ -680,7 +680,7 @@ private:
 	SCREEN_GLRenderManager *render_;
 	GLRTexture *tex_;
 
-	DataFormat format_;
+	SCREEN_DataFormat format_;
 	SCREEN_TextureType type_;
 	int mipLevels_;
 	bool generatedMips_;
@@ -771,14 +771,14 @@ void OpenGLTexture::SetImageData(int x, int y, int z, int width, int height, int
 		texDataPopulated = callback(texData, data, width, height, depth, width * (int)alignment, height * width * (int)alignment);
 	}
 	if (texDataPopulated) {
-		if (format_ == DataFormat::A1R5G5B5_UNORM_PACK16) {
-			format_ = DataFormat::R5G5B5A1_UNORM_PACK16;
+		if (format_ == SCREEN_DataFormat::A1R5G5B5_UNORM_PACK16) {
+			format_ = SCREEN_DataFormat::R5G5B5A1_UNORM_PACK16;
 			MoveABit((u16 *)texData, (const u16 *)texData, width * height * depth);
 		}
 	} else {
-		// Emulate support for DataFormat::A1R5G5B5_UNORM_PACK16.
-		if (format_ == DataFormat::A1R5G5B5_UNORM_PACK16) {
-			format_ = DataFormat::R5G5B5A1_UNORM_PACK16;
+		// Emulate support for SCREEN_DataFormat::A1R5G5B5_UNORM_PACK16.
+		if (format_ == SCREEN_DataFormat::A1R5G5B5_UNORM_PACK16) {
+			format_ = SCREEN_DataFormat::R5G5B5A1_UNORM_PACK16;
 			for (int y = 0; y < height; y++) {
 				MoveABit((u16 *)(texData + y * width * alignment), (const u16 *)(data + y * stride * alignment), width);
 			}
@@ -828,7 +828,7 @@ static void LogReadPixelsError(GLenum error) {
 }
 #endif
 
-bool OpenGLContext::CopyFramebufferToMemorySync(SCREEN_Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat dataFormat, void *pixels, int pixelStride, const char *tag) {
+bool OpenGLContext::CopyFramebufferToMemorySync(SCREEN_Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::SCREEN_DataFormat dataFormat, void *pixels, int pixelStride, const char *tag) {
 	if (gl_extensions.IsGLES && (channelBits & FB_COLOR_BIT) == 0) {
 		// Can't readback depth or stencil on GLES.
 		return false;
@@ -1203,27 +1203,27 @@ void OpenGLInputLayout::Compile(const InputLayoutDesc &desc) {
 		entry.stride = (GLsizei)desc.bindings[attr.binding].stride;
 		entry.offset = attr.offset;
 		switch (attr.format) {
-		case DataFormat::R32G32_FLOAT:
+		case SCREEN_DataFormat::R32G32_FLOAT:
 			entry.count = 2;
 			entry.type = GL_FLOAT;
 			entry.normalized = GL_FALSE;
 			break;
-		case DataFormat::R32G32B32_FLOAT:
+		case SCREEN_DataFormat::R32G32B32_FLOAT:
 			entry.count = 3;
 			entry.type = GL_FLOAT;
 			entry.normalized = GL_FALSE;
 			break;
-		case DataFormat::R32G32B32A32_FLOAT:
+		case SCREEN_DataFormat::R32G32B32A32_FLOAT:
 			entry.count = 4;
 			entry.type = GL_FLOAT;
 			entry.normalized = GL_FALSE;
 			break;
-		case DataFormat::R8G8B8A8_UNORM:
+		case SCREEN_DataFormat::R8G8B8A8_UNORM:
 			entry.count = 4;
 			entry.type = GL_UNSIGNED_BYTE;
 			entry.normalized = GL_TRUE;
 			break;
-		case DataFormat::UNDEFINED:
+		case SCREEN_DataFormat::UNDEFINED:
 		default:
 			printf("Thin3DGLVertexFormat: Invalid or unknown component type applied.");
 			break;
@@ -1306,30 +1306,30 @@ void OpenGLContext::GetFramebufferDimensions(SCREEN_Framebuffer *fbo, int *w, in
 	}
 }
 
-uint32_t OpenGLContext::GetDataFormatSupport(DataFormat fmt) const {
+uint32_t OpenGLContext::GetDataFormatSupport(SCREEN_DataFormat fmt) const {
 	switch (fmt) {
-	case DataFormat::R4G4B4A4_UNORM_PACK16:
-	case DataFormat::R5G6B5_UNORM_PACK16:
-	case DataFormat::R5G5B5A1_UNORM_PACK16:
+	case SCREEN_DataFormat::R4G4B4A4_UNORM_PACK16:
+	case SCREEN_DataFormat::R5G6B5_UNORM_PACK16:
+	case SCREEN_DataFormat::R5G5B5A1_UNORM_PACK16:
 		return FMT_RENDERTARGET | FMT_TEXTURE | FMT_AUTOGEN_MIPS;  // native support
 
-	case DataFormat::R8G8B8A8_UNORM:
+	case SCREEN_DataFormat::R8G8B8A8_UNORM:
 		return FMT_RENDERTARGET | FMT_TEXTURE | FMT_INPUTLAYOUT | FMT_AUTOGEN_MIPS;
 
-	case DataFormat::A1R5G5B5_UNORM_PACK16:
+	case SCREEN_DataFormat::A1R5G5B5_UNORM_PACK16:
 		return FMT_TEXTURE;  // we will emulate this! Very fast to convert from R5G5B5A1_UNORM_PACK16 during upload.
 
-	case DataFormat::R32_FLOAT:
-	case DataFormat::R32G32_FLOAT:
-	case DataFormat::R32G32B32_FLOAT:
-	case DataFormat::R32G32B32A32_FLOAT:
+	case SCREEN_DataFormat::R32_FLOAT:
+	case SCREEN_DataFormat::R32G32_FLOAT:
+	case SCREEN_DataFormat::R32G32B32_FLOAT:
+	case SCREEN_DataFormat::R32G32B32A32_FLOAT:
 		return FMT_INPUTLAYOUT;
 
-	case DataFormat::R8_UNORM:
+	case SCREEN_DataFormat::R8_UNORM:
 		return 0;
-	case DataFormat::BC1_RGBA_UNORM_BLOCK:
-	case DataFormat::BC2_UNORM_BLOCK:
-	case DataFormat::BC3_UNORM_BLOCK:
+	case SCREEN_DataFormat::BC1_RGBA_UNORM_BLOCK:
+	case SCREEN_DataFormat::BC2_UNORM_BLOCK:
+	case SCREEN_DataFormat::BC3_UNORM_BLOCK:
 		return FMT_TEXTURE;
 	default:
 		return 0;

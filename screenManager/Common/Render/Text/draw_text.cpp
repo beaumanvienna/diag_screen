@@ -66,7 +66,7 @@ void SCREEN_TextDrawer::DrawStringRect(SCREEN_DrawBuffer &target, const char *st
 	DrawString(target, toDraw.c_str(), x, y, color, align);
 }
 
-void SCREEN_TextDrawer::DrawStringBitmapRect(std::vector<uint8_t> &bitmapData, TextStringEntry &entry, SCREEN_Draw::DataFormat texFormat, const char *str, const Bounds &bounds, int align) {
+void SCREEN_TextDrawer::DrawStringBitmapRect(std::vector<uint8_t> &bitmapData, TextStringEntry &entry, SCREEN_Draw::SCREEN_DataFormat texFormat, const char *str, const Bounds &bounds, int align) {
 	std::string toDraw = str;
 	int wrap = align & (FLAG_WRAP_TEXT | FLAG_ELLIPSIZE_TEXT);
 	if (wrap) {

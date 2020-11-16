@@ -49,13 +49,13 @@ enum {
 	VIRTKEY_COUNT = VIRTKEY_LAST - VIRTKEY_FIRST
 };
 
-enum class GPUBackend {
+enum class SCREEN_GPUBackend {
 	OPENGL = 0,
 	DIRECT3D9 = 1,
 	DIRECT3D11 = 2,
 	VULKAN = 3,
 };
-void SetGPUBackend(GPUBackend type, const std::string &device = "");
+void SetGPUBackend(SCREEN_GPUBackend type, const std::string &device = "");
 
 enum SystemPermission {
 	SYSTEM_PERMISSION_STORAGE,

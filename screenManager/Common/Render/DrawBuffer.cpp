@@ -53,9 +53,9 @@ SCREEN_Draw::SCREEN_InputLayout *SCREEN_DrawBuffer::CreateInputLayout(SCREEN_Dra
 			{ sizeof(Vertex), false },
 		},
 		{
-			{ 0, SEM_POSITION, DataFormat::R32G32B32_FLOAT, 0 },
-			{ 0, SEM_TEXCOORD0, DataFormat::R32G32_FLOAT, 12 },
-			{ 0, SEM_COLOR0, DataFormat::R8G8B8A8_UNORM, 20 },
+			{ 0, SEM_POSITION, SCREEN_DataFormat::R32G32B32_FLOAT, 0 },
+			{ 0, SEM_TEXCOORD0, SCREEN_DataFormat::R32G32_FLOAT, 12 },
+			{ 0, SEM_COLOR0, SCREEN_DataFormat::R8G8B8A8_UNORM, 20 },
 		},
 	};
 
@@ -362,10 +362,10 @@ void SCREEN_DrawBuffer::DrawImage2GridH(ImageID atlas_image, float x1, float y1,
 	DrawTexRect(xb, y1, x2, y2, um, v1, u2, v2, color);
 }
 
-class AtlasWordWrapper : public WordWrapper {
+class SCREEN_AtlasWordWrapper : public SCREEN_WordWrapper {
 public:
 	// Note: maxW may be height if rotated.
-	AtlasWordWrapper(const AtlasFont &atlasfont, float scale, const char *str, float maxW, int flags) : WordWrapper(str, maxW, flags), atlasfont_(atlasfont), scale_(scale) {
+	SCREEN_AtlasWordWrapper(const AtlasFont &atlasfont, float scale, const char *str, float maxW, int flags) : SCREEN_WordWrapper(str, maxW, flags), atlasfont_(atlasfont), scale_(scale) {
 	}
 
 protected:
@@ -375,9 +375,9 @@ protected:
 	const float scale_;
 };
 
-float AtlasWordWrapper::MeasureWidth(const char *str, size_t bytes) {
+float SCREEN_AtlasWordWrapper::MeasureWidth(const char *str, size_t bytes) {
 	float w = 0.0f;
-	for (UTF8 utf(str); utf.byteIndex() < (int)bytes; ) {
+	for (SCREEN_UTF8 utf(str); utf.byteIndex() < (int)bytes; ) {
 		uint32_t c = utf.next();
 		if (c == '&') {
 			// Skip ampersand prefixes ("&&" is an ampersand.)
@@ -404,7 +404,7 @@ void SCREEN_DrawBuffer::MeasureTextCount(FontID font, const char *text, int coun
 	float wacc = 0;
 	float maxX = 0.0f;
 	int lines = 1;
-	UTF8 utf(text);
+	SCREEN_UTF8 utf(text);
 	while (true) {
 		if (utf.end())
 			break;
@@ -450,7 +450,7 @@ void SCREEN_DrawBuffer::MeasureTextRect(FontID font_id, const char *text, int co
 			*h = 0.0f;
 			return;
 		}
-		AtlasWordWrapper wrapper(*font, fontscalex, toMeasure.c_str(), bounds.w, wrap);
+		SCREEN_AtlasWordWrapper wrapper(*font, fontscalex, toMeasure.c_str(), bounds.w, wrap);
 		toMeasure = wrapper.Wrapped();
 	}
 	MeasureTextCount(font_id, toMeasure.c_str(), (int)toMeasure.length(), w, h);
@@ -495,7 +495,7 @@ void SCREEN_DrawBuffer::DrawTextRect(FontID font, const char *text, float x, flo
 	int wrap = align & (FLAG_WRAP_TEXT | FLAG_ELLIPSIZE_TEXT);
 	const AtlasFont *atlasfont = atlas->getFont(font);
 	if (wrap && atlasfont) {
-		AtlasWordWrapper wrapper(*atlasfont, fontscalex, toDraw.c_str(), w, wrap);
+		SCREEN_AtlasWordWrapper wrapper(*atlasfont, fontscalex, toDraw.c_str(), w, wrap);
 		toDraw = wrapper.Wrapped();
 	}
 
@@ -552,7 +552,7 @@ void SCREEN_DrawBuffer::DrawText(FontID font, const char *text, float x, float y
 		y += atlasfont->ascend * fontscaley;
 	}
 	float sx = x;
-	UTF8 utf(text);
+	SCREEN_UTF8 utf(text);
 	for (size_t i = 0; i < textLen; i++) {
 		if (utf.end())
 			break;

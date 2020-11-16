@@ -17,10 +17,10 @@ public:
 		float m[16];
 	};
 
-	const Vec3 right() const {return Vec3(xx, xy, xz);}
-	const Vec3 up()		const {return Vec3(yx, yy, yz);}
-	const Vec3 front() const {return Vec3(zx, zy, zz);}
-	const Vec3 move()	const {return Vec3(wx, wy, wz);}
+	const SCREEN_Vec3 right() const {return SCREEN_Vec3(xx, xy, xz);}
+	const SCREEN_Vec3 up()		const {return SCREEN_Vec3(yx, yy, yz);}
+	const SCREEN_Vec3 front() const {return SCREEN_Vec3(zx, zy, zz);}
+	const SCREEN_Vec3 move()	const {return SCREEN_Vec3(wx, wy, wz);}
 
 	const float &operator[](int i) const {
 		return *(((const float *)this) + i);
@@ -47,7 +47,7 @@ public:
 		empty();
 		xx = yy = zz = ww = 1.0f;
 	}
-	void setTranslation(const Vec3 &trans) {
+	void setTranslation(const SCREEN_Vec3 &trans) {
 		setIdentity();
 		wx = trans.x;
 		wy = trans.y;
@@ -89,11 +89,11 @@ public:
 	void setOrthoD3D(float left, float right, float bottom, float top, float near, float far);
 	void setOrthoVulkan(float left, float right, float top, float bottom, float near, float far);
 
-	void setViewFrame(const Vec3 &pos, const Vec3 &right, const Vec3 &forward, const Vec3 &up);
+	void setViewFrame(const SCREEN_Vec3 &pos, const SCREEN_Vec3 &right, const SCREEN_Vec3 &forward, const SCREEN_Vec3 &up);
 	void toText(char *buffer, int len) const;
 	void print() const;
 
-	void translateAndScale(const Vec3 &trans, const Vec3 &scale) {
+	void translateAndScale(const SCREEN_Vec3 &trans, const SCREEN_Vec3 &scale) {
 		xx = xx * scale.x + xw * trans.x;
 		xy = xy * scale.y + xw * trans.y;
 		xz = xz * scale.z + xw * trans.z;

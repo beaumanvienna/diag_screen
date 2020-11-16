@@ -5,6 +5,6 @@
 
 namespace SCREEN_Draw {
 
-bool Thin3DFormatToFormatAndType(DataFormat fmt, GLuint &internalFormat, GLuint &format, GLuint &type, int &alignment);
+bool Thin3DFormatToFormatAndType(SCREEN_DataFormat fmt, GLuint &internalFormat, GLuint &format, GLuint &type, int &alignment);
 
 }

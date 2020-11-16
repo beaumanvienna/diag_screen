@@ -46,16 +46,16 @@ void FreeAlignedMemory(void* ptr);
 int GetMemoryProtectPageSize();
 
 template <typename T>
-class SimpleBuf {
+class SCREEN_SimpleBuf {
 public:
-	SimpleBuf() : buf_(0), size_(0) {
+	SCREEN_SimpleBuf() : buf_(0), size_(0) {
 	}
 
-	SimpleBuf(size_t size) : buf_(0) {
+	SCREEN_SimpleBuf(size_t size) : buf_(0) {
 		resize(size);
 	}
 
-	~SimpleBuf() {
+	~SCREEN_SimpleBuf() {
 		if (buf_ != 0) {
 			FreeMemoryPages(buf_, size_ * sizeof(T));
 		}

@@ -71,10 +71,10 @@
 
 static SCREEN_UI::Theme ui_theme;
 extern GlobalUIState globalUIState;
-static GPUBackend gpuBackend;
+static SCREEN_GPUBackend gpuBackend;
 static std::string gpuBackendDevice;
 
-Atlas g_ui_atlas;
+SCREEN_Atlas g_ui_atlas;
 
 SCREEN_ScreenManager *screenManager;
 std::string config_filename;
@@ -109,10 +109,10 @@ static SCREEN_UIContext *uiContext;
 
 std::thread *graphicsLoadThread;
 
-static LogListener *logger = nullptr;
+static SCREEN_LogListener *logger = nullptr;
 std::string boot_filename = "";
 
-void SetGPUBackend(GPUBackend type, const std::string &device) {
+void SetGPUBackend(SCREEN_GPUBackend type, const std::string &device) {
 	gpuBackend = type;
 	gpuBackendDevice = device;
 }

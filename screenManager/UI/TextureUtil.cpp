@@ -15,10 +15,10 @@
 #include "Common/TimeUtil.h"
 #include "UI/TextureUtil.h"
 
-static SCREEN_Draw::DataFormat ZimToT3DFormat(int zim) {
+static SCREEN_Draw::SCREEN_DataFormat ZimToT3DFormat(int zim) {
 	switch (zim) {
-	case ZIM_RGBA8888: return SCREEN_Draw::DataFormat::R8G8B8A8_UNORM;
-	default: return SCREEN_Draw::DataFormat::R8G8B8A8_UNORM;
+	case ZIM_RGBA8888: return SCREEN_Draw::SCREEN_DataFormat::R8G8B8A8_UNORM;
+	default: return SCREEN_Draw::SCREEN_DataFormat::R8G8B8A8_UNORM;
 	}
 }
 
@@ -40,7 +40,7 @@ static ImageFileType DetectImageFileType(const uint8_t *data, size_t size) {
 	}
 }
 
-static bool LoadTextureLevels(const uint8_t *data, size_t size, ImageFileType type, int width[16], int height[16], int *num_levels, SCREEN_Draw::DataFormat *fmt, uint8_t *image[16], int *zim_flags) {
+static bool LoadTextureLevels(const uint8_t *data, size_t size, ImageFileType type, int width[16], int height[16], int *num_levels, SCREEN_Draw::SCREEN_DataFormat *fmt, uint8_t *image[16], int *zim_flags) {
 	if (type == DETECT) {
 		type = DetectImageFileType(data, size);
 	}
@@ -63,7 +63,7 @@ static bool LoadTextureLevels(const uint8_t *data, size_t size, ImageFileType ty
 	case PNG:
 		if (1 == pngLoadPtr((const unsigned char *)data, size, &width[0], &height[0], &image[0])) {
 			*num_levels = 1;
-			*fmt = SCREEN_Draw::DataFormat::R8G8B8A8_UNORM;
+			*fmt = SCREEN_Draw::SCREEN_DataFormat::R8G8B8A8_UNORM;
 			if (!image[0]) {
 				printf("if (!image[0]) {");
 				return false;
@@ -93,7 +93,7 @@ bool SCREEN_ManagedTexture::LoadFromFileData(const uint8_t *data, size_t dataSiz
 
 	int num_levels = 0;
 	int zim_flags = 0;
-	DataFormat fmt;
+	SCREEN_DataFormat fmt;
 	if (!LoadTextureLevels(data, dataSize, type, width, height, &num_levels, &fmt, image, &zim_flags)) {
 		return false;
 	}

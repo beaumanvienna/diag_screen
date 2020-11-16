@@ -21,14 +21,14 @@ extern float display_hz;
 
 // On some platforms (currently only Windows UWP) we need to manually rotate
 // our rendered output to match the display. Use these to do so.
-enum class DisplayRotation {
+enum class SCREEN_DisplayRotation {
 	ROTATE_0 = 0,
 	ROTATE_90,
 	ROTATE_180,
 	ROTATE_270,
 };
 
-extern DisplayRotation g_display_rotation;
+extern SCREEN_DisplayRotation g_display_rotation;
 extern SCREEN_Lin::SCREEN_Matrix4x4 g_display_rot_matrix;
 
 template<class T>

@@ -11,7 +11,7 @@
 #include "Common/Math/lin/matrix4x4.h"
 #include "Common/GPU/thin3d.h"
 
-struct Atlas;
+struct SCREEN_Atlas;
 
 enum {
 	ALIGN_LEFT = 0,
@@ -101,10 +101,10 @@ public:
 	// New drawing APIs
 
 	// Must call this before you use any functions with atlas_image etc.
-	void SetAtlas(const Atlas *_atlas) {
+	void SetAtlas(const SCREEN_Atlas *_atlas) {
 		atlas = _atlas;
 	}
-	const Atlas *GetAtlas() const { return atlas; }
+	const SCREEN_Atlas *GetAtlas() const { return atlas; }
 	bool MeasureImage(ImageID atlas_image, float *w, float *h);
 	void DrawImage(ImageID atlas_image, float x, float y, float scale, Color color = COLOR(0xFFFFFF), int align = ALIGN_TOPLEFT);
 	void DrawImageStretch(ImageID atlas_image, float x1, float y1, float x2, float y2, Color color = COLOR(0xFFFFFF));
@@ -185,7 +185,7 @@ private:
 
 	Vertex *verts_;
 	int count_;
-	const Atlas *atlas;
+	const SCREEN_Atlas *atlas;
 
 	bool inited_;
 	float fontscalex;

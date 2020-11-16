@@ -24,7 +24,7 @@ SCREEN_Matrix4x4 SCREEN_Matrix4x4::operator * (const SCREEN_Matrix4x4 &other) co
 	return temp;
 }
 
-void SCREEN_Matrix4x4::setViewFrame(const Vec3 &pos, const Vec3 &vRight, const Vec3 &vView, const Vec3 &vUp) {
+void SCREEN_Matrix4x4::setViewFrame(const SCREEN_Vec3 &pos, const SCREEN_Vec3 &vRight, const SCREEN_Vec3 &vView, const SCREEN_Vec3 &vUp) {
 	xx = vRight.x; xy = vUp.x; xz=vView.x; xw = 0.0f;
 	yx = vRight.y; yy = vUp.y; yz=vView.y; yw = 0.0f;
 	zx = vRight.z; zy = vUp.z; zz=vView.z; zw = 0.0f;

@@ -105,7 +105,7 @@ void DrawBackground(SCREEN_UIContext &dc, float alpha) {
 	static int last_yres = 0;
 
 	if (xbase[0] == 0.0f || last_xres != xres || last_yres != yres) {
-		GMRng rng;
+		SCREEN_GMRng rng;
 		for (int i = 0; i < 100; i++) {
 			xbase[i] = rng.F() * xres;
 			ybase[i] = rng.F() * yres;

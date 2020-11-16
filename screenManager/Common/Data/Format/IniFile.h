@@ -9,13 +9,13 @@
 #include <string>
 #include <vector>
 
-class Section
+class SCREEN_Section
 {
-	friend class PIniFile;
+	friend class SCREEN_IniFile;
 
 public:
-	Section() {}
-	Section(const std::string& name) : name_(name) {}
+	SCREEN_Section() {}
+	SCREEN_Section(const std::string& name) : name_(name) {}
 
 	bool Exists(const char *key) const;
 	bool Delete(const char *key);
@@ -62,7 +62,7 @@ public:
 	bool Get(const char* key, double* value, double defaultValue = false);
 	bool Get(const char* key, std::vector<std::string>& values);
 
-	bool operator < (const Section& other) const {
+	bool operator < (const SCREEN_Section& other) const {
 		return name_ < other.name_;
 	}
 
@@ -76,7 +76,7 @@ protected:
 	std::string comment;
 };
 
-class PIniFile
+class SCREEN_IniFile
 {
 public:
 	bool Load(const char* filename);
@@ -133,15 +133,15 @@ public:
 	bool DeleteSection(const char* sectionName);
 
 	void SortSections();
-	std::vector<Section> &Sections() { return sections; }
+	std::vector<SCREEN_Section> &Sections() { return sections; }
 
 	bool HasSection(const char *section) { return GetSection(section) != 0; }
 
-	Section* GetOrCreateSection(const char* section);
+	SCREEN_Section* GetOrCreateSection(const char* section);
 
 private:
-	std::vector<Section> sections;
+	std::vector<SCREEN_Section> sections;
 
-	const Section* GetSection(const char* section) const;
-	Section* GetSection(const char* section);
+	const SCREEN_Section* GetSection(const char* section) const;
+	SCREEN_Section* GetSection(const char* section);
 };

@@ -273,17 +273,17 @@ bool TouchEvent(const TouchInput &touch, ViewGroup *root) {
 }
 
 bool AxisEvent(const AxisInput &axis, ViewGroup *root) {
-	enum class DirState {
+	enum class SCREEN_DirState {
 		NONE = 0,
 		POS = 1,
 		NEG = 2,
 	};
 	struct PrevState {
-		PrevState() : x(DirState::NONE), y(DirState::NONE) {
+		PrevState() : x(SCREEN_DirState::NONE), y(SCREEN_DirState::NONE) {
 		}
 
-		DirState x;
-		DirState y;
+		SCREEN_DirState x;
+		SCREEN_DirState y;
 	};
 	struct StateKey {
 		int deviceId;
@@ -300,17 +300,17 @@ bool AxisEvent(const AxisInput &axis, ViewGroup *root) {
 
 	// Cannot use the remapper since this is for the menu, so we provide our own
 	// axis->button emulation here.
-	auto GenerateKeyFromAxis = [&](DirState old, DirState cur, keycode_t neg_key, keycode_t pos_key) {
+	auto GenerateKeyFromAxis = [&](SCREEN_DirState old, SCREEN_DirState cur, keycode_t neg_key, keycode_t pos_key) {
 		if (old == cur)
 			return;
-		if (old == DirState::POS) {
+		if (old == SCREEN_DirState::POS) {
 			KeyEvent(KeyInput{ DEVICE_ID_KEYBOARD, pos_key, KEY_UP }, root);
-		} else if (old == DirState::NEG) {
+		} else if (old == SCREEN_DirState::NEG) {
 			KeyEvent(KeyInput{ DEVICE_ID_KEYBOARD, neg_key, KEY_UP }, root);
 		}
-		if (cur == DirState::POS) {
+		if (cur == SCREEN_DirState::POS) {
 			KeyEvent(KeyInput{ DEVICE_ID_KEYBOARD, pos_key, KEY_DOWN }, root);
-		} else if (cur == DirState::NEG) {
+		} else if (cur == SCREEN_DirState::NEG) {
 			KeyEvent(KeyInput{ DEVICE_ID_KEYBOARD, neg_key, KEY_DOWN }, root);
 		}
 	};
@@ -326,11 +326,11 @@ bool AxisEvent(const AxisInput &axis, ViewGroup *root) {
 	case DEVICE_ID_X360_3:
 	{
 		PrevState &old = state[stateKey];
-		DirState dir = DirState::NONE;
+		SCREEN_DirState dir = SCREEN_DirState::NONE;
 		if (axis.value < -THRESHOLD)
-			dir = DirState::NEG;
+			dir = SCREEN_DirState::NEG;
 		else if (axis.value > THRESHOLD)
-			dir = DirState::POS;
+			dir = SCREEN_DirState::POS;
 
 		if (axis.axisId == JOYSTICK_AXIS_X || axis.axisId == JOYSTICK_AXIS_HAT_X) {
 			GenerateKeyFromAxis(old.x, dir, NKCODE_DPAD_LEFT, NKCODE_DPAD_RIGHT);

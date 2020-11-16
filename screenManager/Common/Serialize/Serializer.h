@@ -46,14 +46,14 @@ struct LinkedListItem : public T
 	LinkedListItem<T> *next;
 };
 
-class PointerWrap;
+class SCREEN_PointerWrap;
 
-class PointerWrapSection
+class SCREEN_PointerWrapSection
 {
 public:
-	PointerWrapSection(PointerWrap &p, int ver, const char *title) : p_(p), ver_(ver), title_(title) {
+	SCREEN_PointerWrapSection(SCREEN_PointerWrap &p, int ver, const char *title) : p_(p), ver_(ver), title_(title) {
 	}
-	~PointerWrapSection();
+	~SCREEN_PointerWrapSection();
 	
 	bool operator == (const int &v) const { return ver_ == v; }
 	bool operator != (const int &v) const { return ver_ != v; }
@@ -67,13 +67,13 @@ public:
 	}
 
 private:
-	PointerWrap &p_;
+	SCREEN_PointerWrap &p_;
 	int ver_;
 	const char *title_;
 };
 
 // Wrapper class
-class PointerWrap
+class SCREEN_PointerWrap
 {
 public:
 	enum Mode {
@@ -93,15 +93,15 @@ public:
 	Mode mode;
 	Error error = ERROR_NONE;
 
-	PointerWrap(u8 **ptr_, Mode mode_) : ptr(ptr_), mode(mode_) {}
-	PointerWrap(unsigned char **ptr_, int mode_) : ptr((u8**)ptr_), mode((Mode)mode_) {}
+	SCREEN_PointerWrap(u8 **ptr_, Mode mode_) : ptr(ptr_), mode(mode_) {}
+	SCREEN_PointerWrap(unsigned char **ptr_, int mode_) : ptr((u8**)ptr_), mode((Mode)mode_) {}
 
-	PointerWrapSection Section(const char *title, int ver);
+	SCREEN_PointerWrapSection Section(const char *title, int ver);
 
 	// The returned object can be compared against the version that was loaded.
 	// This can be used to support versions as old as minVer.
 	// Version = 0 means the section was not found.
-	PointerWrapSection Section(const char *title, int minVer, int ver);
+	SCREEN_PointerWrapSection Section(const char *title, int minVer, int ver);
 
 	void SetMode(Mode mode_) {mode = mode_;}
 	Mode GetMode() const {return mode;}
@@ -122,7 +122,7 @@ private:
 	const char *firstBadSectionTitle_ = nullptr;
 };
 
-class CChunkFileReader
+class SCREEN_CChunkFileReader
 {
 public:
 	enum Error {
@@ -136,7 +136,7 @@ public:
 	template<class T>
 	static Error LoadPtr(u8 *ptr, T &_class, std::string *errorString)
 	{
-		PointerWrap p(&ptr, PointerWrap::MODE_READ);
+		SCREEN_PointerWrap p(&ptr, SCREEN_PointerWrap::MODE_READ);
 		_class.DoState(p);
 
 		if (p.error != p.ERROR_FAILURE) {
@@ -151,7 +151,7 @@ public:
 	static size_t MeasurePtr(T &_class)
 	{
 		u8 *ptr = 0;
-		PointerWrap p(&ptr, PointerWrap::MODE_MEASURE);
+		SCREEN_PointerWrap p(&ptr, SCREEN_PointerWrap::MODE_MEASURE);
 		_class.DoState(p);
 		return (size_t)ptr;
 	}
@@ -160,7 +160,7 @@ public:
 	template<class T>
 	static Error SavePtr(u8 *ptr, T &_class)
 	{
-		PointerWrap p(&ptr, PointerWrap::MODE_WRITE);
+		SCREEN_PointerWrap p(&ptr, SCREEN_PointerWrap::MODE_WRITE);
 		_class.DoState(p);
 
 		if (p.error != p.ERROR_FAILURE) {
@@ -213,19 +213,19 @@ public:
 		u8 *ptr = 0;
 
 		// Step 1: Measure the space required.
-		PointerWrap p(&ptr, PointerWrap::MODE_MEASURE);
+		SCREEN_PointerWrap p(&ptr, SCREEN_PointerWrap::MODE_MEASURE);
 		_class.DoState(p);
 		size_t const sz = (size_t)ptr;
 		std::vector<u8> buffer(sz);
 
 		// Step 2: Dump the state.
 		ptr = &buffer[0];
-		p.SetMode(PointerWrap::MODE_WRITE);
+		p.SetMode(SCREEN_PointerWrap::MODE_WRITE);
 		_class.DoState(p);
 
 		// Step 3: Verify the state.
 		ptr = &buffer[0];
-		p.SetMode(PointerWrap::MODE_VERIFY);
+		p.SetMode(SCREEN_PointerWrap::MODE_VERIFY);
 		_class.DoState(p);
 
 		return ERROR_NONE;

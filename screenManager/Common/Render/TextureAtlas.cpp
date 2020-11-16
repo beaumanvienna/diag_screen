@@ -3,9 +3,9 @@
 
 #include "Common/Render/TextureAtlas.h"
 
-class ByteReader {
+class SCREEN_ByteReader {
 public:
-	ByteReader(const uint8_t *data, size_t size) : data_(data), offset_(0), size_(size) {}
+	SCREEN_ByteReader(const uint8_t *data, size_t size) : data_(data), offset_(0), size_(size) {}
 
 	template<class T>
 	T Read() {
@@ -35,8 +35,8 @@ private:
 	size_t size_;
 };
 
-bool Atlas::Load(const uint8_t *data, size_t data_size) {
-	ByteReader reader(data, data_size);
+bool SCREEN_Atlas::Load(const uint8_t *data, size_t data_size) {
+	SCREEN_ByteReader reader(data, data_size);
 
 	AtlasHeader header = reader.Read<AtlasHeader>();
 	num_images = header.numImages;
@@ -62,7 +62,7 @@ bool Atlas::Load(const uint8_t *data, size_t data_size) {
 	return true;
 }
 
-const AtlasFont *Atlas::getFont(FontID id) const {
+const AtlasFont *SCREEN_Atlas::getFont(FontID id) const {
 	if (id.isInvalid())
 		return nullptr;
 
@@ -73,7 +73,7 @@ const AtlasFont *Atlas::getFont(FontID id) const {
 	return nullptr;
 }
 
-const AtlasImage *Atlas::getImage(ImageID name) const {
+const AtlasImage *SCREEN_Atlas::getImage(ImageID name) const {
 	if (name.isInvalid())
 		return nullptr;
 
@@ -84,7 +84,7 @@ const AtlasImage *Atlas::getImage(ImageID name) const {
 	return nullptr;
 }
 
-bool Atlas::measureImage(ImageID id, float *w, float *h) const {
+bool SCREEN_Atlas::measureImage(ImageID id, float *w, float *h) const {
 	const AtlasImage *image = getImage(id);
 	if (image) {
 		*w = (float)image->w;
@@ -110,7 +110,7 @@ const AtlasChar *AtlasFont::getChar(int utf32) const {
 	return nullptr;
 }
 
-Atlas::~Atlas() {
+SCREEN_Atlas::~SCREEN_Atlas() {
 	delete[] images;
 	delete[] fonts;
 }

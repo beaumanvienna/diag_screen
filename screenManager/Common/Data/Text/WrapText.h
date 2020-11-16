@@ -2,9 +2,9 @@
 
 #include <string>
 
-class WordWrapper {
+class SCREEN_WordWrapper {
 public:
-	WordWrapper(const char *str, float maxW, int flags)
+	SCREEN_WordWrapper(const char *str, float maxW, int flags)
 		: str_(str), maxW_(maxW), flags_(flags) {
 	}
 

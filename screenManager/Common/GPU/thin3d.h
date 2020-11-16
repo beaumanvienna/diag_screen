@@ -395,7 +395,7 @@ struct BindingDesc {
 struct AttributeDesc {
 	int binding;
 	int location;  // corresponds to semantic
-	DataFormat format;
+	SCREEN_DataFormat format;
 	int offset;
 };
 
@@ -506,9 +506,9 @@ struct DeviceCaps {
 	SCREEN_GPUVendor vendor;
 	uint32_t deviceID;  // use caution!
 
-	DataFormat preferredDepthBufferFormat;
-	DataFormat preferredShadowMapFormatLow;
-	DataFormat preferredShadowMapFormatHigh;
+	SCREEN_DataFormat preferredDepthBufferFormat;
+	SCREEN_DataFormat preferredShadowMapFormatLow;
+	SCREEN_DataFormat preferredShadowMapFormatHigh;
 	bool anisoSupported;
 	bool depthRangeMinusOneToOne;  // OpenGL style depth
 	bool geometryShaderSupported;
@@ -530,7 +530,7 @@ typedef std::function<bool(uint8_t *data, const uint8_t *initData, uint32_t w, u
 
 struct TextureDesc {
 	SCREEN_TextureType type;
-	DataFormat format;
+	SCREEN_DataFormat format;
 	int width;
 	int height;
 	int depth;
@@ -568,7 +568,7 @@ public:
 	SCREEN_Bugs GetBugs() const { return bugs_; }
 
 	virtual const DeviceCaps &GetDeviceCaps() const = 0;
-	virtual uint32_t GetDataFormatSupport(DataFormat fmt) const = 0;
+	virtual uint32_t GetDataFormatSupport(SCREEN_DataFormat fmt) const = 0;
 	virtual std::vector<std::string> GetFeatureList() const { return std::vector<std::string>(); }
 	virtual std::vector<std::string> GetExtensionList() const { return std::vector<std::string>(); }
 	virtual std::vector<std::string> GetDeviceList() const { return std::vector<std::string>(); }
@@ -602,11 +602,11 @@ public:
 
 	virtual void CopyFramebufferImage(SCREEN_Framebuffer *src, int level, int x, int y, int z, SCREEN_Framebuffer *dst, int dstLevel, int dstX, int dstY, int dstZ, int width, int height, int depth, int channelBits, const char *tag) = 0;
 	virtual bool BlitFramebuffer(SCREEN_Framebuffer *src, int srcX1, int srcY1, int srcX2, int srcY2, SCREEN_Framebuffer *dst, int dstX1, int dstY1, int dstX2, int dstY2, int channelBits, FBBlitFilter filter, const char *tag) = 0;
-	virtual bool CopyFramebufferToMemorySync(SCREEN_Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::DataFormat format, void *pixels, int pixelStride, const char *tag) {
+	virtual bool CopyFramebufferToMemorySync(SCREEN_Framebuffer *src, int channelBits, int x, int y, int w, int h, SCREEN_Draw::SCREEN_DataFormat format, void *pixels, int pixelStride, const char *tag) {
 		return false;
 	}
-	virtual DataFormat PreferredFramebufferReadbackFormat(SCREEN_Framebuffer *src) {
-		return DataFormat::R8G8B8A8_UNORM;
+	virtual SCREEN_DataFormat PreferredFramebufferReadbackFormat(SCREEN_Framebuffer *src) {
+		return SCREEN_DataFormat::R8G8B8A8_UNORM;
 	}
 
 	// These functions should be self explanatory.
