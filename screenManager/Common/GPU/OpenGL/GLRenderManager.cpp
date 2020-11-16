@@ -118,7 +118,7 @@ void SCREEN_GLRenderManager::ThreadStart(SCREEN_Draw::SCREEN_DrawContext *draw) 
 	}
 
 	// Don't save draw, we don't want any thread safety confusion.
-	bool mapBuffers = draw->GetBugs().Has(SCREEN_Draw::Bugs::ANY_MAP_BUFFER_RANGE_SLOW);
+	bool mapBuffers = draw->GetBugs().Has(SCREEN_Draw::SCREEN_Bugs::ANY_MAP_BUFFER_RANGE_SLOW);
 	bool hasBufferStorage = gl_extensions.ARB_buffer_storage || gl_extensions.EXT_buffer_storage;
 	if (!gl_extensions.VersionGEThan(3, 0, 0) && gl_extensions.IsGLES && !hasBufferStorage) {
 		// Force disable if it wouldn't work anyway.

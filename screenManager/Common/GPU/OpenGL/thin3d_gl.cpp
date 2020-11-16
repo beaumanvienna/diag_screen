@@ -156,7 +156,7 @@ static const unsigned short primToGL[] = {
 
 class OpenGLBuffer;
 
-class OpenGLBlendState : public BlendState {
+class OpenGLBlendState : public SCREEN_BlendState {
 public:
 	bool enabled;
 	GLuint eqCol, eqAlpha;
@@ -169,7 +169,7 @@ public:
 	}
 };
 
-class OpenGLSamplerState : public SamplerState {
+class OpenGLSamplerState : public SCREEN_SamplerState {
 public:
 	GLint wrapU;
 	GLint wrapV;
@@ -211,16 +211,16 @@ public:
 	GLenum frontFace;
 };
 
-GLuint ShaderStageToOpenGL(ShaderStage stage) {
+GLuint ShaderStageToOpenGL(SCREEN_ShaderStage stage) {
 	switch (stage) {
-	case ShaderStage::VERTEX: return GL_VERTEX_SHADER;
+	case SCREEN_ShaderStage::VERTEX: return GL_VERTEX_SHADER;
 #ifndef USING_GLES2
-	case ShaderStage::COMPUTE: return GL_COMPUTE_SHADER;
-	case ShaderStage::EVALUATION: return GL_TESS_EVALUATION_SHADER;
-	case ShaderStage::CONTROL: return GL_TESS_CONTROL_SHADER;
-	case ShaderStage::GEOMETRY: return GL_GEOMETRY_SHADER;
+	case SCREEN_ShaderStage::COMPUTE: return GL_COMPUTE_SHADER;
+	case SCREEN_ShaderStage::EVALUATION: return GL_TESS_EVALUATION_SHADER;
+	case SCREEN_ShaderStage::CONTROL: return GL_TESS_CONTROL_SHADER;
+	case SCREEN_ShaderStage::GEOMETRY: return GL_GEOMETRY_SHADER;
 #endif
-	case ShaderStage::FRAGMENT:
+	case SCREEN_ShaderStage::FRAGMENT:
 	default:
 		return GL_FRAGMENT_SHADER;
 	}
@@ -228,7 +228,7 @@ GLuint ShaderStageToOpenGL(ShaderStage stage) {
 
 class OpenGLShaderModule : public ShaderModule {
 public:
-	OpenGLShaderModule(SCREEN_GLRenderManager *render, ShaderStage stage, const std::string &tag) : render_(render), stage_(stage), tag_(tag) {
+	OpenGLShaderModule(SCREEN_GLRenderManager *render, SCREEN_ShaderStage stage, const std::string &tag) : render_(render), stage_(stage), tag_(tag) {
 		printf("Shader module created (%p)", this);
 		glstage_ = ShaderStageToOpenGL(stage);
 	}
@@ -238,30 +238,30 @@ public:
 			render_->DeleteShader(shader_);
 	}
 
-	bool Compile(SCREEN_GLRenderManager *render, ShaderLanguage language, const uint8_t *data, size_t dataSize);
+	bool Compile(SCREEN_GLRenderManager *render, SCREEN_ShaderLanguage language, const uint8_t *data, size_t dataSize);
 	GLRShader *GetShader() const {
 		return shader_;
 	}
 	const std::string &GetSource() const { return source_; }
 
-	ShaderLanguage GetLanguage() {
+	SCREEN_ShaderLanguage GetLanguage() {
 		return language_;
 	}
-	ShaderStage GetStage() const override {
+	SCREEN_ShaderStage GetStage() const override {
 		return stage_;
 	}
 
 private:
 	SCREEN_GLRenderManager *render_;
-	ShaderStage stage_;
-	ShaderLanguage language_ = ShaderLanguage::GLSL_ES_200;
+	SCREEN_ShaderStage stage_;
+	SCREEN_ShaderLanguage language_ = SCREEN_ShaderLanguage::GLSL_ES_200;
 	GLRShader *shader_ = nullptr;
 	GLuint glstage_ = 0;
 	std::string source_;  // So we can recompile in case of context loss.
 	std::string tag_;
 };
 
-bool OpenGLShaderModule::Compile(SCREEN_GLRenderManager *render, ShaderLanguage language, const uint8_t *data, size_t dataSize) {
+bool OpenGLShaderModule::Compile(SCREEN_GLRenderManager *render, SCREEN_ShaderLanguage language, const uint8_t *data, size_t dataSize) {
 	source_ = std::string((const char *)data);
 	// Add the prelude on automatically.
 	if (glstage_ == GL_FRAGMENT_SHADER || glstage_ == GL_VERTEX_SHADER) {
@@ -346,19 +346,19 @@ public:
 	}
 	uint32_t GetSupportedShaderLanguages() const override {
 		if (gl_extensions.IsGLES)
-			return (uint32_t)ShaderLanguage::GLSL_ES_200 | (uint32_t)ShaderLanguage::GLSL_ES_300;
+			return (uint32_t)SCREEN_ShaderLanguage::GLSL_ES_200 | (uint32_t)SCREEN_ShaderLanguage::GLSL_ES_300;
 		else
-			return (uint32_t)ShaderLanguage::GLSL_ES_200 | (uint32_t)ShaderLanguage::GLSL_410;
+			return (uint32_t)SCREEN_ShaderLanguage::GLSL_ES_200 | (uint32_t)SCREEN_ShaderLanguage::GLSL_410;
 	}
 	uint32_t GetDataFormatSupport(DataFormat fmt) const override;
 
 	DepthStencilState *CreateDepthStencilState(const DepthStencilStateDesc &desc) override;
-	BlendState *CreateBlendState(const BlendStateDesc &desc) override;
-	SamplerState *CreateSamplerState(const SamplerStateDesc &desc) override;
+	SCREEN_BlendState *CreateBlendState(const BlendStateDesc &desc) override;
+	SCREEN_SamplerState *CreateSamplerState(const SamplerStateDesc &desc) override;
 	RasterState *CreateRasterState(const RasterStateDesc &desc) override;
 	Pipeline *CreateGraphicsPipeline(const PipelineDesc &desc) override;
 	InputLayout *CreateInputLayout(const InputLayoutDesc &desc) override;
-	ShaderModule *CreateShaderModule(ShaderStage stage, ShaderLanguage language, const uint8_t *data, size_t dataSize, const std::string &tag) override;
+	ShaderModule *CreateShaderModule(SCREEN_ShaderStage stage, SCREEN_ShaderLanguage language, const uint8_t *data, size_t dataSize, const std::string &tag) override;
 
 	SCREEN_Texture *CreateTexture(const TextureDesc &desc) override;
 	Buffer *CreateBuffer(size_t size, uint32_t usageFlags) override;
@@ -380,7 +380,7 @@ public:
 
 	void GetFramebufferDimensions(Framebuffer *fbo, int *w, int *h) override;
 
-	void BindSamplerStates(int start, int count, SamplerState **states) override {
+	void BindSamplerStates(int start, int count, SCREEN_SamplerState **states) override {
 		if (start + count >= MAX_TEXTURE_SLOTS) {
 			return;
 		}
@@ -446,15 +446,15 @@ public:
 			case VENDORSTRING: return renderManager_.GetGLString(GL_VENDOR);
 			case VENDOR:
 				switch (caps_.vendor) {
-				case GPUVendor::VENDOR_AMD: return "VENDOR_AMD";
-				case GPUVendor::VENDOR_IMGTEC: return "VENDOR_POWERVR";
-				case GPUVendor::VENDOR_NVIDIA: return "VENDOR_NVIDIA";
-				case GPUVendor::VENDOR_INTEL: return "VENDOR_INTEL";
-				case GPUVendor::VENDOR_QUALCOMM: return "VENDOR_ADRENO";
-				case GPUVendor::VENDOR_ARM: return "VENDOR_ARM";
-				case GPUVendor::VENDOR_BROADCOM: return "VENDOR_BROADCOM";
-				case GPUVendor::VENDOR_VIVANTE: return "VENDOR_VIVANTE";
-				case GPUVendor::VENDOR_UNKNOWN:
+				case SCREEN_GPUVendor::VENDOR_AMD: return "VENDOR_AMD";
+				case SCREEN_GPUVendor::VENDOR_IMGTEC: return "VENDOR_POWERVR";
+				case SCREEN_GPUVendor::VENDOR_NVIDIA: return "VENDOR_NVIDIA";
+				case SCREEN_GPUVendor::VENDOR_INTEL: return "VENDOR_INTEL";
+				case SCREEN_GPUVendor::VENDOR_QUALCOMM: return "VENDOR_ADRENO";
+				case SCREEN_GPUVendor::VENDOR_ARM: return "VENDOR_ARM";
+				case SCREEN_GPUVendor::VENDOR_BROADCOM: return "VENDOR_BROADCOM";
+				case SCREEN_GPUVendor::VENDOR_VIVANTE: return "VENDOR_VIVANTE";
+				case SCREEN_GPUVendor::VENDOR_UNKNOWN:
 				default:
 					return "VENDOR_UNKNOWN";
 				}
@@ -466,16 +466,16 @@ public:
 		}
 	}
 
-	uint64_t GetNativeObject(NativeObject obj) override {
+	uint64_t GetNativeObject(SCREEN_NativeObject obj) override {
 		switch (obj) {
-		case NativeObject::RENDER_MANAGER:
+		case SCREEN_NativeObject::RENDER_MANAGER:
 			return (uint64_t)(uintptr_t)&renderManager_;
 		default:
 			return 0;
 		}
 	}
 
-	void HandleEvent(Event ev, int width, int height, void *param1, void *param2) override {}
+	void HandleEvent(SCREEN_Event ev, int width, int height, void *param1, void *param2) override {}
 
 	int GetCurrentStepId() const override {
 		return renderManager_.GetCurrentStepId();
@@ -545,17 +545,17 @@ OpenGLContext::OpenGLContext() {
 	caps_.framebufferDepthBlitSupported = caps_.framebufferBlitSupported;
 
 	switch (gl_extensions.gpuVendor) {
-	case GPU_VENDOR_AMD: caps_.vendor = GPUVendor::VENDOR_AMD; break;
-	case GPU_VENDOR_NVIDIA: caps_.vendor = GPUVendor::VENDOR_NVIDIA; break;
-	case GPU_VENDOR_ARM: caps_.vendor = GPUVendor::VENDOR_ARM; break;
-	case GPU_VENDOR_QUALCOMM: caps_.vendor = GPUVendor::VENDOR_QUALCOMM; break;
-	case GPU_VENDOR_BROADCOM: caps_.vendor = GPUVendor::VENDOR_BROADCOM; break;
-	case GPU_VENDOR_INTEL: caps_.vendor = GPUVendor::VENDOR_INTEL; break;
-	case GPU_VENDOR_IMGTEC: caps_.vendor = GPUVendor::VENDOR_IMGTEC; break;
-	case GPU_VENDOR_VIVANTE: caps_.vendor = GPUVendor::VENDOR_VIVANTE; break;
+	case GPU_VENDOR_AMD: caps_.vendor = SCREEN_GPUVendor::VENDOR_AMD; break;
+	case GPU_VENDOR_NVIDIA: caps_.vendor = SCREEN_GPUVendor::VENDOR_NVIDIA; break;
+	case GPU_VENDOR_ARM: caps_.vendor = SCREEN_GPUVendor::VENDOR_ARM; break;
+	case GPU_VENDOR_QUALCOMM: caps_.vendor = SCREEN_GPUVendor::VENDOR_QUALCOMM; break;
+	case GPU_VENDOR_BROADCOM: caps_.vendor = SCREEN_GPUVendor::VENDOR_BROADCOM; break;
+	case GPU_VENDOR_INTEL: caps_.vendor = SCREEN_GPUVendor::VENDOR_INTEL; break;
+	case GPU_VENDOR_IMGTEC: caps_.vendor = SCREEN_GPUVendor::VENDOR_IMGTEC; break;
+	case GPU_VENDOR_VIVANTE: caps_.vendor = SCREEN_GPUVendor::VENDOR_VIVANTE; break;
 	case GPU_VENDOR_UNKNOWN:
 	default:
-		caps_.vendor = GPUVendor::VENDOR_UNKNOWN;
+		caps_.vendor = SCREEN_GPUVendor::VENDOR_UNKNOWN;
 		break;
 	}
 	for (int i = 0; i < SCREEN_GLRenderManager::MAX_INFLIGHT_FRAMES; i++) {
@@ -564,8 +564,8 @@ OpenGLContext::OpenGLContext() {
 
 	if (!gl_extensions.VersionGEThan(3, 0, 0)) {
 		// Don't use this extension on sub 3.0 OpenGL versions as it does not seem reliable.
-		bugs_.Infest(Bugs::DUAL_SOURCE_BLENDING_BROKEN);
-	} else if (caps_.vendor == GPUVendor::VENDOR_INTEL) {
+		bugs_.Infest(SCREEN_Bugs::DUAL_SOURCE_BLENDING_BROKEN);
+	} else if (caps_.vendor == SCREEN_GPUVendor::VENDOR_INTEL) {
 		// Note: this is for Intel drivers with GL3+.
 		// Also on Intel, see https://github.com/hrydgard/ppsspp/issues/10117
 		// TODO: Remove entirely sometime reasonably far in driver years after 2015.
@@ -573,29 +573,29 @@ OpenGLContext::OpenGLContext() {
 		int versions[4]{};
 		if (sscanf(ver.c_str(), "Build %d.%d.%d.%d", &versions[0], &versions[1], &versions[2], &versions[3]) == 4) {
 			if (HasIntelDualSrcBug(versions)) {
-				bugs_.Infest(Bugs::DUAL_SOURCE_BLENDING_BROKEN);
+				bugs_.Infest(SCREEN_Bugs::DUAL_SOURCE_BLENDING_BROKEN);
 			}
 		}
 	}
 
 	// Try to detect old Tegra chips by checking for sub 3.0 GL versions. Like Vivante and Broadcom,
 	// those can't handle NaN values in conditionals.
-	if (caps_.vendor == GPUVendor::VENDOR_VIVANTE ||
-		caps_.vendor == GPUVendor::VENDOR_BROADCOM ||
-		(caps_.vendor == GPUVendor::VENDOR_NVIDIA && !gl_extensions.VersionGEThan(3, 0, 0))) {
-		bugs_.Infest(Bugs::BROKEN_NAN_IN_CONDITIONAL);
+	if (caps_.vendor == SCREEN_GPUVendor::VENDOR_VIVANTE ||
+		caps_.vendor == SCREEN_GPUVendor::VENDOR_BROADCOM ||
+		(caps_.vendor == SCREEN_GPUVendor::VENDOR_NVIDIA && !gl_extensions.VersionGEThan(3, 0, 0))) {
+		bugs_.Infest(SCREEN_Bugs::BROKEN_NAN_IN_CONDITIONAL);
 	}
 
 	// TODO: Make this check more lenient. Disabled for all right now
 	// because it murders performance on Mali.
-	if (caps_.vendor != GPUVendor::VENDOR_NVIDIA) {
-		bugs_.Infest(Bugs::ANY_MAP_BUFFER_RANGE_SLOW);
+	if (caps_.vendor != SCREEN_GPUVendor::VENDOR_NVIDIA) {
+		bugs_.Infest(SCREEN_Bugs::ANY_MAP_BUFFER_RANGE_SLOW);
 	}
 
-	if (caps_.vendor == GPUVendor::VENDOR_IMGTEC) {
+	if (caps_.vendor == SCREEN_GPUVendor::VENDOR_IMGTEC) {
 		// See https://github.com/hrydgard/ppsspp/commit/8974cd675e538f4445955e3eac572a9347d84232
 		// TODO: Should this workaround be removed for newer devices/drivers?
-		bugs_.Infest(Bugs::PVR_GENMIPMAP_HEIGHT_GREATER);
+		bugs_.Infest(SCREEN_Bugs::PVR_GENMIPMAP_HEIGHT_GREATER);
 	}
 }
 
@@ -637,18 +637,18 @@ InputLayout *OpenGLContext::CreateInputLayout(const InputLayoutDesc &desc) {
 	return fmt;
 }
 
-GLuint TypeToTarget(TextureType type) {
+GLuint TypeToTarget(SCREEN_TextureType type) {
 	switch (type) {
 #ifndef USING_GLES2
-	case TextureType::LINEAR1D: return GL_TEXTURE_1D;
+	case SCREEN_TextureType::LINEAR1D: return GL_TEXTURE_1D;
 #endif
-	case TextureType::LINEAR2D: return GL_TEXTURE_2D;
-	case TextureType::LINEAR3D: return GL_TEXTURE_3D;
-	case TextureType::CUBE: return GL_TEXTURE_CUBE_MAP;
+	case SCREEN_TextureType::LINEAR2D: return GL_TEXTURE_2D;
+	case SCREEN_TextureType::LINEAR3D: return GL_TEXTURE_3D;
+	case SCREEN_TextureType::CUBE: return GL_TEXTURE_CUBE_MAP;
 #ifndef USING_GLES2
-	case TextureType::ARRAY1D: return GL_TEXTURE_1D_ARRAY;
+	case SCREEN_TextureType::ARRAY1D: return GL_TEXTURE_1D_ARRAY;
 #endif
-	case TextureType::ARRAY2D: return GL_TEXTURE_2D_ARRAY;
+	case SCREEN_TextureType::ARRAY2D: return GL_TEXTURE_2D_ARRAY;
 	default:
 		printf("Bad texture type %d", (int)type);
 		return GL_NONE;
@@ -666,7 +666,7 @@ public:
 	bool CanWrap() const {
 		return canWrap_;
 	}
-	TextureType GetType() const { return type_; }
+	SCREEN_TextureType GetType() const { return type_; }
 	void Bind(int stage) {
 		render_->BindTexture(stage, tex_);
 	}
@@ -681,7 +681,7 @@ private:
 	GLRTexture *tex_;
 
 	DataFormat format_;
-	TextureType type_;
+	SCREEN_TextureType type_;
 	int mipLevels_;
 	bool generatedMips_;
 	bool canWrap_;
@@ -865,7 +865,7 @@ DepthStencilState *OpenGLContext::CreateDepthStencilState(const DepthStencilStat
 	return ds;
 }
 
-BlendState *OpenGLContext::CreateBlendState(const BlendStateDesc &desc) {
+SCREEN_BlendState *OpenGLContext::CreateBlendState(const BlendStateDesc &desc) {
 	OpenGLBlendState *bs = new OpenGLBlendState();
 	bs->enabled = desc.enabled;
 	bs->eqCol = blendEqToGL[(int)desc.eqCol];
@@ -878,7 +878,7 @@ BlendState *OpenGLContext::CreateBlendState(const BlendStateDesc &desc) {
 	return bs;
 }
 
-SamplerState *OpenGLContext::CreateSamplerState(const SamplerStateDesc &desc) {
+SCREEN_SamplerState *OpenGLContext::CreateSamplerState(const SamplerStateDesc &desc) {
 	OpenGLSamplerState *samps = new OpenGLSamplerState();
 	samps->wrapU = texWrapToGL[(int)desc.wrapU];
 	samps->wrapV = texWrapToGL[(int)desc.wrapV];
@@ -891,30 +891,30 @@ SamplerState *OpenGLContext::CreateSamplerState(const SamplerStateDesc &desc) {
 
 RasterState *OpenGLContext::CreateRasterState(const RasterStateDesc &desc) {
 	OpenGLRasterState *rs = new OpenGLRasterState();
-	if (desc.cull == CullMode::NONE) {
+	if (desc.cull == SCREEN_CullMode::NONE) {
 		rs->cullEnable = GL_FALSE;
 		return rs;
 	}
 	rs->cullEnable = GL_TRUE;
 	switch (desc.frontFace) {
-	case Facing::CW:
+	case SCREEN_Facing::CW:
 		rs->frontFace = GL_CW;
 		break;
-	case Facing::CCW:
+	case SCREEN_Facing::CCW:
 		rs->frontFace = GL_CCW;
 		break;
 	}
 	switch (desc.cull) {
-	case CullMode::FRONT:
+	case SCREEN_CullMode::FRONT:
 		rs->cullMode = GL_FRONT;
 		break;
-	case CullMode::BACK:
+	case SCREEN_CullMode::BACK:
 		rs->cullMode = GL_BACK;
 		break;
-	case CullMode::FRONT_AND_BACK:
+	case SCREEN_CullMode::FRONT_AND_BACK:
 		rs->cullMode = GL_FRONT_AND_BACK;
 		break;
-	case CullMode::NONE:
+	case SCREEN_CullMode::NONE:
 		// Unsupported
 		break;
 	}
@@ -968,7 +968,7 @@ Pipeline *OpenGLContext::CreateGraphicsPipeline(const PipelineDesc &desc) {
 		printf("Pipeline requires at least one shader");
 		return nullptr;
 	}
-	if ((int)desc.prim >= (int)Primitive::PRIMITIVE_TYPE_COUNT) {
+	if ((int)desc.prim >= (int)SCREEN_Primitive::PRIMITIVE_TYPE_COUNT) {
 		printf("Invalid primitive type");
 		return nullptr;
 	}
@@ -1052,7 +1052,7 @@ void OpenGLContext::ApplySamplers() {
 	}
 }
 
-ShaderModule *OpenGLContext::CreateShaderModule(ShaderStage stage, ShaderLanguage language, const uint8_t *data, size_t dataSize, const std::string &tag) {
+ShaderModule *OpenGLContext::CreateShaderModule(SCREEN_ShaderStage stage, SCREEN_ShaderLanguage language, const uint8_t *data, size_t dataSize, const std::string &tag) {
 	OpenGLShaderModule *shader = new OpenGLShaderModule(&renderManager_, stage, tag);
 	if (shader->Compile(&renderManager_, language, data, dataSize)) {
 		return shader;

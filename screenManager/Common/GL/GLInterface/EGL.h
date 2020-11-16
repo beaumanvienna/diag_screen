@@ -14,7 +14,7 @@
 #define EGL_ELOG(...) INFO_LOG(G3D, __VA_ARGS__)
 
 
-class cInterfaceEGL : public cInterfaceBase {
+class SCREEN_cInterfaceEGL : public SCREEN_cInterfaceBase {
 public:
 	void SwapInterval(int Interval) override;
 	void Swap() override;

@@ -67,7 +67,7 @@ bool DataFormatIsDepthStencil(DataFormat fmt) {
 }
 
 
-bool RefCountedObject::Release() {
+bool SCREEN_RefCountedObject::Release() {
 	if (refcount_ > 0 && refcount_ < 10000) {
 		refcount_--;
 		if (refcount_ == 0) {
@@ -81,7 +81,7 @@ bool RefCountedObject::Release() {
 	return false;
 }
 
-bool RefCountedObject::ReleaseAssertLast() {
+bool SCREEN_RefCountedObject::ReleaseAssertLast() {
 	_dbg_assert_msg_(refcount_ == 1, "RefCountedObject: Expected to be the last reference, but isn't!");
 	if (refcount_ > 0 && refcount_ < 10000) {
 		refcount_--;
@@ -101,7 +101,7 @@ bool RefCountedObject::ReleaseAssertLast() {
 // The Vulkan ones can be re-used with modern GL later if desired, as they're just GLSL.
 
 static const std::vector<ShaderSource> fsTexCol = {
-	{ShaderLanguage::GLSL_ES_200,
+	{SCREEN_ShaderLanguage::GLSL_ES_200,
 	"#ifdef GL_ES\n"
 	"precision lowp float;\n"
 	"#endif\n"
@@ -116,14 +116,14 @@ static const std::vector<ShaderSource> fsTexCol = {
 	"uniform sampler2D Sampler0;\n"
 	"void main() { gl_FragColor = texture2D(Sampler0, oTexCoord0) * oColor0; }\n"
 	},
-	{ShaderLanguage::HLSL_D3D9,
+	{SCREEN_ShaderLanguage::HLSL_D3D9,
 	"struct PS_INPUT { float4 color : COLOR0; float2 uv : TEXCOORD0; };\n"
 	"sampler2D Sampler0 : register(s0);\n"
 	"float4 main(PS_INPUT input) : COLOR0 {\n"
 	"  return input.color * tex2D(Sampler0, input.uv);\n"
 	"}\n"
 	},
-	{ShaderLanguage::HLSL_D3D11,
+	{SCREEN_ShaderLanguage::HLSL_D3D11,
 	"struct PS_INPUT { float4 color : COLOR0; float2 uv : TEXCOORD0; };\n"
 	"SamplerState samp : register(s0);\n"
 	"Texture2D<float4> tex : register(t0);\n"
@@ -132,7 +132,7 @@ static const std::vector<ShaderSource> fsTexCol = {
 	"  return col;\n"
 	"}\n"
 	},
-	{ShaderLanguage::GLSL_VULKAN,
+	{SCREEN_ShaderLanguage::GLSL_VULKAN,
 	"#version 140\n"
 	"#extension GL_ARB_separate_shader_objects : enable\n"
 	"#extension GL_ARB_shading_language_420pack : enable\n"
@@ -145,7 +145,7 @@ static const std::vector<ShaderSource> fsTexCol = {
 };
 
 static const std::vector<ShaderSource> fsTexColRBSwizzle = {
-	{ShaderLanguage::GLSL_ES_200,
+	{SCREEN_ShaderLanguage::GLSL_ES_200,
 	"#ifdef GL_ES\n"
 	"precision lowp float;\n"
 	"#endif\n"
@@ -160,14 +160,14 @@ static const std::vector<ShaderSource> fsTexColRBSwizzle = {
 	"uniform sampler2D Sampler0;\n"
 	"void main() { gl_FragColor = texture2D(Sampler0, oTexCoord0).zyxw * oColor0; }\n"
 	},
-	{ShaderLanguage::HLSL_D3D9,
+	{SCREEN_ShaderLanguage::HLSL_D3D9,
 	"struct PS_INPUT { float4 color : COLOR0; float2 uv : TEXCOORD0; };\n"
 	"sampler2D Sampler0 : register(s0);\n"
 	"float4 main(PS_INPUT input) : COLOR0 {\n"
 	"  return input.color * tex2D(Sampler0, input.uv).zyxw;\n"
 	"}\n"
 	},
-	{ShaderLanguage::HLSL_D3D11,
+	{SCREEN_ShaderLanguage::HLSL_D3D11,
 	"struct PS_INPUT { float4 color : COLOR0; float2 uv : TEXCOORD0; };\n"
 	"SamplerState samp : register(s0);\n"
 	"Texture2D<float4> tex : register(t0);\n"
@@ -176,7 +176,7 @@ static const std::vector<ShaderSource> fsTexColRBSwizzle = {
 	"  return col;\n"
 	"}\n"
 	},
-	{ShaderLanguage::GLSL_VULKAN,
+	{SCREEN_ShaderLanguage::GLSL_VULKAN,
 	"#version 140\n"
 	"#extension GL_ARB_separate_shader_objects : enable\n"
 	"#extension GL_ARB_shading_language_420pack : enable\n"
@@ -189,7 +189,7 @@ static const std::vector<ShaderSource> fsTexColRBSwizzle = {
 };
 
 static const std::vector<ShaderSource> fsCol = {
-	{ ShaderLanguage::GLSL_ES_200,
+	{ SCREEN_ShaderLanguage::GLSL_ES_200,
 	"#ifdef GL_ES\n"
 	"precision lowp float;\n"
 	"#endif\n"
@@ -201,19 +201,19 @@ static const std::vector<ShaderSource> fsCol = {
 	"varying vec4 oColor0;\n"
 	"void main() { gl_FragColor = oColor0; }\n"
 	},
-	{ ShaderLanguage::HLSL_D3D9,
+	{ SCREEN_ShaderLanguage::HLSL_D3D9,
 	"struct PS_INPUT { float4 color : COLOR0; };\n"
 	"float4 main(PS_INPUT input) : COLOR0 {\n"
 	"  return input.color;\n"
 	"}\n"
 	},
-	{ ShaderLanguage::HLSL_D3D11,
+	{ SCREEN_ShaderLanguage::HLSL_D3D11,
 	"struct PS_INPUT { float4 color : COLOR0; };\n"
 	"float4 main(PS_INPUT input) : SV_Target {\n"
 	"  return input.color;\n"
 	"}\n"
 	},
-	{ ShaderLanguage::GLSL_VULKAN,
+	{ SCREEN_ShaderLanguage::GLSL_VULKAN,
 	"#version 140\n"
 	"#extension GL_ARB_separate_shader_objects : enable\n"
 	"#extension GL_ARB_shading_language_420pack : enable\n"
@@ -226,7 +226,7 @@ static const std::vector<ShaderSource> fsCol = {
 // ================================== VERTEX SHADERS
 
 static const std::vector<ShaderSource> vsCol = {
-	{ ShaderLanguage::GLSL_ES_200,
+	{ SCREEN_ShaderLanguage::GLSL_ES_200,
 	"#if __VERSION__ >= 130\n"
 	"#define attribute in\n"
 	"#define varying out\n"
@@ -241,7 +241,7 @@ static const std::vector<ShaderSource> vsCol = {
 	"  oColor0 = Color0;\n"
 	"}"
 	},
-	{ ShaderLanguage::HLSL_D3D9,
+	{ SCREEN_ShaderLanguage::HLSL_D3D9,
 	"struct VS_INPUT { float3 Position : POSITION; float4 Color0 : COLOR0; };\n"
 	"struct VS_OUTPUT { float4 Position : POSITION; float4 Color0 : COLOR0; };\n"
 	"float4x4 WorldViewProj : register(c0);\n"
@@ -252,7 +252,7 @@ static const std::vector<ShaderSource> vsCol = {
 	"  return output;\n"
 	"}\n"
 	},
-	{ ShaderLanguage::HLSL_D3D11,
+	{ SCREEN_ShaderLanguage::HLSL_D3D11,
 	"struct VS_INPUT { float3 Position : POSITION; float4 Color0 : COLOR0; };\n"
 	"struct VS_OUTPUT { float4 Color0 : COLOR0; float4 Position : SV_Position; };\n"
 	"cbuffer ConstantBuffer : register(b0) {\n"
@@ -265,7 +265,7 @@ static const std::vector<ShaderSource> vsCol = {
 	"  return output;\n"
 	"}\n"
 	},
-	{ ShaderLanguage::GLSL_VULKAN,
+	{ SCREEN_ShaderLanguage::GLSL_VULKAN,
 	"#version 450\n"
 	"#extension GL_ARB_separate_shader_objects : enable\n"
 	"#extension GL_ARB_shading_language_420pack : enable\n"
@@ -288,7 +288,7 @@ const UniformBufferDesc vsColBufDesc { sizeof(VsColUB), {
 } };
 
 static const std::vector<ShaderSource> vsTexCol = {
-	{ ShaderLanguage::GLSL_ES_200,
+	{ SCREEN_ShaderLanguage::GLSL_ES_200,
 	"#if __VERSION__ >= 130\n"
 	"#define attribute in\n"
 	"#define varying out\n"
@@ -305,7 +305,7 @@ static const std::vector<ShaderSource> vsTexCol = {
 	"  oTexCoord0 = TexCoord0;\n"
 	"}\n"
 	},
-	{ ShaderLanguage::HLSL_D3D9,
+	{ SCREEN_ShaderLanguage::HLSL_D3D9,
 	"struct VS_INPUT { float3 Position : POSITION; float2 Texcoord0 : TEXCOORD0; float4 Color0 : COLOR0; };\n"
 	"struct VS_OUTPUT { float4 Position : POSITION; float2 Texcoord0 : TEXCOORD0; float4 Color0 : COLOR0; };\n"
 	"float4x4 WorldViewProj : register(c0);\n"
@@ -317,7 +317,7 @@ static const std::vector<ShaderSource> vsTexCol = {
 	"  return output;\n"
 	"}\n"
 	},
-	{ ShaderLanguage::HLSL_D3D11,
+	{ SCREEN_ShaderLanguage::HLSL_D3D11,
 	"struct VS_INPUT { float3 Position : POSITION; float2 Texcoord0 : TEXCOORD0; float4 Color0 : COLOR0; };\n"
 	"struct VS_OUTPUT { float4 Color0 : COLOR0; float2 Texcoord0 : TEXCOORD0; float4 Position : SV_Position; };\n"
 	"cbuffer ConstantBuffer : register(b0) {\n"
@@ -331,7 +331,7 @@ static const std::vector<ShaderSource> vsTexCol = {
 	"  return output;\n"
 	"}\n"
 	},
-	{ ShaderLanguage::GLSL_VULKAN,
+	{ SCREEN_ShaderLanguage::GLSL_VULKAN,
 	"#version 450\n"
 	"#extension GL_ARB_separate_shader_objects : enable\n"
 	"#extension GL_ARB_shading_language_420pack : enable\n"
@@ -356,7 +356,7 @@ const UniformBufferDesc vsTexColBufDesc{ sizeof(VsTexColUB),{
 	{ "WorldViewProj", 0, -1, UniformType::MATRIX4X4, 0 }
 } };
 
-ShaderModule *CreateShader(SCREEN_DrawContext *draw, ShaderStage stage, const std::vector<ShaderSource> &sources) {
+ShaderModule *CreateShader(SCREEN_DrawContext *draw, SCREEN_ShaderStage stage, const std::vector<ShaderSource> &sources) {
 	uint32_t supported = draw->GetSupportedShaderLanguages();
 	for (auto iter : sources) {
 		if ((uint32_t)iter.lang & supported) {
@@ -367,12 +367,12 @@ ShaderModule *CreateShader(SCREEN_DrawContext *draw, ShaderStage stage, const st
 }
 
 bool SCREEN_DrawContext::CreatePresets() {
-	vsPresets_[VS_TEXTURE_COLOR_2D] = CreateShader(this, ShaderStage::VERTEX, vsTexCol);
-	vsPresets_[VS_COLOR_2D] = CreateShader(this, ShaderStage::VERTEX, vsCol);
+	vsPresets_[VS_TEXTURE_COLOR_2D] = CreateShader(this, SCREEN_ShaderStage::VERTEX, vsTexCol);
+	vsPresets_[VS_COLOR_2D] = CreateShader(this, SCREEN_ShaderStage::VERTEX, vsCol);
 
-	fsPresets_[FS_TEXTURE_COLOR_2D] = CreateShader(this, ShaderStage::FRAGMENT, fsTexCol);
-	fsPresets_[FS_COLOR_2D] = CreateShader(this, ShaderStage::FRAGMENT, fsCol);
-	fsPresets_[FS_TEXTURE_COLOR_2D_RB_SWIZZLE] = CreateShader(this, ShaderStage::FRAGMENT, fsTexColRBSwizzle);
+	fsPresets_[FS_TEXTURE_COLOR_2D] = CreateShader(this, SCREEN_ShaderStage::FRAGMENT, fsTexCol);
+	fsPresets_[FS_COLOR_2D] = CreateShader(this, SCREEN_ShaderStage::FRAGMENT, fsCol);
+	fsPresets_[FS_TEXTURE_COLOR_2D_RB_SWIZZLE] = CreateShader(this, SCREEN_ShaderStage::FRAGMENT, fsTexColRBSwizzle);
 
 	return vsPresets_[VS_TEXTURE_COLOR_2D] && vsPresets_[VS_COLOR_2D] && fsPresets_[FS_TEXTURE_COLOR_2D] && fsPresets_[FS_COLOR_2D] && fsPresets_[FS_TEXTURE_COLOR_2D_RB_SWIZZLE];
 }

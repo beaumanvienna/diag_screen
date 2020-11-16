@@ -413,7 +413,7 @@ int SDLGLSCREEN_GraphicsContext::Init(SDL_Window *&window, int x, int y, int mod
 	// Finally we can do the regular initialization.
 	CheckGLExtensions();
 	draw_ = SCREEN_Draw::T3DCreateGLContext();
-	renderManager_ = (SCREEN_GLRenderManager *)draw_->GetNativeObject(SCREEN_Draw::NativeObject::RENDER_MANAGER);
+	renderManager_ = (SCREEN_GLRenderManager *)draw_->GetNativeObject(SCREEN_Draw::SCREEN_NativeObject::RENDER_MANAGER);
 	SetGPUBackend(GPUBackend::OPENGL);
 	bool success = draw_->CreatePresets();
 	_assert_(success);

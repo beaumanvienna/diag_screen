@@ -114,7 +114,7 @@ bool SCREEN_ManagedTexture::LoadFromFileData(const uint8_t *data, size_t dataSiz
 	int potentialLevels = std::min(log2i(width[0]), log2i(height[0]));
 
 	TextureDesc desc{};
-	desc.type = TextureType::LINEAR2D;
+	desc.type = SCREEN_TextureType::LINEAR2D;
 	desc.format = fmt;
 	desc.width = width[0];
 	desc.height = height[0];

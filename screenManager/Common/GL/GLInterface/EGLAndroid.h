@@ -6,9 +6,9 @@
 
 #include "Common/GL/GLInterface/EGL.h"
 
-class cInterfaceEGLAndroid : public cInterfaceEGL {
+class SCREEN_cInterfaceEGLAndroid : public SCREEN_cInterfaceEGL {
 public:
-	cInterfaceEGLAndroid() : internalWidth_(0), internalHeight_(0) {}
+	SCREEN_cInterfaceEGLAndroid() : internalWidth_(0), internalHeight_(0) {}
 protected:
 	EGLDisplay OpenDisplay() override;
 	EGLNativeWindowType InitializePlatform(EGLNativeWindowType host_window, EGLConfig config) override;

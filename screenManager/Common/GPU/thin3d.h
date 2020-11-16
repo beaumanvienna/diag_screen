@@ -23,7 +23,7 @@ namespace SCREEN_Draw {
 // Useful in UBOs
 typedef int bool32;
 
-enum class Comparison : int {
+enum class SCREEN_Comparison : int {
 	NEVER,
 	LESS,
 	EQUAL,
@@ -35,7 +35,7 @@ enum class Comparison : int {
 };
 
 // Had to prefix with LOGIC, too many clashes
-enum class LogicOp : int {
+enum class SCREEN_LogicOp : int {
 	LOGIC_CLEAR,
 	LOGIC_SET,
 	LOGIC_COPY,
@@ -54,7 +54,7 @@ enum class LogicOp : int {
 	LOGIC_OR_INVERTED,
 };
 
-enum class BlendOp : int {
+enum class SCREEN_BlendOp : int {
 	ADD,
 	SUBTRACT,
 	REV_SUBTRACT,
@@ -62,7 +62,7 @@ enum class BlendOp : int {
 	MAX,
 };
 
-enum class BlendFactor : uint8_t {
+enum class SCREEN_BlendFactor : uint8_t {
 	ZERO,
 	ONE,
 	SRC_COLOR,
@@ -83,7 +83,7 @@ enum class BlendFactor : uint8_t {
 	ONE_MINUS_SRC1_ALPHA,
 };
 
-enum class StencilOp {
+enum class SCREEN_StencilOp {
 	KEEP = 0,
 	ZERO = 1,
 	REPLACE = 2,
@@ -94,7 +94,7 @@ enum class StencilOp {
 	DECREMENT_AND_WRAP = 7,
 };
 
-enum class TextureFilter : int {
+enum class SCREEN_TextureFilter : int {
 	NEAREST = 0,
 	LINEAR = 1,
 };
@@ -119,7 +119,7 @@ enum Semantic : int {
 	SEM_MAX,
 };
 
-enum class Primitive {
+enum class SCREEN_Primitive {
 	POINT_LIST,
 	LINE_LIST,
 	LINE_STRIP,
@@ -151,7 +151,7 @@ enum FragmentShaderPreset : int {
 	FS_MAX_PRESET,
 };
 
-enum class TextureType : uint8_t {
+enum class SCREEN_TextureType : uint8_t {
 	UNKNOWN,
 	LINEAR1D,
 	LINEAR2D,
@@ -161,7 +161,7 @@ enum class TextureType : uint8_t {
 	ARRAY2D,
 };
 
-enum class ShaderStage {
+enum class SCREEN_ShaderStage {
 	VERTEX,
 	FRAGMENT,
 	GEOMETRY,
@@ -170,14 +170,14 @@ enum class ShaderStage {
 	COMPUTE,
 };
 
-enum class CullMode : uint8_t {
+enum class SCREEN_CullMode : uint8_t {
 	NONE,
 	FRONT,
 	BACK,
 	FRONT_AND_BACK,  // Not supported on D3D9
 };
 
-enum class Facing {
+enum class SCREEN_Facing {
 	CCW,
 	CW,
 };
@@ -196,14 +196,14 @@ enum {
 	COLOR_MASK_A = 8,
 };
 
-enum class TextureAddressMode {
+enum class SCREEN_TextureAddressMode {
 	REPEAT = 0,
 	REPEAT_MIRROR,
 	CLAMP_TO_EDGE,
 	CLAMP_TO_BORDER,
 };
 
-enum class ShaderLanguage {
+enum class SCREEN_ShaderLanguage {
 	GLSL_ES_200 = 1,
 	GLSL_ES_300 = 2,
 	GLSL_410 = 4,
@@ -229,7 +229,7 @@ enum InfoField {
 	DRIVER,
 };
 
-enum class GPUVendor {
+enum class SCREEN_GPUVendor {
 	VENDOR_UNKNOWN,
 	VENDOR_NVIDIA,
 	VENDOR_INTEL,
@@ -241,7 +241,7 @@ enum class GPUVendor {
 	VENDOR_VIVANTE,
 };
 
-enum class NativeObject {
+enum class SCREEN_NativeObject {
 	CONTEXT,
 	CONTEXT_EX,
 	DEVICE,
@@ -288,7 +288,7 @@ enum UpdateBufferFlags {
 	UPDATE_DISCARD = 1,
 };
 
-enum class Event {
+enum class SCREEN_Event {
 	// These happen on D3D resize. Only the backbuffer needs to be resized.
 	LOST_BACKBUFFER,
 	GOT_BACKBUFFER,
@@ -323,7 +323,7 @@ struct Viewport {
 	float MaxDepth;
 };
 
-class Bugs {
+class SCREEN_Bugs {
 public:
 	bool Has(uint32_t bug) const {
 		return (flags_ & (1 << bug)) != 0;
@@ -345,10 +345,10 @@ protected:
 	uint32_t flags_ = 0;
 };
 
-class RefCountedObject {
+class SCREEN_RefCountedObject {
 public:
-	RefCountedObject() : refcount_(1) {}
-	virtual ~RefCountedObject() {}
+	SCREEN_RefCountedObject() : refcount_(1) {}
+	virtual ~SCREEN_RefCountedObject() {}
 
 	void AddRef() { refcount_++; }
 	bool Release();
@@ -358,27 +358,27 @@ private:
 	int refcount_;
 };
 
-class BlendState : public RefCountedObject {
+class SCREEN_BlendState : public SCREEN_RefCountedObject {
 public:
 };
 
-class SamplerState : public RefCountedObject {
+class SCREEN_SamplerState : public SCREEN_RefCountedObject {
 public:
 };
 
-class DepthStencilState : public RefCountedObject {
+class DepthStencilState : public SCREEN_RefCountedObject {
 public:
 };
 
-class Framebuffer : public RefCountedObject {
+class Framebuffer : public SCREEN_RefCountedObject {
 public:
 };
 
-class Buffer : public RefCountedObject {
+class Buffer : public SCREEN_RefCountedObject {
 public:
 };
 
-class SCREEN_Texture : public RefCountedObject {
+class SCREEN_Texture : public SCREEN_RefCountedObject {
 public:
 	int Width() { return width_; }
 	int Height() { return height_; }
@@ -404,7 +404,7 @@ struct InputLayoutDesc {
 	std::vector<AttributeDesc> attributes;
 };
 
-class InputLayout : public RefCountedObject { };
+class InputLayout : public SCREEN_RefCountedObject { };
 
 enum class UniformType : int8_t {
 	FLOAT1,
@@ -429,24 +429,24 @@ struct UniformBufferDesc {
 	std::vector<UniformDesc> uniforms;
 };
 
-class ShaderModule : public RefCountedObject {
+class ShaderModule : public SCREEN_RefCountedObject {
 public:
-	virtual ShaderStage GetStage() const = 0;
+	virtual SCREEN_ShaderStage GetStage() const = 0;
 };
 
-class Pipeline : public RefCountedObject {
+class Pipeline : public SCREEN_RefCountedObject {
 public:
 	virtual ~Pipeline() {}
 	virtual bool RequiresBuffer() = 0;
 };
 
-class RasterState : public RefCountedObject {};
+class RasterState : public SCREEN_RefCountedObject {};
 
 struct StencilSide {
-	StencilOp failOp;
-	StencilOp passOp;
-	StencilOp depthFailOp;
-	Comparison compareOp;
+	SCREEN_StencilOp failOp;
+	SCREEN_StencilOp passOp;
+	SCREEN_StencilOp depthFailOp;
+	SCREEN_Comparison compareOp;
 	uint8_t compareMask;
 	uint8_t writeMask;
 };
@@ -454,7 +454,7 @@ struct StencilSide {
 struct DepthStencilStateDesc {
 	bool depthTestEnabled;
 	bool depthWriteEnabled;
-	Comparison depthCompare;
+	SCREEN_Comparison depthCompare;
 	bool stencilEnabled;
 	StencilSide front;
 	StencilSide back;
@@ -463,47 +463,47 @@ struct DepthStencilStateDesc {
 struct BlendStateDesc {
 	bool enabled;
 	int colorMask;
-	BlendFactor srcCol;
-	BlendFactor dstCol;
-	BlendOp eqCol;
-	BlendFactor srcAlpha;
-	BlendFactor dstAlpha;
-	BlendOp eqAlpha;
+	SCREEN_BlendFactor srcCol;
+	SCREEN_BlendFactor dstCol;
+	SCREEN_BlendOp eqCol;
+	SCREEN_BlendFactor srcAlpha;
+	SCREEN_BlendFactor dstAlpha;
+	SCREEN_BlendOp eqAlpha;
 	bool logicEnabled;
-	LogicOp logicOp;
+	SCREEN_LogicOp logicOp;
 };
 
 struct SamplerStateDesc {
-	TextureFilter magFilter;
-	TextureFilter minFilter;
-	TextureFilter mipFilter;
+	SCREEN_TextureFilter magFilter;
+	SCREEN_TextureFilter minFilter;
+	SCREEN_TextureFilter mipFilter;
 	float maxAniso;
-	TextureAddressMode wrapU;
-	TextureAddressMode wrapV;
-	TextureAddressMode wrapW;
+	SCREEN_TextureAddressMode wrapU;
+	SCREEN_TextureAddressMode wrapV;
+	SCREEN_TextureAddressMode wrapW;
 	float maxLod;
 	bool shadowCompareEnabled;
-	Comparison shadowCompareFunc;
+	SCREEN_Comparison shadowCompareFunc;
 	BorderColor borderColor;
 };
 
 struct RasterStateDesc {
-	CullMode cull;
-	Facing frontFace;
+	SCREEN_CullMode cull;
+	SCREEN_Facing frontFace;
 };
 
 struct PipelineDesc {
-	Primitive prim;
+	SCREEN_Primitive prim;
 	std::vector<ShaderModule *> shaders;
 	InputLayout *inputLayout;
 	DepthStencilState *depthStencil;
-	BlendState *blend;
+	SCREEN_BlendState *blend;
 	RasterState *raster;
 	const UniformBufferDesc *uniformDesc;
 };
 
 struct DeviceCaps {
-	GPUVendor vendor;
+	SCREEN_GPUVendor vendor;
 	uint32_t deviceID;  // use caution!
 
 	DataFormat preferredDepthBufferFormat;
@@ -529,7 +529,7 @@ struct DeviceCaps {
 typedef std::function<bool(uint8_t *data, const uint8_t *initData, uint32_t w, uint32_t h, uint32_t d, uint32_t byteStride, uint32_t sliceByteStride)> TextureCallback;
 
 struct TextureDesc {
-	TextureType type;
+	SCREEN_TextureType type;
 	DataFormat format;
 	int width;
 	int height;
@@ -565,7 +565,7 @@ public:
 	bool CreatePresets();
 	void DestroyPresets();
 
-	Bugs GetBugs() const { return bugs_; }
+	SCREEN_Bugs GetBugs() const { return bugs_; }
 
 	virtual const DeviceCaps &GetDeviceCaps() const = 0;
 	virtual uint32_t GetDataFormatSupport(DataFormat fmt) const = 0;
@@ -577,8 +577,8 @@ public:
 
 	// Partial pipeline state, used to create pipelines. (in practice, in d3d11 they'll use the native state objects directly).
 	virtual DepthStencilState *CreateDepthStencilState(const DepthStencilStateDesc &desc) = 0;
-	virtual BlendState *CreateBlendState(const BlendStateDesc &desc) = 0;
-	virtual SamplerState *CreateSamplerState(const SamplerStateDesc &desc) = 0;
+	virtual SCREEN_BlendState *CreateBlendState(const BlendStateDesc &desc) = 0;
+	virtual SCREEN_SamplerState *CreateSamplerState(const SamplerStateDesc &desc) = 0;
 	virtual RasterState *CreateRasterState(const RasterStateDesc &desc) = 0;
 	// virtual ComputePipeline CreateComputePipeline(const ComputePipelineDesc &desc) = 0
 	virtual InputLayout *CreateInputLayout(const InputLayoutDesc &desc) = 0;
@@ -594,7 +594,7 @@ public:
 	// On some hardware, you might get a 24-bit depth buffer even though you only wanted a 16-bit one.
 	virtual Framebuffer *CreateFramebuffer(const FramebufferDesc &desc) = 0;
 
-	virtual ShaderModule *CreateShaderModule(ShaderStage stage, ShaderLanguage language, const uint8_t *data, size_t dataSize, const std::string &tag = "thin3d") = 0;
+	virtual ShaderModule *CreateShaderModule(SCREEN_ShaderStage stage, SCREEN_ShaderLanguage language, const uint8_t *data, size_t dataSize, const std::string &tag = "thin3d") = 0;
 	virtual Pipeline *CreateGraphicsPipeline(const PipelineDesc &desc) = 0;
 
 	// Copies data from the CPU over into the buffer, at a specific offset. This does not change the size of the buffer and cannot write outside it.
@@ -632,7 +632,7 @@ public:
 	virtual void SetBlendFactor(float color[4]) = 0;
 	virtual void SetStencilRef(uint8_t ref) = 0;
 
-	virtual void BindSamplerStates(int start, int count, SamplerState **state) = 0;
+	virtual void BindSamplerStates(int start, int count, SCREEN_SamplerState **state) = 0;
 	virtual void BindTextures(int start, int count, SCREEN_Texture **textures) = 0;
 	virtual void BindVertexBuffers(int start, int count, Buffer **buffers, int *offsets) = 0;
 	virtual void BindIndexBuffer(Buffer *indexBuffer, int offset) = 0;
@@ -673,9 +673,9 @@ public:
 	}
 
 	virtual std::string GetInfoString(InfoField info) const = 0;
-	virtual uint64_t GetNativeObject(NativeObject obj) = 0;
+	virtual uint64_t GetNativeObject(SCREEN_NativeObject obj) = 0;
 
-	virtual void HandleEvent(Event ev, int width, int height, void *param1 = nullptr, void *param2 = nullptr) = 0;
+	virtual void HandleEvent(SCREEN_Event ev, int width, int height, void *param1 = nullptr, void *param2 = nullptr) = 0;
 
 	// Flush state like scissors etc so the caller can do its own custom drawing.
 	virtual void FlushState() {}
@@ -689,7 +689,7 @@ protected:
 	int targetWidth_;
 	int targetHeight_;
 
-	Bugs bugs_;
+	SCREEN_Bugs bugs_;
 };
 
 extern const UniformBufferDesc UBPresetDesc;
@@ -708,10 +708,10 @@ extern const UniformBufferDesc vsColBufDesc;
 // Useful utility for specifying a shader in multiple languages.
 
 struct ShaderSource {
-	ShaderLanguage lang;
+	SCREEN_ShaderLanguage lang;
 	const char *src;
 };
 
-ShaderModule *CreateShader(SCREEN_DrawContext *draw, ShaderStage stage, const std::vector<ShaderSource> &sources);
+ShaderModule *CreateShader(SCREEN_DrawContext *draw, SCREEN_ShaderStage stage, const std::vector<ShaderSource> &sources);
 
 }  // namespace SCREEN_Draw

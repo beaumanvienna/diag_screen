@@ -16,7 +16,7 @@ enum GLInterfaceMode {
 	MODE_OPENGLES3,
 };
 
-class cInterfaceBase {
+class SCREEN_cInterfaceBase {
 protected:
 	// Window dimensions.
 	u32 s_backbuffer_width;
@@ -24,8 +24,8 @@ protected:
 
 	u32 s_opengl_mode;
 public:
-	cInterfaceBase() : s_backbuffer_width(0), s_backbuffer_height(0), s_opengl_mode(MODE_DETECT) {}
-	virtual ~cInterfaceBase() {}
+	SCREEN_cInterfaceBase() : s_backbuffer_width(0), s_backbuffer_height(0), s_opengl_mode(MODE_DETECT) {}
+	virtual ~SCREEN_cInterfaceBase() {}
 	virtual void Swap() {}
 	virtual void SetMode(u32 mode) { s_opengl_mode = GLInterfaceMode::MODE_OPENGL; }
 	virtual u32 GetMode() { return s_opengl_mode; }
@@ -47,4 +47,4 @@ public:
 };
 
 
-cInterfaceBase* HostGL_CreateGLInterface();
+SCREEN_cInterfaceBase* HostGL_CreateGLInterface();

@@ -255,17 +255,17 @@ bool CreateGlobalPipelines() {
 	using namespace SCREEN_Draw;
 
 	InputLayout *inputLayout = ui_draw2d.CreateInputLayout(g_draw);
-	BlendState *blendNormal = g_draw->CreateBlendState({ true, 0xF, BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA });
-	DepthStencilState *depth = g_draw->CreateDepthStencilState({ false, false, Comparison::LESS });
+	SCREEN_BlendState *blendNormal = g_draw->CreateBlendState({ true, 0xF, SCREEN_BlendFactor::SRC_ALPHA, SCREEN_BlendFactor::ONE_MINUS_SRC_ALPHA });
+	DepthStencilState *depth = g_draw->CreateDepthStencilState({ false, false, SCREEN_Comparison::LESS });
 	RasterState *rasterNoCull = g_draw->CreateRasterState({});
 
 	PipelineDesc colorDesc{
-		Primitive::TRIANGLE_LIST,
+		SCREEN_Primitive::TRIANGLE_LIST,
 		{ g_draw->GetVshaderPreset(VS_COLOR_2D), g_draw->GetFshaderPreset(FS_COLOR_2D) },
 		inputLayout, depth, blendNormal, rasterNoCull, &vsColBufDesc,
 	};
 	PipelineDesc texColorDesc{
-		Primitive::TRIANGLE_LIST,
+		SCREEN_Primitive::TRIANGLE_LIST,
 		{ g_draw->GetVshaderPreset(VS_TEXTURE_COLOR_2D), g_draw->GetFshaderPreset(FS_TEXTURE_COLOR_2D) },
 		inputLayout, depth, blendNormal, rasterNoCull, &vsTexColBufDesc,
 	};

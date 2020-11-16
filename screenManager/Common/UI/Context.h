@@ -17,7 +17,7 @@ namespace SCREEN_Draw {
 	class DepthStencilState;
 	class SCREEN_Texture;
 	class BlendState;
-	class SamplerState;
+	class SCREEN_SamplerState;
 	class RasterState;
 }
 
@@ -55,7 +55,7 @@ public:
 
 	void Begin();
 	void BeginNoTex();
-	void BeginPipeline(SCREEN_Draw::Pipeline *pipeline, SCREEN_Draw::SamplerState *samplerState);
+	void BeginPipeline(SCREEN_Draw::Pipeline *pipeline, SCREEN_Draw::SCREEN_SamplerState *samplerState);
 	void Flush();
 
 	void RebindTexture() const;
@@ -106,7 +106,7 @@ private:
 	SCREEN_UI::FontStyle *fontStyle_ = nullptr;
 	TextDrawer *textDrawer_ = nullptr;
 
-	SCREEN_Draw::SamplerState *sampler_;
+	SCREEN_Draw::SCREEN_SamplerState *sampler_;
 	SCREEN_Draw::Pipeline *ui_pipeline_ = nullptr;
 	SCREEN_Draw::Pipeline *ui_pipeline_notex_ = nullptr;
 	std::unique_ptr<SCREEN_ManagedTexture> uitexture_;

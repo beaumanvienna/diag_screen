@@ -6,9 +6,9 @@
 
 #include "Common/GL/GLInterface/EGL.h"
 
-class cInterfaceEGLSwitch : public cInterfaceEGL {
+class SCREEN_cInterfaceEGLSwitch : public SCREEN_cInterfaceEGL {
 public:
-	cInterfaceEGLSwitch() {}
+	SCREEN_cInterfaceEGLSwitch() {}
 protected:
 	EGLDisplay OpenDisplay() override;
 	EGLNativeWindowType InitializePlatform(EGLNativeWindowType host_window, EGLConfig config) override;

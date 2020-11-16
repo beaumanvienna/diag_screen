@@ -27,7 +27,7 @@ SCREEN_UIContext::~SCREEN_UIContext() {
 void SCREEN_UIContext::Init(SCREEN_Draw::SCREEN_DrawContext *thin3d, SCREEN_Draw::Pipeline *uipipe, SCREEN_Draw::Pipeline *uipipenotex, SCREEN_DrawBuffer *uidrawbuffer, SCREEN_DrawBuffer *uidrawbufferTop) {
 	using namespace SCREEN_Draw;
 	draw_ = thin3d;
-	sampler_ = draw_->CreateSamplerState({ TextureFilter::LINEAR, TextureFilter::LINEAR, TextureFilter::LINEAR });
+	sampler_ = draw_->CreateSamplerState({ SCREEN_TextureFilter::LINEAR, SCREEN_TextureFilter::LINEAR, SCREEN_TextureFilter::LINEAR });
 	ui_pipeline_ = uipipe;
 	ui_pipeline_notex_ = uipipenotex;
 	uidrawbuffer_ = uidrawbuffer;
@@ -54,7 +54,7 @@ void SCREEN_UIContext::BeginNoTex() {
 	UIBegin(ui_pipeline_notex_);
 }
 
-void SCREEN_UIContext::BeginPipeline(SCREEN_Draw::Pipeline *pipeline, SCREEN_Draw::SamplerState *samplerState) {
+void SCREEN_UIContext::BeginPipeline(SCREEN_Draw::Pipeline *pipeline, SCREEN_Draw::SCREEN_SamplerState *samplerState) {
 	draw_->BindSamplerStates(0, 1, &samplerState);
 	RebindTexture();
 	UIBegin(pipeline);
