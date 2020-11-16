@@ -256,7 +256,7 @@ bool CreateGlobalPipelines() {
 
 	InputLayout *inputLayout = ui_draw2d.CreateInputLayout(g_draw);
 	SCREEN_BlendState *blendNormal = g_draw->CreateBlendState({ true, 0xF, SCREEN_BlendFactor::SRC_ALPHA, SCREEN_BlendFactor::ONE_MINUS_SRC_ALPHA });
-	DepthStencilState *depth = g_draw->CreateDepthStencilState({ false, false, SCREEN_Comparison::LESS });
+	SCREEN_DepthStencilState *depth = g_draw->CreateDepthStencilState({ false, false, SCREEN_Comparison::LESS });
 	RasterState *rasterNoCull = g_draw->CreateRasterState({});
 
 	PipelineDesc colorDesc{

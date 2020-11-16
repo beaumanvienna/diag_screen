@@ -179,7 +179,7 @@ public:
 	GLint mipMinFilt;
 };
 
-class OpenGLDepthStencilState : public DepthStencilState {
+class OpenGLDepthStencilState : public SCREEN_DepthStencilState {
 public:
 	bool depthTestEnabled;
 	bool depthWriteEnabled;
@@ -352,7 +352,7 @@ public:
 	}
 	uint32_t GetDataFormatSupport(DataFormat fmt) const override;
 
-	DepthStencilState *CreateDepthStencilState(const DepthStencilStateDesc &desc) override;
+	SCREEN_DepthStencilState *CreateDepthStencilState(const DepthStencilStateDesc &desc) override;
 	SCREEN_BlendState *CreateBlendState(const BlendStateDesc &desc) override;
 	SCREEN_SamplerState *CreateSamplerState(const SamplerStateDesc &desc) override;
 	RasterState *CreateRasterState(const RasterStateDesc &desc) override;
@@ -850,7 +850,7 @@ SCREEN_Texture *OpenGLContext::CreateTexture(const TextureDesc &desc) {
 	return new OpenGLTexture(&renderManager_, desc);
 }
 
-DepthStencilState *OpenGLContext::CreateDepthStencilState(const DepthStencilStateDesc &desc) {
+SCREEN_DepthStencilState *OpenGLContext::CreateDepthStencilState(const DepthStencilStateDesc &desc) {
 	OpenGLDepthStencilState *ds = new OpenGLDepthStencilState();
 	ds->depthTestEnabled = desc.depthTestEnabled;
 	ds->depthWriteEnabled = desc.depthWriteEnabled;

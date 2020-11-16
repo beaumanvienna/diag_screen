@@ -366,7 +366,7 @@ class SCREEN_SamplerState : public SCREEN_RefCountedObject {
 public:
 };
 
-class DepthStencilState : public SCREEN_RefCountedObject {
+class SCREEN_DepthStencilState : public SCREEN_RefCountedObject {
 public:
 };
 
@@ -496,7 +496,7 @@ struct PipelineDesc {
 	SCREEN_Primitive prim;
 	std::vector<ShaderModule *> shaders;
 	InputLayout *inputLayout;
-	DepthStencilState *depthStencil;
+	SCREEN_DepthStencilState *depthStencil;
 	SCREEN_BlendState *blend;
 	RasterState *raster;
 	const UniformBufferDesc *uniformDesc;
@@ -576,7 +576,7 @@ public:
 	virtual uint32_t GetSupportedShaderLanguages() const = 0;
 
 	// Partial pipeline state, used to create pipelines. (in practice, in d3d11 they'll use the native state objects directly).
-	virtual DepthStencilState *CreateDepthStencilState(const DepthStencilStateDesc &desc) = 0;
+	virtual SCREEN_DepthStencilState *CreateDepthStencilState(const DepthStencilStateDesc &desc) = 0;
 	virtual SCREEN_BlendState *CreateBlendState(const BlendStateDesc &desc) = 0;
 	virtual SCREEN_SamplerState *CreateSamplerState(const SamplerStateDesc &desc) = 0;
 	virtual RasterState *CreateRasterState(const RasterStateDesc &desc) = 0;
