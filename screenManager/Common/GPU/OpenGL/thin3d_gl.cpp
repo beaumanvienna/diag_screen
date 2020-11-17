@@ -239,7 +239,7 @@ public:
 	}
 
 	bool Compile(SCREEN_GLRenderManager *render, SCREEN_ShaderLanguage language, const uint8_t *data, size_t dataSize);
-	GLRShader *GetShader() const {
+	SCREEN_GLRShader *GetShader() const {
 		return shader_;
 	}
 	const std::string &GetSource() const { return source_; }
@@ -255,7 +255,7 @@ private:
 	SCREEN_GLRenderManager *render_;
 	SCREEN_ShaderStage stage_;
 	SCREEN_ShaderLanguage language_ = SCREEN_ShaderLanguage::GLSL_ES_200;
-	GLRShader *shader_ = nullptr;
+	SCREEN_GLRShader *shader_ = nullptr;
 	GLuint glstage_ = 0;
 	std::string source_;  // So we can recompile in case of context loss.
 	std::string tag_;
@@ -284,7 +284,7 @@ public:
 		return false;
 	}
 
-	GLRInputLayout *inputLayout_ = nullptr;
+	SCREEN_GLRInputLayout *inputLayout_ = nullptr;
 	int stride = 0;
 private:
 	SCREEN_GLRenderManager *render_;
@@ -322,7 +322,7 @@ public:
 	UniformBufferDesc dynamicUniforms;
 	GLint samplerLocs_[8];
 	std::vector<GLint> dynamicUniformLocs_;
-	GLRProgram *program_ = nullptr;
+	SCREEN_GLRProgram *program_ = nullptr;
 
 private:
 	SCREEN_GLRenderManager *render_;
@@ -505,7 +505,7 @@ private:
 	// Frames in flight is not such a strict concept as with Vulkan until we start using glBufferStorage and fences.
 	// But might as well have the structure ready, and can't hurt to rotate buffers.
 	struct FrameData {
-		GLPushBuffer *push;
+		SCREEN_GLPushBuffer *push;
 	};
 	FrameData frameData_[SCREEN_GLRenderManager::MAX_INFLIGHT_FRAMES]{};
 };
@@ -678,7 +678,7 @@ private:
 	void SetImageData(int x, int y, int z, int width, int height, int depth, int level, int stride, const uint8_t *data, TextureCallback callback);
 
 	SCREEN_GLRenderManager *render_;
-	GLRTexture *tex_;
+	SCREEN_GLRTexture *tex_;
 
 	SCREEN_DataFormat format_;
 	SCREEN_TextureType type_;
@@ -737,7 +737,7 @@ public:
 	}
 
 	SCREEN_GLRenderManager *render_;
-	GLRFramebuffer *framebuffer = nullptr;
+	SCREEN_GLRFramebuffer *framebuffer = nullptr;
 
 	FBColorDepth colorDepth = FBO_8888;
 };
@@ -938,7 +938,7 @@ public:
 	}
 
 	SCREEN_GLRenderManager *render_;
-	GLRBuffer *buffer_;
+	SCREEN_GLRBuffer *buffer_;
 	GLuint target_;
 	GLuint usage_;
 
@@ -1063,10 +1063,10 @@ SCREEN_ShaderModule *OpenGLContext::CreateShaderModule(SCREEN_ShaderStage stage,
 }
 
 bool OpenGLPipeline::LinkShaders() {
-	std::vector<GLRShader *> linkShaders;
+	std::vector<SCREEN_GLRShader *> linkShaders;
 	for (auto shaderModule : shaders) {
 		if (shaderModule) {
-			GLRShader *shader = shaderModule->GetShader();
+			SCREEN_GLRShader *shader = shaderModule->GetShader();
 			if (shader) {
 				linkShaders.push_back(shader);
 			} else {
@@ -1079,7 +1079,7 @@ bool OpenGLPipeline::LinkShaders() {
 		}
 	}
 
-	std::vector<GLRProgram::Semantic> semantics;
+	std::vector<SCREEN_GLRProgram::Semantic> semantics;
 	// Bind all the common vertex data points. Mismatching ones will be ignored.
 	semantics.push_back({ SEM_POSITION, "Position" });
 	semantics.push_back({ SEM_COLOR0, "Color0" });
@@ -1090,13 +1090,13 @@ bool OpenGLPipeline::LinkShaders() {
 	// For postshaders.
 	semantics.push_back({ SEM_POSITION, "a_position" });
 	semantics.push_back({ SEM_TEXCOORD0, "a_texcoord0" });
-	std::vector<GLRProgram::UniformLocQuery> queries;
+	std::vector<SCREEN_GLRProgram::UniformLocQuery> queries;
 	queries.push_back({ &samplerLocs_[0], "sampler0" });
 	queries.push_back({ &samplerLocs_[1], "sampler1" });
 	for (size_t i = 0; i < dynamicUniforms.uniforms.size(); ++i) {
 		queries.push_back({ &dynamicUniformLocs_[i], dynamicUniforms.uniforms[i].name });
 	}
-	std::vector<GLRProgram::Initializer> initialize;
+	std::vector<SCREEN_GLRProgram::Initializer> initialize;
 	initialize.push_back({ &samplerLocs_[0], 0, 0 });
 	initialize.push_back({ &samplerLocs_[1], 0, 1 });
 	program_ = render_->CreateProgram(linkShaders, semantics, queries, initialize, false);
@@ -1159,7 +1159,7 @@ void OpenGLContext::DrawUP(const void *vdata, int vertexCount) {
 
 	FrameData &frameData = frameData_[renderManager_.GetCurFrame()];
 
-	GLRBuffer *buf;
+	SCREEN_GLRBuffer *buf;
 	size_t offset = frameData.push->Push(vdata, dataSize, &buf);
 
 	ApplySamplers();
@@ -1196,9 +1196,9 @@ void OpenGLInputLayout::Compile(const InputLayoutDesc &desc) {
 	// never use multiple streams anyway.
 	stride = (GLsizei)desc.bindings[0].stride;
 
-	std::vector<GLRInputLayout::Entry> entries;
+	std::vector<SCREEN_GLRInputLayout::Entry> entries;
 	for (auto &attr : desc.attributes) {
-		GLRInputLayout::Entry entry;
+		SCREEN_GLRInputLayout::Entry entry;
 		entry.location = attr.location;
 		entry.stride = (GLsizei)desc.bindings[attr.binding].stride;
 		entry.offset = attr.offset;
@@ -1244,9 +1244,9 @@ SCREEN_Framebuffer *OpenGLContext::CreateFramebuffer(const FramebufferDesc &desc
 
 void OpenGLContext::BindFramebufferAsRenderTarget(SCREEN_Framebuffer *fbo, const RenderPassInfo &rp, const char *tag) {
 	OpenGLFramebuffer *fb = (OpenGLFramebuffer *)fbo;
-	GLRRenderPassAction color = (GLRRenderPassAction)rp.color;
-	GLRRenderPassAction depth = (GLRRenderPassAction)rp.depth;
-	GLRRenderPassAction stencil = (GLRRenderPassAction)rp.stencil;
+	SCREEN_GLRRenderPassAction color = (SCREEN_GLRRenderPassAction)rp.color;
+	SCREEN_GLRRenderPassAction depth = (SCREEN_GLRRenderPassAction)rp.depth;
+	SCREEN_GLRRenderPassAction stencil = (SCREEN_GLRRenderPassAction)rp.stencil;
 
 	renderManager_.BindFramebufferAsRenderTarget(fb ? fb->framebuffer : nullptr, color, depth, stencil, rp.clearColor, rp.clearDepth, rp.clearStencil, tag);
 }

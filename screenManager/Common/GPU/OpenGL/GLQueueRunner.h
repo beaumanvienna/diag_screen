@@ -20,20 +20,20 @@ struct GLOffset2D {
 	int x, y;
 };
 
-enum class GLRAllocType {
+enum class SCREEN_GLRAllocType {
 	NONE,
 	NEW,
 	ALIGNED,
 };
 
-class GLRShader;
-class GLRTexture;
-class GLRBuffer;
-class GLRFramebuffer;
-class GLRProgram;
-class GLRInputLayout;
+class SCREEN_GLRShader;
+class SCREEN_GLRTexture;
+class SCREEN_GLRBuffer;
+class SCREEN_GLRFramebuffer;
+class SCREEN_GLRProgram;
+class SCREEN_GLRInputLayout;
 
-enum class GLRRenderCommand : uint8_t {
+enum class SCREEN_GLRRenderCommand : uint8_t {
 	DEPTH,
 	STENCILFUNC,
 	STENCILOP,
@@ -66,7 +66,7 @@ enum class GLRRenderCommand : uint8_t {
 // type field, smashed right after each other?)
 // Also, all GLenums are really only 16 bits.
 struct GLRRenderData {
-	GLRRenderCommand cmd;
+	SCREEN_GLRRenderCommand cmd;
 	union {
 		struct {
 			GLboolean enabled;
@@ -139,34 +139,34 @@ struct GLRRenderData {
 		} clear;  // also used for invalidate
 		struct {
 			int slot;
-			GLRTexture *texture;
+			SCREEN_GLRTexture *texture;
 		} texture;
 		struct {
-			GLRTexture *texture;
+			SCREEN_GLRTexture *texture;
 			SCREEN_Draw::SCREEN_DataFormat format;
 			int level;
 			int x;
 			int y;
 			int width;
 			int height;
-			GLRAllocType allocType;
+			SCREEN_GLRAllocType allocType;
 			uint8_t *data;  // owned, delete[]-d
 		} texture_subimage;
 		struct {
 			int slot;
-			GLRFramebuffer *framebuffer;
+			SCREEN_GLRFramebuffer *framebuffer;
 			int aspect;
 		} bind_fb_texture;
 		struct {
-			GLRBuffer *buffer;
+			SCREEN_GLRBuffer *buffer;
 			GLuint target;
 		} bind_buffer;
 		struct {
-			GLRProgram *program;
+			SCREEN_GLRProgram *program;
 		} program;
 		struct {
-			GLRInputLayout *inputLayout;
-			GLRBuffer *buffer;
+			SCREEN_GLRInputLayout *inputLayout;
+			SCREEN_GLRBuffer *buffer;
 			size_t offset;
 		} bindVertexBuffer;
 		struct {
@@ -201,7 +201,7 @@ struct GLRRenderData {
 // Unlike in Vulkan, we can't create stuff on the main thread, but need to
 // defer this too. A big benefit will be that we'll be able to do all creation
 // at the start of the frame.
-enum class GLRInitStepType : uint8_t {
+enum class SCREEN_GLRInitStepType : uint8_t {
 	CREATE_TEXTURE,
 	CREATE_SHADER,
 	CREATE_PROGRAM,
@@ -215,62 +215,62 @@ enum class GLRInitStepType : uint8_t {
 };
 
 struct GLRInitStep {
-	GLRInitStep(GLRInitStepType _type) : stepType(_type) {}
-	GLRInitStepType stepType;
+	GLRInitStep(SCREEN_GLRInitStepType _type) : stepType(_type) {}
+	SCREEN_GLRInitStepType stepType;
 	union {
 		struct {
-			GLRTexture *texture;
+			SCREEN_GLRTexture *texture;
 			GLenum target;
 		} create_texture;
 		struct {
-			GLRShader *shader;
+			SCREEN_GLRShader *shader;
 			// This char arrays needs to be allocated with new[].
 			char *code;
 			GLuint stage;
 		} create_shader;
 		struct {
-			GLRProgram *program;
-			GLRShader *shaders[3];
+			SCREEN_GLRProgram *program;
+			SCREEN_GLRShader *shaders[3];
 			int num_shaders;
 			bool support_dual_source;
 		} create_program;
 		struct {
-			GLRBuffer *buffer;
+			SCREEN_GLRBuffer *buffer;
 			int size;
 			GLuint usage;
 		} create_buffer;
 		struct {
-			GLRInputLayout *inputLayout;
+			SCREEN_GLRInputLayout *inputLayout;
 		} create_input_layout;
 		struct {
-			GLRFramebuffer *framebuffer;
+			SCREEN_GLRFramebuffer *framebuffer;
 		} create_framebuffer;
 		struct {
-			GLRBuffer *buffer;
+			SCREEN_GLRBuffer *buffer;
 			int offset;
 			int size;
 			uint8_t *data;  // owned, delete[]-d
 			bool deleteData;
 		} buffer_subdata;
 		struct {
-			GLRTexture *texture;
+			SCREEN_GLRTexture *texture;
 			SCREEN_Draw::SCREEN_DataFormat format;
 			int level;
 			int width;
 			int height;
-			GLRAllocType allocType;
+			SCREEN_GLRAllocType allocType;
 			bool linearFilter;
 			uint8_t *data;  // owned, delete[]-d
 		} texture_image;
 		struct {
-			GLRTexture *texture;
+			SCREEN_GLRTexture *texture;
 			int maxLevel;
 			bool genMips;
 		} texture_finalize;
 	};
 };
 
-enum class GLRStepType : uint8_t {
+enum class SCREEN_GLRStepType : uint8_t {
 	RENDER,
 	COPY,
 	BLIT,
@@ -279,13 +279,13 @@ enum class GLRStepType : uint8_t {
 	RENDER_SKIP,
 };
 
-enum class GLRRenderPassAction {
+enum class SCREEN_GLRRenderPassAction {
 	DONT_CARE,
 	CLEAR,
 	KEEP,
 };
 
-class GLRFramebuffer;
+class SCREEN_GLRFramebuffer;
 
 enum {
 	GLR_ASPECT_COLOR = 1,
@@ -294,30 +294,30 @@ enum {
 };
 
 struct GLRStep {
-	GLRStep(GLRStepType _type) : stepType(_type) {}
-	GLRStepType stepType;
+	GLRStep(SCREEN_GLRStepType _type) : stepType(_type) {}
+	SCREEN_GLRStepType stepType;
 	std::vector<GLRRenderData> commands;
-	TinySet<const GLRFramebuffer *, 8> dependencies;
+	TinySet<const SCREEN_GLRFramebuffer *, 8> dependencies;
 	const char *tag;
 	union {
 		struct {
-			GLRFramebuffer *framebuffer;
-			GLRRenderPassAction color;
-			GLRRenderPassAction depth;
-			GLRRenderPassAction stencil;
+			SCREEN_GLRFramebuffer *framebuffer;
+			SCREEN_GLRRenderPassAction color;
+			SCREEN_GLRRenderPassAction depth;
+			SCREEN_GLRRenderPassAction stencil;
 			// Note: not accurate.
 			int numDraws;
 		} render;
 		struct {
-			GLRFramebuffer *src;
-			GLRFramebuffer *dst;
+			SCREEN_GLRFramebuffer *src;
+			SCREEN_GLRFramebuffer *dst;
 			GLRect2D srcRect;
 			GLOffset2D dstPos;
 			int aspectMask;
 		} copy;
 		struct {
-			GLRFramebuffer *src;
-			GLRFramebuffer *dst;
+			SCREEN_GLRFramebuffer *src;
+			SCREEN_GLRFramebuffer *dst;
 			GLRect2D srcRect;
 			GLRect2D dstRect;
 			int aspectMask;
@@ -325,21 +325,21 @@ struct GLRStep {
 		} blit;
 		struct {
 			int aspectMask;
-			GLRFramebuffer *src;
+			SCREEN_GLRFramebuffer *src;
 			GLRect2D srcRect;
 			SCREEN_Draw::SCREEN_DataFormat dstFormat;
 		} readback;
 		struct {
-			GLRTexture *texture;
+			SCREEN_GLRTexture *texture;
 			GLRect2D srcRect;
 			int mipLevel;
 		} readback_image;
 	};
 };
 
-class GLQueueRunner {
+class SCREEN_GLQueueRunner {
 public:
-	GLQueueRunner() {}
+	SCREEN_GLQueueRunner() {}
 
 	void RunInitSteps(const std::vector<GLRInitStep> &steps, bool skipGLCalls);
 
@@ -349,7 +349,7 @@ public:
 	void CreateDeviceObjects();
 	void DestroyDeviceObjects();
 
-	inline int RPIndex(GLRRenderPassAction color, GLRRenderPassAction depth) {
+	inline int RPIndex(SCREEN_GLRRenderPassAction color, SCREEN_GLRRenderPassAction depth) {
 		return (int)depth * 3 + (int)color;
 	}
 
@@ -392,7 +392,7 @@ private:
 	GLenum fbo_get_fb_target(bool read, GLuint **cached);
 	void fbo_unbind();
 
-	GLRFramebuffer *curFB_ = nullptr;
+	SCREEN_GLRFramebuffer *curFB_ = nullptr;
 
 	GLuint globalVAO_ = 0;
 

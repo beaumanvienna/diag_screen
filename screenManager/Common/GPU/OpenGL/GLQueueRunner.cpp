@@ -19,7 +19,7 @@
 
 GLuint g_defaultFBO = 0;
 
-void GLQueueRunner::CreateDeviceObjects() {
+void SCREEN_GLQueueRunner::CreateDeviceObjects() {
 	CHECK_GL_ERROR_IF_DEBUG();
 	if (gl_extensions.EXT_texture_filter_anisotropic) {
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropyLevel_);
@@ -54,7 +54,7 @@ void GLQueueRunner::CreateDeviceObjects() {
 	useDebugGroups_ = !gl_extensions.IsGLES && gl_extensions.VersionGEThan(4, 3);
 }
 
-void GLQueueRunner::DestroyDeviceObjects() {
+void SCREEN_GLQueueRunner::DestroyDeviceObjects() {
 	CHECK_GL_ERROR_IF_DEBUG();
 	if (!nameCache_.empty()) {
 		glDeleteTextures((GLsizei)nameCache_.size(), &nameCache_[0]);
@@ -90,33 +90,33 @@ static std::string GetInfoLog(GLuint name, Getiv getiv, GetLog getLog) {
 	return infoLog;
 }
 
-void GLQueueRunner::RunInitSteps(const std::vector<GLRInitStep> &steps, bool skipGLCalls) {
+void SCREEN_GLQueueRunner::RunInitSteps(const std::vector<GLRInitStep> &steps, bool skipGLCalls) {
 	if (skipGLCalls) {
 		// Some bookkeeping still needs to be done.
 		for (size_t i = 0; i < steps.size(); i++) {
 			const GLRInitStep &step = steps[i];
 			switch (step.stepType) {
-			case GLRInitStepType::BUFFER_SUBDATA:
+			case SCREEN_GLRInitStepType::BUFFER_SUBDATA:
 			{
 				if (step.buffer_subdata.deleteData)
 					delete[] step.buffer_subdata.data;
 				break;
 			}
-			case GLRInitStepType::TEXTURE_IMAGE:
+			case SCREEN_GLRInitStepType::TEXTURE_IMAGE:
 			{
-				if (step.texture_image.allocType == GLRAllocType::ALIGNED) {
+				if (step.texture_image.allocType == SCREEN_GLRAllocType::ALIGNED) {
 					FreeAlignedMemory(step.texture_image.data);
-				} else if (step.texture_image.allocType == GLRAllocType::NEW) {
+				} else if (step.texture_image.allocType == SCREEN_GLRAllocType::NEW) {
 					delete[] step.texture_image.data;
 				}
 				break;
 			}
-			case GLRInitStepType::CREATE_PROGRAM:
+			case SCREEN_GLRInitStepType::CREATE_PROGRAM:
 			{
 				printf("CREATE_PROGRAM found with skipGLCalls, not good");
 				break;
 			}
-			case GLRInitStepType::CREATE_SHADER:
+			case SCREEN_GLRInitStepType::CREATE_SHADER:
 			{
 				printf("CREATE_SHADER found with skipGLCalls, not good");
 				break;
@@ -141,27 +141,27 @@ void GLQueueRunner::RunInitSteps(const std::vector<GLRInitStep> &steps, bool ski
 	for (size_t i = 0; i < steps.size(); i++) {
 		const GLRInitStep &step = steps[i];
 		switch (step.stepType) {
-		case GLRInitStepType::CREATE_TEXTURE:
+		case SCREEN_GLRInitStepType::CREATE_TEXTURE:
 		{
-			GLRTexture *tex = step.create_texture.texture;
+			SCREEN_GLRTexture *tex = step.create_texture.texture;
 			glGenTextures(1, &tex->texture);
 			glBindTexture(tex->target, tex->texture);
 			boundTexture = tex->texture;
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRInitStepType::CREATE_BUFFER:
+		case SCREEN_GLRInitStepType::CREATE_BUFFER:
 		{
-			GLRBuffer *buffer = step.create_buffer.buffer;
+			SCREEN_GLRBuffer *buffer = step.create_buffer.buffer;
 			glGenBuffers(1, &buffer->buffer_);
 			glBindBuffer(buffer->target_, buffer->buffer_);
 			glBufferData(buffer->target_, step.create_buffer.size, nullptr, step.create_buffer.usage);
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRInitStepType::BUFFER_SUBDATA:
+		case SCREEN_GLRInitStepType::BUFFER_SUBDATA:
 		{
-			GLRBuffer *buffer = step.buffer_subdata.buffer;
+			SCREEN_GLRBuffer *buffer = step.buffer_subdata.buffer;
 			glBindBuffer(buffer->target_, buffer->buffer_);
 			glBufferSubData(buffer->target_, step.buffer_subdata.offset, step.buffer_subdata.size, step.buffer_subdata.data);
 			if (step.buffer_subdata.deleteData)
@@ -169,10 +169,10 @@ void GLQueueRunner::RunInitSteps(const std::vector<GLRInitStep> &steps, bool ski
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRInitStepType::CREATE_PROGRAM:
+		case SCREEN_GLRInitStepType::CREATE_PROGRAM:
 		{
 			CHECK_GL_ERROR_IF_DEBUG();
-			GLRProgram *program = step.create_program.program;
+			SCREEN_GLRProgram *program = step.create_program.program;
 			program->program = glCreateProgram();
 			_assert_msg_(step.create_program.num_shaders > 0, "Can't create a program with zero shaders");
 			bool anyFailed = false;
@@ -208,8 +208,8 @@ void GLQueueRunner::RunInitSteps(const std::vector<GLRInitStep> &steps, bool ski
 				std::string infoLog = GetInfoLog(program->program, glGetProgramiv, glGetProgramInfoLog);
 
 				// TODO: Could be other than vs/fs.  Also, we're assuming order here...
-				GLRShader *vs = step.create_program.shaders[0];
-				GLRShader *fs = step.create_program.num_shaders > 1 ? step.create_program.shaders[1] : nullptr;
+				SCREEN_GLRShader *vs = step.create_program.shaders[0];
+				SCREEN_GLRShader *fs = step.create_program.num_shaders > 1 ? step.create_program.shaders[1] : nullptr;
 				std::string vsDesc = vs->desc + (vs->failed ? " (failed)" : "");
 				std::string fsDesc = fs ? (fs->desc + (fs->failed ? " (failed)" : "")) : "(none)";
 				const char *vsCode = vs->code.c_str();
@@ -256,7 +256,7 @@ void GLQueueRunner::RunInitSteps(const std::vector<GLRInitStep> &steps, bool ski
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRInitStepType::CREATE_SHADER:
+		case SCREEN_GLRInitStepType::CREATE_SHADER:
 		{
 			CHECK_GL_ERROR_IF_DEBUG();
 			GLuint shader = glCreateShader(step.create_shader.stage);
@@ -286,13 +286,13 @@ void GLQueueRunner::RunInitSteps(const std::vector<GLRInitStep> &steps, bool ski
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRInitStepType::CREATE_INPUT_LAYOUT:
+		case SCREEN_GLRInitStepType::CREATE_INPUT_LAYOUT:
 		{
-			// GLRInputLayout *layout = step.create_input_layout.inputLayout;
+			// SCREEN_GLRInputLayout *layout = step.create_input_layout.inputLayout;
 			// Nothing to do unless we want to create vertexbuffer objects (GL 4.5)
 			break;
 		}
-		case GLRInitStepType::CREATE_FRAMEBUFFER:
+		case SCREEN_GLRInitStepType::CREATE_FRAMEBUFFER:
 		{
 			CHECK_GL_ERROR_IF_DEBUG();
 			boundTexture = (GLuint)-1;
@@ -301,15 +301,15 @@ void GLQueueRunner::RunInitSteps(const std::vector<GLRInitStep> &steps, bool ski
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRInitStepType::TEXTURE_IMAGE:
+		case SCREEN_GLRInitStepType::TEXTURE_IMAGE:
 		{
-			GLRTexture *tex = step.texture_image.texture;
+			SCREEN_GLRTexture *tex = step.texture_image.texture;
 			CHECK_GL_ERROR_IF_DEBUG();
 			if (boundTexture != tex->texture) {
 				glBindTexture(tex->target, tex->texture);
 				boundTexture = tex->texture;
 			}
-			if (!step.texture_image.data && step.texture_image.allocType != GLRAllocType::NONE)
+			if (!step.texture_image.data && step.texture_image.allocType != SCREEN_GLRAllocType::NONE)
 				Crash();
 			// For things to show in RenderDoc, need to split into glTexImage2D(..., nullptr) and glTexSubImage.
 
@@ -318,9 +318,9 @@ void GLQueueRunner::RunInitSteps(const std::vector<GLRInitStep> &steps, bool ski
 			Thin3DFormatToFormatAndType(step.texture_image.format, internalFormat, format, type, alignment);
 			glTexImage2D(tex->target, step.texture_image.level, internalFormat, step.texture_image.width, step.texture_image.height, 0, format, type, step.texture_image.data);
 			allocatedTextures = true;
-			if (step.texture_image.allocType == GLRAllocType::ALIGNED) {
+			if (step.texture_image.allocType == SCREEN_GLRAllocType::ALIGNED) {
 				FreeAlignedMemory(step.texture_image.data);
-			} else if (step.texture_image.allocType == GLRAllocType::NEW) {
+			} else if (step.texture_image.allocType == SCREEN_GLRAllocType::NEW) {
 				delete[] step.texture_image.data;
 			}
 			CHECK_GL_ERROR_IF_DEBUG();
@@ -335,10 +335,10 @@ void GLQueueRunner::RunInitSteps(const std::vector<GLRInitStep> &steps, bool ski
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRInitStepType::TEXTURE_FINALIZE:
+		case SCREEN_GLRInitStepType::TEXTURE_FINALIZE:
 		{
 			CHECK_GL_ERROR_IF_DEBUG();
-			GLRTexture *tex = step.texture_finalize.texture;
+			SCREEN_GLRTexture *tex = step.texture_finalize.texture;
 			if (boundTexture != tex->texture) {
 				glBindTexture(tex->target, tex->texture);
 				boundTexture = tex->texture;
@@ -385,8 +385,8 @@ void GLQueueRunner::RunInitSteps(const std::vector<GLRInitStep> &steps, bool ski
 #endif
 }
 
-void GLQueueRunner::InitCreateFramebuffer(const GLRInitStep &step) {
-	GLRFramebuffer *fbo = step.create_framebuffer.framebuffer;
+void SCREEN_GLQueueRunner::InitCreateFramebuffer(const GLRInitStep &step) {
+	SCREEN_GLRFramebuffer *fbo = step.create_framebuffer.framebuffer;
 
 #ifndef USING_GLES2
 	if (!gl_extensions.ARB_framebuffer_object && gl_extensions.EXT_framebuffer_object) {
@@ -398,7 +398,7 @@ void GLQueueRunner::InitCreateFramebuffer(const GLRInitStep &step) {
 #endif
 	CHECK_GL_ERROR_IF_DEBUG();
 
-	auto initFBOTexture = [&](GLRTexture &tex, GLint internalFormat, GLenum format, GLenum type, bool linear) {
+	auto initFBOTexture = [&](SCREEN_GLRTexture &tex, GLint internalFormat, GLenum format, GLenum type, bool linear) {
 		glGenTextures(1, &tex.texture);
 		tex.target = GL_TEXTURE_2D;
 		tex.maxLod = 0.0f;
@@ -560,20 +560,20 @@ retry_depth:
 	currentReadHandle_ = fbo->handle;
 }
 
-void GLQueueRunner::RunSteps(const std::vector<GLRStep *> &steps, bool skipGLCalls) {
+void SCREEN_GLQueueRunner::RunSteps(const std::vector<GLRStep *> &steps, bool skipGLCalls) {
 	if (skipGLCalls) {
 		// Dry run
 		for (size_t i = 0; i < steps.size(); i++) {
 			const GLRStep &step = *steps[i];
 			switch (step.stepType) {
-			case GLRStepType::RENDER:
+			case SCREEN_GLRStepType::RENDER:
 				for (const auto &c : step.commands) {
 					switch (c.cmd) {
-					case GLRRenderCommand::TEXTURE_SUBIMAGE:
+					case SCREEN_GLRRenderCommand::TEXTURE_SUBIMAGE:
 						if (c.texture_subimage.data) {
-							if (c.texture_subimage.allocType == GLRAllocType::ALIGNED) {
+							if (c.texture_subimage.allocType == SCREEN_GLRAllocType::ALIGNED) {
 								FreeAlignedMemory(c.texture_subimage.data);
-							} else if (c.texture_subimage.allocType == GLRAllocType::NEW) {
+							} else if (c.texture_subimage.allocType == SCREEN_GLRAllocType::NEW) {
 								delete[] c.texture_subimage.data;
 							}
 						}
@@ -593,32 +593,32 @@ void GLQueueRunner::RunSteps(const std::vector<GLRStep *> &steps, bool skipGLCal
 
 	size_t totalRenderCount = 0;
 	for (auto &step : steps) {
-		if (step->stepType == GLRStepType::RENDER) {
+		if (step->stepType == SCREEN_GLRStepType::RENDER) {
 			// Skip empty render steps.
 			if (step->commands.empty()) {
-				step->stepType = GLRStepType::RENDER_SKIP;
+				step->stepType = SCREEN_GLRStepType::RENDER_SKIP;
 				continue;
 			}
 			totalRenderCount++;
 		}
 	}
 
-	auto ignoresContents = [](GLRRenderPassAction act) {
-		return act == GLRRenderPassAction::CLEAR || act == GLRRenderPassAction::DONT_CARE;
+	auto ignoresContents = [](SCREEN_GLRRenderPassAction act) {
+		return act == SCREEN_GLRRenderPassAction::CLEAR || act == SCREEN_GLRRenderPassAction::DONT_CARE;
 	};
 	int invalidateAllMask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
 
 	/*
 	for (int j = 0; j < (int)steps.size() - 1; ++j) {
 		GLRStep &primaryStep = *steps[j];
-		if (primaryStep.stepType == GLRStepType::RENDER) {
-			const GLRFramebuffer *fb = primaryStep.render.framebuffer;
+		if (primaryStep.stepType == SCREEN_GLRStepType::RENDER) {
+			const SCREEN_GLRFramebuffer *fb = primaryStep.render.framebuffer;
 
 			// Let's see if we can invalidate it...
 			int invalidateMask = 0;
 			for (int i = j + 1; i < (int)steps.size(); ++i) {
 				const GLRStep &secondaryStep = *steps[i];
-				if (secondaryStep.stepType == GLRStepType::RENDER && secondaryStep.render.framebuffer == fb) {
+				if (secondaryStep.stepType == SCREEN_GLRStepType::RENDER && secondaryStep.render.framebuffer == fb) {
 					if (ignoresContents(secondaryStep.render.color))
 						invalidateMask |= GL_COLOR_BUFFER_BIT;
 					if (ignoresContents(secondaryStep.render.depth))
@@ -635,7 +635,7 @@ void GLQueueRunner::RunSteps(const std::vector<GLRStep *> &steps, bool skipGLCal
 			}
 
 			if (invalidateMask) {
-				GLRRenderData data{ GLRRenderCommand::INVALIDATE };
+				GLRRenderData data{ SCREEN_GLRRenderCommand::INVALIDATE };
 				data.clear.clearMask = invalidateMask;
 				primaryStep.commands.push_back(data);
 			}
@@ -653,23 +653,23 @@ void GLQueueRunner::RunSteps(const std::vector<GLRStep *> &steps, bool skipGLCal
 #endif
 
 		switch (step.stepType) {
-		case GLRStepType::RENDER:
+		case SCREEN_GLRStepType::RENDER:
 			renderCount++;
 			PerformRenderPass(step, renderCount == 1, renderCount == totalRenderCount);
 			break;
-		case GLRStepType::COPY:
+		case SCREEN_GLRStepType::COPY:
 			PerformCopy(step);
 			break;
-		case GLRStepType::BLIT:
+		case SCREEN_GLRStepType::BLIT:
 			PerformBlit(step);
 			break;
-		case GLRStepType::READBACK:
+		case SCREEN_GLRStepType::READBACK:
 			PerformReadback(step);
 			break;
-		case GLRStepType::READBACK_IMAGE:
+		case SCREEN_GLRStepType::READBACK_IMAGE:
 			PerformReadbackImage(step);
 			break;
-		case GLRStepType::RENDER_SKIP:
+		case SCREEN_GLRStepType::RENDER_SKIP:
 			break;
 		default:
 			Crash();
@@ -686,12 +686,12 @@ void GLQueueRunner::RunSteps(const std::vector<GLRStep *> &steps, bool skipGLCal
 	CHECK_GL_ERROR_IF_DEBUG();
 }
 
-void GLQueueRunner::LogSteps(const std::vector<GLRStep *> &steps) {
+void SCREEN_GLQueueRunner::LogSteps(const std::vector<GLRStep *> &steps) {
 
 }
 
 
-void GLQueueRunner::PerformBlit(const GLRStep &step) {
+void SCREEN_GLQueueRunner::PerformBlit(const GLRStep &step) {
 	CHECK_GL_ERROR_IF_DEBUG();
 	// Without FBO_ARB / GLES3, this will collide with bind_for_read, but there's nothing
 	// in ES 2.0 that actually separate them anyway of course, so doesn't matter.
@@ -716,11 +716,11 @@ void GLQueueRunner::PerformBlit(const GLRStep &step) {
 		CHECK_GL_ERROR_IF_DEBUG();
 #endif // defined(USING_GLES2) && defined(__ANDROID__)
 	} else {
-		printf("GLQueueRunner: Tried to blit without the capability");
+		printf("SCREEN_GLQueueRunner: Tried to blit without the capability");
 	}
 }
 
-void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last) {
+void SCREEN_GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last) {
 	CHECK_GL_ERROR_IF_DEBUG();
 
 	PerformBindFramebufferAsRenderTarget(step);
@@ -755,7 +755,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 		glBindVertexArray(globalVAO_);
 	}
 
-	GLRProgram *curProgram = nullptr;
+	SCREEN_GLRProgram *curProgram = nullptr;
 	int activeSlot = 0;
 	if (first)
 		glActiveTexture(GL_TEXTURE0 + activeSlot);
@@ -779,13 +779,13 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 	GLuint blendEqColor = (GLuint)-1;
 	GLuint blendEqAlpha = (GLuint)-1;
 
-	GLRTexture *curTex[8]{};
+	SCREEN_GLRTexture *curTex[8]{};
 
 	CHECK_GL_ERROR_IF_DEBUG();
 	auto &commands = step.commands;
 	for (const auto &c : commands) {
 		switch (c.cmd) {
-		case GLRRenderCommand::DEPTH:
+		case SCREEN_GLRRenderCommand::DEPTH:
 			if (c.depth.enabled) {
 				if (!depthEnabled) {
 					glEnable(GL_DEPTH_TEST);
@@ -804,7 +804,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 				depthEnabled = false;
 			}
 			break;
-		case GLRRenderCommand::STENCILFUNC:
+		case SCREEN_GLRRenderCommand::STENCILFUNC:
 			if (c.stencilFunc.enabled) {
 				if (!stencilEnabled) {
 					glEnable(GL_STENCIL_TEST);
@@ -817,11 +817,11 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			}
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
-		case GLRRenderCommand::STENCILOP:
+		case SCREEN_GLRRenderCommand::STENCILOP:
 			glStencilOp(c.stencilOp.sFail, c.stencilOp.zFail, c.stencilOp.pass);
 			glStencilMask(c.stencilOp.writeMask);
 			break;
-		case GLRRenderCommand::BLEND:
+		case SCREEN_GLRRenderCommand::BLEND:
 			if (c.blend.enabled) {
 				if (!blendEnabled) {
 					glEnable(GL_BLEND);
@@ -843,7 +843,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			}
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
-		case GLRRenderCommand::LOGICOP:
+		case SCREEN_GLRRenderCommand::LOGICOP:
 #ifndef USING_GLES2
 			if (c.logic.enabled) {
 				if (!logicEnabled) {
@@ -860,7 +860,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 #endif
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
-		case GLRRenderCommand::CLEAR:
+		case SCREEN_GLRRenderCommand::CLEAR:
 			// Scissor test is on, and should be on after leaving this case. If we disable it,
 			// we re-enable it at the end.
 			if (c.clear.scissorW == 0) {
@@ -900,7 +900,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			}
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
-		case GLRRenderCommand::INVALIDATE:
+		case SCREEN_GLRRenderCommand::INVALIDATE:
 		{
 			GLenum attachments[3];
 			int count = 0;
@@ -917,10 +917,10 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRRenderCommand::BLENDCOLOR:
+		case SCREEN_GLRRenderCommand::BLENDCOLOR:
 			glBlendColor(c.blendColor.color[0], c.blendColor.color[1], c.blendColor.color[2], c.blendColor.color[3]);
 			break;
-		case GLRRenderCommand::VIEWPORT:
+		case SCREEN_GLRRenderCommand::VIEWPORT:
 		{
 			float y = c.viewport.vp.y;
 			if (!curFB_)
@@ -940,7 +940,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRRenderCommand::SCISSOR:
+		case SCREEN_GLRRenderCommand::SCISSOR:
 		{
 			int y = c.scissor.rc.y;
 			if (!curFB_)
@@ -949,7 +949,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRRenderCommand::UNIFORM4F:
+		case SCREEN_GLRRenderCommand::UNIFORM4F:
 		{
 			int loc = c.uniform4.loc ? *c.uniform4.loc : -1;
 			if (c.uniform4.name) {
@@ -974,7 +974,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRRenderCommand::UNIFORM4I:
+		case SCREEN_GLRRenderCommand::UNIFORM4I:
 		{
 			_dbg_assert_(curProgram);
 			int loc = c.uniform4.loc ? *c.uniform4.loc : -1;
@@ -1000,7 +1000,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRRenderCommand::UNIFORMMATRIX:
+		case SCREEN_GLRRenderCommand::UNIFORMMATRIX:
 		{
 			_dbg_assert_(curProgram);
 			int loc = c.uniformMatrix4.loc ? *c.uniformMatrix4.loc : -1;
@@ -1013,7 +1013,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRRenderCommand::BINDTEXTURE:
+		case SCREEN_GLRRenderCommand::BINDTEXTURE:
 		{
 			GLint slot = c.texture.slot;
 			if (slot != activeSlot) {
@@ -1032,7 +1032,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRRenderCommand::BIND_FB_TEXTURE:
+		case SCREEN_GLRRenderCommand::BIND_FB_TEXTURE:
 		{
 			GLint slot = c.bind_fb_texture.slot;
 			if (slot != activeSlot) {
@@ -1054,7 +1054,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRRenderCommand::BINDPROGRAM:
+		case SCREEN_GLRRenderCommand::BINDPROGRAM:
 		{
 			if (curProgram != c.program.program) {
 				glUseProgram(c.program.program->program);
@@ -1063,10 +1063,10 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRRenderCommand::BIND_VERTEX_BUFFER:
+		case SCREEN_GLRRenderCommand::BIND_VERTEX_BUFFER:
 		{
 			// TODO: Add fast path for glBindVertexBuffer
-			GLRInputLayout *layout = c.bindVertexBuffer.inputLayout;
+			SCREEN_GLRInputLayout *layout = c.bindVertexBuffer.inputLayout;
 			GLuint buf = c.bindVertexBuffer.buffer ? c.bindVertexBuffer.buffer->buffer_ : 0;
 			_dbg_assert_(!c.bindVertexBuffer.buffer->Mapped());
 			if (buf != curArrayBuffer) {
@@ -1091,7 +1091,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRRenderCommand::BIND_BUFFER:
+		case SCREEN_GLRRenderCommand::BIND_BUFFER:
 		{
 			if (c.bind_buffer.target == GL_ARRAY_BUFFER) {
 				Crash();
@@ -1110,15 +1110,15 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRRenderCommand::GENMIPS:
+		case SCREEN_GLRRenderCommand::GENMIPS:
 			// TODO: Should we include the texture handle in the command?
 			// Also, should this not be an init command?
 			glGenerateMipmap(GL_TEXTURE_2D);
 			break;
-		case GLRRenderCommand::DRAW:
+		case SCREEN_GLRRenderCommand::DRAW:
 			glDrawArrays(c.draw.mode, c.draw.first, c.draw.count);
 			break;
-		case GLRRenderCommand::DRAW_INDEXED:
+		case SCREEN_GLRRenderCommand::DRAW_INDEXED:
 			if (c.drawIndexed.instances == 1) {
 				glDrawElements(c.drawIndexed.mode, c.drawIndexed.count, c.drawIndexed.indexType, c.drawIndexed.indices);
 			} else {
@@ -1126,7 +1126,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			}
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
-		case GLRRenderCommand::TEXTURESAMPLER:
+		case SCREEN_GLRRenderCommand::TEXTURESAMPLER:
 		{
 			CHECK_GL_ERROR_IF_DEBUG();
 			GLint slot = c.textureSampler.slot;
@@ -1134,7 +1134,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 				glActiveTexture(GL_TEXTURE0 + slot);
 				activeSlot = slot;
 			}
-			GLRTexture *tex = curTex[slot];
+			SCREEN_GLRTexture *tex = curTex[slot];
 			if (!tex) {
 				break;
 			}
@@ -1169,14 +1169,14 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRRenderCommand::TEXTURELOD:
+		case SCREEN_GLRRenderCommand::TEXTURELOD:
 		{
 			GLint slot = c.textureSampler.slot;
 			if (slot != activeSlot) {
 				glActiveTexture(GL_TEXTURE0 + slot);
 				activeSlot = slot;
 			}
-			GLRTexture *tex = curTex[slot];
+			SCREEN_GLRTexture *tex = curTex[slot];
 			if (!tex) {
 				break;
 			}
@@ -1196,9 +1196,9 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			}
 			break;
 		}
-		case GLRRenderCommand::TEXTURE_SUBIMAGE:
+		case SCREEN_GLRRenderCommand::TEXTURE_SUBIMAGE:
 		{
-			GLRTexture *tex = c.texture_subimage.texture;
+			SCREEN_GLRTexture *tex = c.texture_subimage.texture;
 			// TODO: Need bind?
 			if (!c.texture_subimage.data)
 				Crash();
@@ -1207,15 +1207,15 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 			int alignment;
 			Thin3DFormatToFormatAndType(c.texture_subimage.format, internalFormat, format, type, alignment);
 			glTexSubImage2D(tex->target, c.texture_subimage.level, c.texture_subimage.x, c.texture_subimage.y, c.texture_subimage.width, c.texture_subimage.height, format, type, c.texture_subimage.data);
-			if (c.texture_subimage.allocType == GLRAllocType::ALIGNED) {
+			if (c.texture_subimage.allocType == SCREEN_GLRAllocType::ALIGNED) {
 				FreeAlignedMemory(c.texture_subimage.data);
-			} else if (c.texture_subimage.allocType == GLRAllocType::NEW) {
+			} else if (c.texture_subimage.allocType == SCREEN_GLRAllocType::NEW) {
 				delete[] c.texture_subimage.data;
 			}
 			CHECK_GL_ERROR_IF_DEBUG();
 			break;
 		}
-		case GLRRenderCommand::RASTER:
+		case SCREEN_GLRRenderCommand::RASTER:
 			if (c.raster.cullEnable) {
 				if (!cullEnabled) {
 					glEnable(GL_CULL_FACE);
@@ -1284,7 +1284,7 @@ void GLQueueRunner::PerformRenderPass(const GLRStep &step, bool first, bool last
 	CHECK_GL_ERROR_IF_DEBUG();
 }
 
-void GLQueueRunner::PerformCopy(const GLRStep &step) {
+void SCREEN_GLQueueRunner::PerformCopy(const GLRStep &step) {
 	CHECK_GL_ERROR_IF_DEBUG();
 	GLuint srcTex = 0;
 	GLuint dstTex = 0;
@@ -1293,8 +1293,8 @@ void GLQueueRunner::PerformCopy(const GLRStep &step) {
 	const GLRect2D &srcRect = step.copy.srcRect;
 	const GLOffset2D &dstPos = step.copy.dstPos;
 
-	GLRFramebuffer *src = step.copy.src;
-	GLRFramebuffer *dst = step.copy.dst;
+	SCREEN_GLRFramebuffer *src = step.copy.src;
+	SCREEN_GLRFramebuffer *dst = step.copy.dst;
 
 	int srcLevel = 0;
 	int dstLevel = 0;
@@ -1345,11 +1345,11 @@ void GLQueueRunner::PerformCopy(const GLRStep &step) {
 	CHECK_GL_ERROR_IF_DEBUG();
 }
 
-void GLQueueRunner::PerformReadback(const GLRStep &pass) {
+void SCREEN_GLQueueRunner::PerformReadback(const GLRStep &pass) {
 	using namespace SCREEN_Draw;
 	CHECK_GL_ERROR_IF_DEBUG();
 
-	GLRFramebuffer *fb = pass.readback.src;
+	SCREEN_GLRFramebuffer *fb = pass.readback.src;
 
 	fbo_bind_fb_target(true, fb ? fb->handle : 0);
 
@@ -1419,9 +1419,9 @@ void GLQueueRunner::PerformReadback(const GLRStep &pass) {
 	CHECK_GL_ERROR_IF_DEBUG();
 }
 
-void GLQueueRunner::PerformReadbackImage(const GLRStep &pass) {
+void SCREEN_GLQueueRunner::PerformReadbackImage(const GLRStep &pass) {
 #ifndef USING_GLES2
-	GLRTexture *tex = pass.readback_image.texture;
+	SCREEN_GLRTexture *tex = pass.readback_image.texture;
 	GLRect2D rect = pass.readback_image.srcRect;
 
 	if (gl_extensions.VersionGEThan(4, 5)) {
@@ -1471,7 +1471,7 @@ void GLQueueRunner::PerformReadbackImage(const GLRStep &pass) {
 	CHECK_GL_ERROR_IF_DEBUG();
 }
 
-void GLQueueRunner::PerformBindFramebufferAsRenderTarget(const GLRStep &pass) {
+void SCREEN_GLQueueRunner::PerformBindFramebufferAsRenderTarget(const GLRStep &pass) {
 	if (pass.render.framebuffer) {
 		curFBWidth_ = pass.render.framebuffer->width;
 		curFBHeight_ = pass.render.framebuffer->height;
@@ -1492,7 +1492,7 @@ void GLQueueRunner::PerformBindFramebufferAsRenderTarget(const GLRStep &pass) {
 	CHECK_GL_ERROR_IF_DEBUG();
 }
 
-void GLQueueRunner::CopyReadbackBuffer(int width, int height, SCREEN_Draw::SCREEN_DataFormat srcFormat, SCREEN_Draw::SCREEN_DataFormat destFormat, int pixelStride, uint8_t *pixels) {
+void SCREEN_GLQueueRunner::CopyReadbackBuffer(int width, int height, SCREEN_Draw::SCREEN_DataFormat srcFormat, SCREEN_Draw::SCREEN_DataFormat destFormat, int pixelStride, uint8_t *pixels) {
 	// TODO: Maybe move data format conversion here, and always read back 8888. Drivers
 	// don't usually provide very optimized conversion implementations, though some do.
 	// Just need to be careful about dithering, which may break Danganronpa.
@@ -1506,7 +1506,7 @@ void GLQueueRunner::CopyReadbackBuffer(int width, int height, SCREEN_Draw::SCREE
 	}
 }
 
-GLuint GLQueueRunner::AllocTextureName() {
+GLuint SCREEN_GLQueueRunner::AllocTextureName() {
 	if (nameCache_.empty()) {
 		nameCache_.resize(TEXCACHE_NAME_CACHE_SIZE);
 		glGenTextures(TEXCACHE_NAME_CACHE_SIZE, &nameCache_[0]);
@@ -1521,8 +1521,8 @@ GLuint GLQueueRunner::AllocTextureName() {
 // On Android, we try to use what's available.
 
 #ifndef USING_GLES2
-void GLQueueRunner::fbo_ext_create(const GLRInitStep &step) {
-	GLRFramebuffer *fbo = step.create_framebuffer.framebuffer;
+void SCREEN_GLQueueRunner::fbo_ext_create(const GLRInitStep &step) {
+	SCREEN_GLRFramebuffer *fbo = step.create_framebuffer.framebuffer;
 
 	CHECK_GL_ERROR_IF_DEBUG();
 
@@ -1585,7 +1585,7 @@ void GLQueueRunner::fbo_ext_create(const GLRInitStep &step) {
 }
 #endif
 
-GLenum GLQueueRunner::fbo_get_fb_target(bool read, GLuint **cached) {
+GLenum SCREEN_GLQueueRunner::fbo_get_fb_target(bool read, GLuint **cached) {
 	bool supportsBlit = gl_extensions.ARB_framebuffer_object;
 	if (gl_extensions.IsGLES) {
 		supportsBlit = (gl_extensions.GLES3 || gl_extensions.NV_framebuffer_blit);
@@ -1606,7 +1606,7 @@ GLenum GLQueueRunner::fbo_get_fb_target(bool read, GLuint **cached) {
 	}
 }
 
-void GLQueueRunner::fbo_bind_fb_target(bool read, GLuint name) {
+void SCREEN_GLQueueRunner::fbo_bind_fb_target(bool read, GLuint name) {
 	CHECK_GL_ERROR_IF_DEBUG();
 	GLuint *cached;
 	GLenum target = fbo_get_fb_target(read, &cached);
@@ -1623,7 +1623,7 @@ void GLQueueRunner::fbo_bind_fb_target(bool read, GLuint name) {
 	CHECK_GL_ERROR_IF_DEBUG();
 }
 
-void GLQueueRunner::fbo_unbind() {
+void SCREEN_GLQueueRunner::fbo_unbind() {
 	CHECK_GL_ERROR_IF_DEBUG();
 #ifndef USING_GLES2
 	if (gl_extensions.ARB_framebuffer_object || gl_extensions.IsGLES) {
@@ -1644,7 +1644,7 @@ void GLQueueRunner::fbo_unbind() {
 	CHECK_GL_ERROR_IF_DEBUG();
 }
 
-GLRFramebuffer::~GLRFramebuffer() {
+SCREEN_GLRFramebuffer::~SCREEN_GLRFramebuffer() {
 	if (handle == 0 && z_stencil_buffer == 0 && z_buffer == 0 && stencil_buffer == 0)
 		return;
 

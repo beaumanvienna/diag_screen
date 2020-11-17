@@ -244,9 +244,9 @@ private:
 };
 
 // Reads and writes value to determine the current selection.
-class PopupMultiChoice : public SCREEN_UI::Choice {
+class SCREEN_PopupMultiChoice : public SCREEN_UI::Choice {
 public:
-	PopupMultiChoice(int *value, const std::string &text, const char **choices, int minVal, int numChoices,
+	SCREEN_PopupMultiChoice(int *value, const std::string &text, const char **choices, int minVal, int numChoices,
 		const char *category, SCREEN_ScreenManager *screenManager, SCREEN_UI::LayoutParams *layoutParams = nullptr)
 		: SCREEN_UI::Choice(text, "", false, layoutParams), value_(value), choices_(choices), minVal_(minVal), numChoices_(numChoices), 
 		category_(category), screenManager_(screenManager) {
@@ -254,7 +254,7 @@ public:
 			*value = numChoices + minVal - 1;
 		if (*value < minVal)
 			*value = minVal;
-		OnClick.Handle(this, &PopupMultiChoice::HandleClick);
+		OnClick.Handle(this, &SCREEN_PopupMultiChoice::HandleClick);
 		UpdateText();
 	}
 
@@ -288,11 +288,11 @@ private:
 };
 
 // Allows passing in a dynamic vector of strings. Saves the string.
-class PopupMultiChoiceDynamic : public PopupMultiChoice {
+class SCREEN_PopupMultiChoiceDynamic : public SCREEN_PopupMultiChoice {
 public:
-	PopupMultiChoiceDynamic(std::string *value, const std::string &text, std::vector<std::string> choices,
+	SCREEN_PopupMultiChoiceDynamic(std::string *value, const std::string &text, std::vector<std::string> choices,
 		const char *category, SCREEN_ScreenManager *screenManager, SCREEN_UI::LayoutParams *layoutParams = nullptr)
-		: SCREEN_UI::PopupMultiChoice(&valueInt_, text, nullptr, 0, (int)choices.size(), category, screenManager, layoutParams),
+		: SCREEN_UI::SCREEN_PopupMultiChoice(&valueInt_, text, nullptr, 0, (int)choices.size(), category, screenManager, layoutParams),
 		  valueStr_(value) {
 		choices_ = new const char *[numChoices_];
 		valueInt_ = 0;
@@ -305,7 +305,7 @@ public:
 		value_ = &valueInt_;
 		UpdateText();
 	}
-	~PopupMultiChoiceDynamic() {
+	~SCREEN_PopupMultiChoiceDynamic() {
 		for (int i = 0; i < numChoices_; i++) {
 			delete[] choices_[i];
 		}
@@ -322,10 +322,10 @@ private:
 	std::string *valueStr_;
 };
 
-class PopupSliderChoice : public Choice {
+class SCREEN_PopupSliderChoice : public Choice {
 public:
-	PopupSliderChoice(int *value, int minValue, int maxValue, const std::string &text, SCREEN_ScreenManager *screenManager, const std::string &units = "", LayoutParams *layoutParams = 0);
-	PopupSliderChoice(int *value, int minValue, int maxValue, const std::string &text, int step, SCREEN_ScreenManager *screenManager, const std::string &units = "", LayoutParams *layoutParams = 0);
+	SCREEN_PopupSliderChoice(int *value, int minValue, int maxValue, const std::string &text, SCREEN_ScreenManager *screenManager, const std::string &units = "", LayoutParams *layoutParams = 0);
+	SCREEN_PopupSliderChoice(int *value, int minValue, int maxValue, const std::string &text, int step, SCREEN_ScreenManager *screenManager, const std::string &units = "", LayoutParams *layoutParams = 0);
 
 	virtual void Draw(SCREEN_UIContext &dc) override;
 
@@ -357,10 +357,10 @@ private:
 	bool restoreFocus_;
 };
 
-class PopupSliderChoiceFloat : public Choice {
+class SCREEN_PopupSliderChoiceFloat : public Choice {
 public:
-	PopupSliderChoiceFloat(float *value, float minValue, float maxValue, const std::string &text, SCREEN_ScreenManager *screenManager, const std::string &units = "", LayoutParams *layoutParams = 0);
-	PopupSliderChoiceFloat(float *value, float minValue, float maxValue, const std::string &text, float step, SCREEN_ScreenManager *screenManager, const std::string &units = "", LayoutParams *layoutParams = 0);
+	SCREEN_PopupSliderChoiceFloat(float *value, float minValue, float maxValue, const std::string &text, SCREEN_ScreenManager *screenManager, const std::string &units = "", LayoutParams *layoutParams = 0);
+	SCREEN_PopupSliderChoiceFloat(float *value, float minValue, float maxValue, const std::string &text, float step, SCREEN_ScreenManager *screenManager, const std::string &units = "", LayoutParams *layoutParams = 0);
 
 	virtual void Draw(SCREEN_UIContext &dc) override;
 
@@ -387,9 +387,9 @@ private:
 	bool restoreFocus_;
 };
 
-class PopupTextInputChoice: public Choice {
+class SCREEN_PopupTextInputChoice: public Choice {
 public:
-	PopupTextInputChoice(std::string *value, const std::string &title, const std::string &placeholder, int maxLen, SCREEN_ScreenManager *screenManager, LayoutParams *layoutParams = 0);
+	SCREEN_PopupTextInputChoice(std::string *value, const std::string &title, const std::string &placeholder, int maxLen, SCREEN_ScreenManager *screenManager, LayoutParams *layoutParams = 0);
 
 	virtual void Draw(SCREEN_UIContext &dc) override;
 
@@ -406,15 +406,15 @@ private:
 	bool restoreFocus_;
 };
 
-class ChoiceWithValueDisplay : public SCREEN_UI::Choice {
+class SCREEN_ChoiceWithValueDisplay : public SCREEN_UI::Choice {
 public:
-	ChoiceWithValueDisplay(int *value, const std::string &text, LayoutParams *layoutParams = 0)
+	SCREEN_ChoiceWithValueDisplay(int *value, const std::string &text, LayoutParams *layoutParams = 0)
 		: Choice(text, layoutParams), iValue_(value) {}
 
-	ChoiceWithValueDisplay(std::string *value, const std::string &text, const char *category, LayoutParams *layoutParams = 0)
+	SCREEN_ChoiceWithValueDisplay(std::string *value, const std::string &text, const char *category, LayoutParams *layoutParams = 0)
 		: Choice(text, layoutParams), sValue_(value), category_(category) {}
 
-	ChoiceWithValueDisplay(std::string *value, const std::string &text, std::string (*translateCallback)(const char *value), LayoutParams *layoutParams = 0)
+	SCREEN_ChoiceWithValueDisplay(std::string *value, const std::string &text, std::string (*translateCallback)(const char *value), LayoutParams *layoutParams = 0)
 		: Choice(text, layoutParams), sValue_(value), translateCallback_(translateCallback) {
 	}
 

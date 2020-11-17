@@ -403,7 +403,7 @@ std::string ChopTitle(const std::string &title) {
 	return title;
 }
 
-SCREEN_UI::EventReturn PopupMultiChoice::HandleClick(SCREEN_UI::EventParams &e) {
+SCREEN_UI::EventReturn SCREEN_PopupMultiChoice::HandleClick(SCREEN_UI::EventParams &e) {
 	restoreFocus_ = HasFocus();
 
 	auto category = category_ ? GetI18NCategory(category_) : nullptr;
@@ -414,7 +414,7 @@ SCREEN_UI::EventReturn PopupMultiChoice::HandleClick(SCREEN_UI::EventParams &e) 
 	}
 
 	ListSCREEN_PopupScreen *popupScreen = new ListSCREEN_PopupScreen(ChopTitle(text_), choices, *value_ - minVal_,
-		std::bind(&PopupMultiChoice::ChoiceCallback, this, std::placeholders::_1));
+		std::bind(&SCREEN_PopupMultiChoice::ChoiceCallback, this, std::placeholders::_1));
 	popupScreen->SetHiddenChoices(hidden_);
 	if (e.v)
 		popupScreen->SetPopupOrigin(e.v);
@@ -422,11 +422,11 @@ SCREEN_UI::EventReturn PopupMultiChoice::HandleClick(SCREEN_UI::EventParams &e) 
 	return SCREEN_UI::EVENT_DONE;
 }
 
-void PopupMultiChoice::Update() {
+void SCREEN_PopupMultiChoice::Update() {
 	UpdateText();
 }
 
-void PopupMultiChoice::UpdateText() {
+void SCREEN_PopupMultiChoice::UpdateText() {
 	if (!choices_)
 		return;
 	auto category = GetI18NCategory(category_);
@@ -438,7 +438,7 @@ void PopupMultiChoice::UpdateText() {
 	}
 }
 
-void PopupMultiChoice::ChoiceCallback(int num) {
+void SCREEN_PopupMultiChoice::ChoiceCallback(int num) {
 	if (num != -1) {
 		*value_ = num + minVal_;
 		UpdateText();
@@ -455,7 +455,7 @@ void PopupMultiChoice::ChoiceCallback(int num) {
 	}
 }
 
-void PopupMultiChoice::Draw(SCREEN_UIContext &dc) {
+void SCREEN_PopupMultiChoice::Draw(SCREEN_UIContext &dc) {
 	Style style = dc.theme->itemStyle;
 	if (!IsEnabled()) {
 		style = dc.theme->itemDisabledStyle;
@@ -471,44 +471,44 @@ void PopupMultiChoice::Draw(SCREEN_UIContext &dc) {
 	dc.DrawText(valueText_.c_str(), bounds_.x2() - paddingX, bounds_.centerY(), style.fgColor, ALIGN_RIGHT | ALIGN_VCENTER);
 }
 
-PopupSliderChoice::PopupSliderChoice(int *value, int minValue, int maxValue, const std::string &text, SCREEN_ScreenManager *screenManager, const std::string &units, LayoutParams *layoutParams)
+SCREEN_PopupSliderChoice::SCREEN_PopupSliderChoice(int *value, int minValue, int maxValue, const std::string &text, SCREEN_ScreenManager *screenManager, const std::string &units, LayoutParams *layoutParams)
 	: Choice(text, "", false, layoutParams), value_(value), minValue_(minValue), maxValue_(maxValue), step_(1), units_(units), screenManager_(screenManager) {
 	fmt_ = "%i";
-	OnClick.Handle(this, &PopupSliderChoice::HandleClick);
+	OnClick.Handle(this, &SCREEN_PopupSliderChoice::HandleClick);
 }
 
-PopupSliderChoice::PopupSliderChoice(int *value, int minValue, int maxValue, const std::string &text, int step, SCREEN_ScreenManager *screenManager, const std::string &units, LayoutParams *layoutParams)
+SCREEN_PopupSliderChoice::SCREEN_PopupSliderChoice(int *value, int minValue, int maxValue, const std::string &text, int step, SCREEN_ScreenManager *screenManager, const std::string &units, LayoutParams *layoutParams)
 	: Choice(text, "", false, layoutParams), value_(value), minValue_(minValue), maxValue_(maxValue), step_(step), units_(units), screenManager_(screenManager) {
 	fmt_ = "%i";
-	OnClick.Handle(this, &PopupSliderChoice::HandleClick);
+	OnClick.Handle(this, &SCREEN_PopupSliderChoice::HandleClick);
 }
 
-PopupSliderChoiceFloat::PopupSliderChoiceFloat(float *value, float minValue, float maxValue, const std::string &text, SCREEN_ScreenManager *screenManager, const std::string &units, LayoutParams *layoutParams)
+SCREEN_PopupSliderChoiceFloat::SCREEN_PopupSliderChoiceFloat(float *value, float minValue, float maxValue, const std::string &text, SCREEN_ScreenManager *screenManager, const std::string &units, LayoutParams *layoutParams)
 	: Choice(text, "", false, layoutParams), value_(value), minValue_(minValue), maxValue_(maxValue), step_(1.0f), units_(units), screenManager_(screenManager) {
 	fmt_ = "%2.2f";
-	OnClick.Handle(this, &PopupSliderChoiceFloat::HandleClick);
+	OnClick.Handle(this, &SCREEN_PopupSliderChoiceFloat::HandleClick);
 }
 
-PopupSliderChoiceFloat::PopupSliderChoiceFloat(float *value, float minValue, float maxValue, const std::string &text, float step, SCREEN_ScreenManager *screenManager, const std::string &units, LayoutParams *layoutParams)
+SCREEN_PopupSliderChoiceFloat::SCREEN_PopupSliderChoiceFloat(float *value, float minValue, float maxValue, const std::string &text, float step, SCREEN_ScreenManager *screenManager, const std::string &units, LayoutParams *layoutParams)
 	: Choice(text, "", false, layoutParams), value_(value), minValue_(minValue), maxValue_(maxValue), step_(step), units_(units), screenManager_(screenManager) {
 	fmt_ = "%2.2f";
-	OnClick.Handle(this, &PopupSliderChoiceFloat::HandleClick);
+	OnClick.Handle(this, &SCREEN_PopupSliderChoiceFloat::HandleClick);
 }
 
-EventReturn PopupSliderChoice::HandleClick(EventParams &e) {
+EventReturn SCREEN_PopupSliderChoice::HandleClick(EventParams &e) {
 	restoreFocus_ = HasFocus();
 
 	SliderSCREEN_PopupScreen *popupScreen = new SliderSCREEN_PopupScreen(value_, minValue_, maxValue_, ChopTitle(text_), step_, units_);
 	if (!negativeLabel_.empty())
 		popupScreen->SetNegativeDisable(negativeLabel_);
-	popupScreen->OnChange.Handle(this, &PopupSliderChoice::HandleChange);
+	popupScreen->OnChange.Handle(this, &SCREEN_PopupSliderChoice::HandleChange);
 	if (e.v)
 		popupScreen->SetPopupOrigin(e.v);
 	screenManager_->push(popupScreen);
 	return EVENT_DONE;
 }
 
-EventReturn PopupSliderChoice::HandleChange(EventParams &e) {
+EventReturn SCREEN_PopupSliderChoice::HandleChange(EventParams &e) {
 	e.v = this;
 	OnChange.Trigger(e);
 
@@ -518,7 +518,7 @@ EventReturn PopupSliderChoice::HandleChange(EventParams &e) {
 	return EVENT_DONE;
 }
 
-void PopupSliderChoice::Draw(SCREEN_UIContext &dc) {
+void SCREEN_PopupSliderChoice::Draw(SCREEN_UIContext &dc) {
 	Style style = dc.theme->itemStyle;
 	if (!IsEnabled()) {
 		style = dc.theme->itemDisabledStyle;
@@ -544,18 +544,18 @@ void PopupSliderChoice::Draw(SCREEN_UIContext &dc) {
 	dc.DrawText(temp, bounds_.x2() - paddingX, bounds_.centerY(), style.fgColor, ALIGN_RIGHT | ALIGN_VCENTER);
 }
 
-EventReturn PopupSliderChoiceFloat::HandleClick(EventParams &e) {
+EventReturn SCREEN_PopupSliderChoiceFloat::HandleClick(EventParams &e) {
 	restoreFocus_ = HasFocus();
 
 	SliderFloatSCREEN_PopupScreen *popupScreen = new SliderFloatSCREEN_PopupScreen(value_, minValue_, maxValue_, ChopTitle(text_), step_, units_);
-	popupScreen->OnChange.Handle(this, &PopupSliderChoiceFloat::HandleChange);
+	popupScreen->OnChange.Handle(this, &SCREEN_PopupSliderChoiceFloat::HandleChange);
 	if (e.v)
 		popupScreen->SetPopupOrigin(e.v);
 	screenManager_->push(popupScreen);
 	return EVENT_DONE;
 }
 
-EventReturn PopupSliderChoiceFloat::HandleChange(EventParams &e) {
+EventReturn SCREEN_PopupSliderChoiceFloat::HandleChange(EventParams &e) {
 	e.v = this;
 	OnChange.Trigger(e);
 
@@ -565,7 +565,7 @@ EventReturn PopupSliderChoiceFloat::HandleChange(EventParams &e) {
 	return EVENT_DONE;
 }
 
-void PopupSliderChoiceFloat::Draw(SCREEN_UIContext &dc) {
+void SCREEN_PopupSliderChoiceFloat::Draw(SCREEN_UIContext &dc) {
 	Style style = dc.theme->itemStyle;
 	if (!IsEnabled()) {
 		style = dc.theme->itemDisabledStyle;
@@ -770,23 +770,23 @@ void SliderFloatSCREEN_PopupScreen::OnCompleted(DialogResult result) {
 	}
 }
 
-PopupTextInputChoice::PopupTextInputChoice(std::string *value, const std::string &title, const std::string &placeholder, int maxLen, SCREEN_ScreenManager *screenManager, LayoutParams *layoutParams)
+SCREEN_PopupTextInputChoice::SCREEN_PopupTextInputChoice(std::string *value, const std::string &title, const std::string &placeholder, int maxLen, SCREEN_ScreenManager *screenManager, LayoutParams *layoutParams)
 : Choice(title, "", false, layoutParams), screenManager_(screenManager), value_(value), placeHolder_(placeholder), maxLen_(maxLen) {
-	OnClick.Handle(this, &PopupTextInputChoice::HandleClick);
+	OnClick.Handle(this, &SCREEN_PopupTextInputChoice::HandleClick);
 }
 
-EventReturn PopupTextInputChoice::HandleClick(EventParams &e) {
+EventReturn SCREEN_PopupTextInputChoice::HandleClick(EventParams &e) {
 	restoreFocus_ = HasFocus();
 
 	TextEditSCREEN_PopupScreen *popupScreen = new TextEditSCREEN_PopupScreen(value_, placeHolder_, ChopTitle(text_), maxLen_);
-	popupScreen->OnChange.Handle(this, &PopupTextInputChoice::HandleChange);
+	popupScreen->OnChange.Handle(this, &SCREEN_PopupTextInputChoice::HandleChange);
 	if (e.v)
 		popupScreen->SetPopupOrigin(e.v);
 	screenManager_->push(popupScreen);
 	return EVENT_DONE;
 }
 
-void PopupTextInputChoice::Draw(SCREEN_UIContext &dc) {
+void SCREEN_PopupTextInputChoice::Draw(SCREEN_UIContext &dc) {
 	Style style = dc.theme->itemStyle;
 	if (!IsEnabled()) {
 		style = dc.theme->itemDisabledStyle;
@@ -802,7 +802,7 @@ void PopupTextInputChoice::Draw(SCREEN_UIContext &dc) {
 	dc.DrawText(value_->c_str(), bounds_.x2() - 12, bounds_.centerY(), style.fgColor, ALIGN_RIGHT | ALIGN_VCENTER);
 }
 
-EventReturn PopupTextInputChoice::HandleChange(EventParams &e) {
+EventReturn SCREEN_PopupTextInputChoice::HandleChange(EventParams &e) {
 	e.v = this;
 	OnChange.Trigger(e);
 
@@ -836,7 +836,7 @@ void TextEditSCREEN_PopupScreen::OnCompleted(DialogResult result) {
 	}
 }
 
-void ChoiceWithValueDisplay::Draw(SCREEN_UIContext &dc) {
+void SCREEN_ChoiceWithValueDisplay::Draw(SCREEN_UIContext &dc) {
 	Style style = dc.theme->itemStyle;
 	if (!IsEnabled()) {
 		style = dc.theme->itemDisabledStyle;

@@ -19,7 +19,7 @@ static bool OnRenderThread() {
 }
 #endif
 
-void GLDeleter::Take(GLDeleter &other) {
+void SCREEN_GLDeleter::Take(SCREEN_GLDeleter &other) {
 	_assert_msg_(IsEmpty(), "Deleter already has stuff");
 	shaders = std::move(other.shaders);
 	programs = std::move(other.programs);
@@ -38,7 +38,7 @@ void GLDeleter::Take(GLDeleter &other) {
 }
 
 // Runs on the GPU thread.
-void GLDeleter::Perform(SCREEN_GLRenderManager *renderManager, bool skipGLCalls) {
+void SCREEN_GLDeleter::Perform(SCREEN_GLRenderManager *renderManager, bool skipGLCalls) {
 	for (auto pushBuffer : pushBuffers) {
 		renderManager->UnregisterPushBuffer(pushBuffer);
 		if (skipGLCalls) {
@@ -131,7 +131,7 @@ void SCREEN_GLRenderManager::ThreadStart(SCREEN_Draw::SCREEN_DrawContext *draw) 
 	if (mapBuffers) {
 		switch (gl_extensions.gpuVendor) {
 		case GPU_VENDOR_NVIDIA:
-			bufferStrategy_ = GLBufferStrategy::FRAME_UNMAP;
+			bufferStrategy_ = SCREEN_GLBufferStrategy::FRAME_UNMAP;
 			break;
 
 		// Temporarily disabled because it doesn't work with task switching on Android.
@@ -140,14 +140,14 @@ void SCREEN_GLRenderManager::ThreadStart(SCREEN_Draw::SCREEN_DrawContext *draw) 
 		// Emu thread which may not yet have shut down. There may be solutions to this, but for now,
 		// disable this strategy to avoid crashing.
 		//case GPU_VENDOR_QUALCOMM:
-		//	bufferStrategy_ = GLBufferStrategy::FLUSH_INVALIDATE_UNMAP;
+		//	bufferStrategy_ = SCREEN_GLBufferStrategy::FLUSH_INVALIDATE_UNMAP;
 		//	break;
 
 		default:
-			bufferStrategy_ = GLBufferStrategy::SUBDATA;
+			bufferStrategy_ = SCREEN_GLBufferStrategy::SUBDATA;
 		}
 	} else {
-		bufferStrategy_ = GLBufferStrategy::SUBDATA;
+		bufferStrategy_ = SCREEN_GLBufferStrategy::SUBDATA;
 	}
 }
 
@@ -276,14 +276,14 @@ void SCREEN_GLRenderManager::StopThread() {
 	}
 }
 
-void SCREEN_GLRenderManager::BindFramebufferAsRenderTarget(GLRFramebuffer *fb, GLRRenderPassAction color, GLRRenderPassAction depth, GLRRenderPassAction stencil, uint32_t clearColor, float clearDepth, uint8_t clearStencil, const char *tag) {
+void SCREEN_GLRenderManager::BindFramebufferAsRenderTarget(SCREEN_GLRFramebuffer *fb, SCREEN_GLRRenderPassAction color, SCREEN_GLRRenderPassAction depth, SCREEN_GLRRenderPassAction stencil, uint32_t clearColor, float clearDepth, uint8_t clearStencil, const char *tag) {
 	_assert_(insideFrame_);
 #ifdef _DEBUG
 	curProgram_ = nullptr;
 #endif
 	// Eliminate dupes.
-	if (steps_.size() && steps_.back()->render.framebuffer == fb && steps_.back()->stepType == GLRStepType::RENDER) {
-		if (color != GLRRenderPassAction::CLEAR && depth != GLRRenderPassAction::CLEAR && stencil != GLRRenderPassAction::CLEAR) {
+	if (steps_.size() && steps_.back()->render.framebuffer == fb && steps_.back()->stepType == SCREEN_GLRStepType::RENDER) {
+		if (color != SCREEN_GLRRenderPassAction::CLEAR && depth != SCREEN_GLRRenderPassAction::CLEAR && stencil != SCREEN_GLRRenderPassAction::CLEAR) {
 			// We don't move to a new step, this bind was unnecessary and we can safely skip it.
 			curRenderStep_ = steps_.back();
 			return;
@@ -293,7 +293,7 @@ void SCREEN_GLRenderManager::BindFramebufferAsRenderTarget(GLRFramebuffer *fb, G
 		printf("Empty render step. Usually happens after uploading pixels..");
 	}
 
-	GLRStep *step = new GLRStep{ GLRStepType::RENDER };
+	GLRStep *step = new GLRStep{ SCREEN_GLRStepType::RENDER };
 	// This is what queues up new passes, and can end previous ones.
 	step->render.framebuffer = fb;
 	step->render.color = color;
@@ -305,16 +305,16 @@ void SCREEN_GLRenderManager::BindFramebufferAsRenderTarget(GLRFramebuffer *fb, G
 
 	GLuint clearMask = 0;
 	GLRRenderData data;
-	data.cmd = GLRRenderCommand::CLEAR;
-	if (color == GLRRenderPassAction::CLEAR) {
+	data.cmd = SCREEN_GLRRenderCommand::CLEAR;
+	if (color == SCREEN_GLRRenderPassAction::CLEAR) {
 		clearMask |= GL_COLOR_BUFFER_BIT;
 		data.clear.clearColor = clearColor;
 	}
-	if (depth == GLRRenderPassAction::CLEAR) {
+	if (depth == SCREEN_GLRRenderPassAction::CLEAR) {
 		clearMask |= GL_DEPTH_BUFFER_BIT;
 		data.clear.clearZ = clearDepth;
 	}
-	if (stencil == GLRRenderPassAction::CLEAR) {
+	if (stencil == SCREEN_GLRRenderPassAction::CLEAR) {
 		clearMask |= GL_STENCIL_BUFFER_BIT;
 		data.clear.clearStencil = clearStencil;
 	}
@@ -330,15 +330,15 @@ void SCREEN_GLRenderManager::BindFramebufferAsRenderTarget(GLRFramebuffer *fb, G
 	curRenderStep_ = step;
 
 	if (fb) {
-		if (color == GLRRenderPassAction::KEEP || depth == GLRRenderPassAction::KEEP || stencil == GLRRenderPassAction::KEEP) {
+		if (color == SCREEN_GLRRenderPassAction::KEEP || depth == SCREEN_GLRRenderPassAction::KEEP || stencil == SCREEN_GLRRenderPassAction::KEEP) {
 			step->dependencies.insert(fb);
 		}
 	}
 }
 
-void SCREEN_GLRenderManager::BindFramebufferAsTexture(GLRFramebuffer *fb, int binding, int aspectBit, int attachment) {
-	_dbg_assert_(curRenderStep_ && curRenderStep_->stepType == GLRStepType::RENDER);
-	GLRRenderData data{ GLRRenderCommand::BIND_FB_TEXTURE };
+void SCREEN_GLRenderManager::BindFramebufferAsTexture(SCREEN_GLRFramebuffer *fb, int binding, int aspectBit, int attachment) {
+	_dbg_assert_(curRenderStep_ && curRenderStep_->stepType == SCREEN_GLRStepType::RENDER);
+	GLRRenderData data{ SCREEN_GLRRenderCommand::BIND_FB_TEXTURE };
 	data.bind_fb_texture.slot = binding;
 	data.bind_fb_texture.framebuffer = fb;
 	data.bind_fb_texture.aspect = aspectBit;
@@ -346,8 +346,8 @@ void SCREEN_GLRenderManager::BindFramebufferAsTexture(GLRFramebuffer *fb, int bi
 	curRenderStep_->dependencies.insert(fb);
 }
 
-void SCREEN_GLRenderManager::CopyFramebuffer(GLRFramebuffer *src, GLRect2D srcRect, GLRFramebuffer *dst, GLOffset2D dstPos, int aspectMask, const char *tag) {
-	GLRStep *step = new GLRStep{ GLRStepType::COPY };
+void SCREEN_GLRenderManager::CopyFramebuffer(SCREEN_GLRFramebuffer *src, GLRect2D srcRect, SCREEN_GLRFramebuffer *dst, GLOffset2D dstPos, int aspectMask, const char *tag) {
+	GLRStep *step = new GLRStep{ SCREEN_GLRStepType::COPY };
 	step->copy.srcRect = srcRect;
 	step->copy.dstPos = dstPos;
 	step->copy.src = src;
@@ -361,8 +361,8 @@ void SCREEN_GLRenderManager::CopyFramebuffer(GLRFramebuffer *src, GLRect2D srcRe
 	steps_.push_back(step);
 }
 
-void SCREEN_GLRenderManager::BlitFramebuffer(GLRFramebuffer *src, GLRect2D srcRect, GLRFramebuffer *dst, GLRect2D dstRect, int aspectMask, bool filter, const char *tag) {
-	GLRStep *step = new GLRStep{ GLRStepType::BLIT };
+void SCREEN_GLRenderManager::BlitFramebuffer(SCREEN_GLRFramebuffer *src, GLRect2D srcRect, SCREEN_GLRFramebuffer *dst, GLRect2D dstRect, int aspectMask, bool filter, const char *tag) {
+	GLRStep *step = new GLRStep{ SCREEN_GLRStepType::BLIT };
 	step->blit.srcRect = srcRect;
 	step->blit.dstRect = dstRect;
 	step->blit.src = src;
@@ -377,10 +377,10 @@ void SCREEN_GLRenderManager::BlitFramebuffer(GLRFramebuffer *src, GLRect2D srcRe
 	steps_.push_back(step);
 }
 
-bool SCREEN_GLRenderManager::CopyFramebufferToMemorySync(GLRFramebuffer *src, int aspectBits, int x, int y, int w, int h, SCREEN_Draw::SCREEN_DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
+bool SCREEN_GLRenderManager::CopyFramebufferToMemorySync(SCREEN_GLRFramebuffer *src, int aspectBits, int x, int y, int w, int h, SCREEN_Draw::SCREEN_DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
 	_assert_(pixels);
 
-	GLRStep *step = new GLRStep{ GLRStepType::READBACK };
+	GLRStep *step = new GLRStep{ SCREEN_GLRStepType::READBACK };
 	step->readback.src = src;
 	step->readback.srcRect = { x, y, w, h };
 	step->readback.aspectMask = aspectBits;
@@ -408,10 +408,10 @@ bool SCREEN_GLRenderManager::CopyFramebufferToMemorySync(GLRFramebuffer *src, in
 	return true;
 }
 
-void SCREEN_GLRenderManager::CopyImageToMemorySync(GLRTexture *texture, int mipLevel, int x, int y, int w, int h, SCREEN_Draw::SCREEN_DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
+void SCREEN_GLRenderManager::CopyImageToMemorySync(SCREEN_GLRTexture *texture, int mipLevel, int x, int y, int w, int h, SCREEN_Draw::SCREEN_DataFormat destFormat, uint8_t *pixels, int pixelStride, const char *tag) {
 	_assert_(texture);
 	_assert_(pixels);
-	GLRStep *step = new GLRStep{ GLRStepType::READBACK_IMAGE };
+	GLRStep *step = new GLRStep{ SCREEN_GLRStepType::READBACK_IMAGE };
 	step->readback_image.texture = texture;
 	step->readback_image.mipLevel = mipLevel;
 	step->readback_image.srcRect = { x, y, w, h };
@@ -654,16 +654,16 @@ void SCREEN_GLRenderManager::WaitUntilQueueIdle() {
 	}
 }
 
-GLPushBuffer::GLPushBuffer(SCREEN_GLRenderManager *render, GLuint target, size_t size) : render_(render), target_(target), size_(size) {
+SCREEN_GLPushBuffer::SCREEN_GLPushBuffer(SCREEN_GLRenderManager *render, GLuint target, size_t size) : render_(render), target_(target), size_(size) {
 	bool res = AddBuffer();
 	_assert_(res);
 }
 
-GLPushBuffer::~GLPushBuffer() {
+SCREEN_GLPushBuffer::~SCREEN_GLPushBuffer() {
 	Destroy(true);
 }
 
-void GLPushBuffer::Map() {
+void SCREEN_GLPushBuffer::Map() {
 	_assert_(!writePtr_);
 	auto &info = buffers_[buf_];
 	writePtr_ = info.deviceMemory ? info.deviceMemory : info.localMemory;
@@ -677,7 +677,7 @@ void GLPushBuffer::Map() {
 	_assert_(writePtr_);
 }
 
-void GLPushBuffer::Unmap() {
+void SCREEN_GLPushBuffer::Unmap() {
 	_assert_(writePtr_);
 	if (!buffers_[buf_].deviceMemory) {
 		// Here we simply upload the data to the last buffer.
@@ -690,7 +690,7 @@ void GLPushBuffer::Unmap() {
 	writePtr_ = nullptr;
 }
 
-void GLPushBuffer::Flush() {
+void SCREEN_GLPushBuffer::Flush() {
 	// Must be called from the render thread.
 	_dbg_assert_(OnRenderThread());
 
@@ -711,7 +711,7 @@ void GLPushBuffer::Flush() {
 	}
 
 	// For device memory, we flush all buffers here.
-	if ((strategy_ & GLBufferStrategy::MASK_FLUSH) != 0) {
+	if ((strategy_ & SCREEN_GLBufferStrategy::MASK_FLUSH) != 0) {
 		for (auto &info : buffers_) {
 			if (info.flushOffset == 0 || !info.deviceMemory)
 				continue;
@@ -723,7 +723,7 @@ void GLPushBuffer::Flush() {
 	}
 }
 
-bool GLPushBuffer::AddBuffer() {
+bool SCREEN_GLPushBuffer::AddBuffer() {
 	BufInfo info;
 	info.localMemory = (uint8_t *)AllocateAlignedMemory(size_, 16);
 	if (!info.localMemory)
@@ -734,7 +734,7 @@ bool GLPushBuffer::AddBuffer() {
 	return true;
 }
 
-void GLPushBuffer::Destroy(bool onRenderThread) {
+void SCREEN_GLPushBuffer::Destroy(bool onRenderThread) {
 	if (buf_ == -1)
 		return;  // Already destroyed
 	for (BufInfo &info : buffers_) {
@@ -752,7 +752,7 @@ void GLPushBuffer::Destroy(bool onRenderThread) {
 	buf_ = -1;
 }
 
-void GLPushBuffer::NextBuffer(size_t minSize) {
+void SCREEN_GLPushBuffer::NextBuffer(size_t minSize) {
 	// First, unmap the current memory.
 	Unmap();
 
@@ -776,7 +776,7 @@ void GLPushBuffer::NextBuffer(size_t minSize) {
 	Map();
 }
 
-void GLPushBuffer::Defragment() {
+void SCREEN_GLPushBuffer::Defragment() {
 	_dbg_assert_msg_(!OnRenderThread(), "Defragment must not run on the render thread");
 
 	if (buffers_.size() <= 1) {
@@ -800,7 +800,7 @@ void GLPushBuffer::Defragment() {
 	_assert_msg_(res, "AddBuffer failed");
 }
 
-size_t GLPushBuffer::GetTotalSize() const {
+size_t SCREEN_GLPushBuffer::GetTotalSize() const {
 	size_t sum = 0;
 	if (buffers_.size() > 1)
 		sum += size_ * (buffers_.size() - 1);
@@ -808,11 +808,11 @@ size_t GLPushBuffer::GetTotalSize() const {
 	return sum;
 }
 
-void GLPushBuffer::MapDevice(GLBufferStrategy strategy) {
+void SCREEN_GLPushBuffer::MapDevice(SCREEN_GLBufferStrategy strategy) {
 	_dbg_assert_msg_(OnRenderThread(), "MapDevice must run on render thread");
 
 	strategy_ = strategy;
-	if (strategy_ == GLBufferStrategy::SUBDATA) {
+	if (strategy_ == SCREEN_GLBufferStrategy::SUBDATA) {
 		return;
 	}
 
@@ -842,7 +842,7 @@ void GLPushBuffer::MapDevice(GLBufferStrategy strategy) {
 	}
 }
 
-void GLPushBuffer::UnmapDevice() {
+void SCREEN_GLPushBuffer::UnmapDevice() {
 	_dbg_assert_msg_(OnRenderThread(), "UnmapDevice must run on render thread");
 
 	for (auto &info : buffers_) {
@@ -854,19 +854,19 @@ void GLPushBuffer::UnmapDevice() {
 	}
 }
 
-void *GLRBuffer::Map(GLBufferStrategy strategy) {
+void *SCREEN_GLRBuffer::Map(SCREEN_GLBufferStrategy strategy) {
 	_assert_(buffer_ != 0);
 
 	GLbitfield access = GL_MAP_WRITE_BIT;
-	if ((strategy & GLBufferStrategy::MASK_FLUSH) != 0) {
+	if ((strategy & SCREEN_GLBufferStrategy::MASK_FLUSH) != 0) {
 		access |= GL_MAP_FLUSH_EXPLICIT_BIT;
 	}
-	if ((strategy & GLBufferStrategy::MASK_INVALIDATE) != 0) {
+	if ((strategy & SCREEN_GLBufferStrategy::MASK_INVALIDATE) != 0) {
 		access |= GL_MAP_INVALIDATE_BUFFER_BIT;
 	}
 
 	void *p = nullptr;
-	bool allowNativeBuffer = strategy != GLBufferStrategy::SUBDATA;
+	bool allowNativeBuffer = strategy != SCREEN_GLBufferStrategy::SUBDATA;
 	if (allowNativeBuffer) {
 		glBindBuffer(target_, buffer_);
 
@@ -899,7 +899,7 @@ void *GLRBuffer::Map(GLBufferStrategy strategy) {
 	return p;
 }
 
-bool GLRBuffer::Unmap() {
+bool SCREEN_GLRBuffer::Unmap() {
 	glBindBuffer(target_, buffer_);
 	mapped_ = false;
 	return glUnmapBuffer(target_) == GL_TRUE;
