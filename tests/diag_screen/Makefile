@@ -1,4 +1,4 @@
-#standalone ppsspp test version
+#standalone diag_screen test version
 COMPILER_ARTIFACTS = -I/usr/include/SDL2 -I../../screenManager/ -I../../screenManager/Common/
 
 SOURCE_FILES =  main.cpp
@@ -65,12 +65,12 @@ LINKER_OBJECTS_DYN 	+= -lrt
 LINKER_OBJECTS_DYN 	+= -lpng
 LINKER_OBJECTS_DYN 	+= -lGLU
 
-all: SETTINGS_DIAG
+all: DIAG_SCREEN
 
-SETTINGS_DIAG: main.cpp
-	$(info   *************** tests make settings dialog ***************)
+DIAG_SCREEN: main.cpp
+	$(info   *************** tests make dialog screen ***************)
 	g++ $(COMPILER_ARTIFACTS) -o DIAG_SCREEN $(SOURCE_FILES) $(LINKER_OBJECTS_DYN)
 
 clean:
-	$(info   *************** tests settings dialog clean ***************)
+	$(info   *************** tests dialog screen clean ***************)
 	rm -rf *.o DIAG_SCREEN *.ini PSP
